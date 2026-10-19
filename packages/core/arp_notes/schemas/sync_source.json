@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "K§2: one row of the 'Last sync' line in GET /notes.",
+  "properties": {
+    "last_synced_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Synced At"
+    },
+    "note_count": {
+      "title": "Note Count",
+      "type": "integer"
+    },
+    "source_system": {
+      "title": "Source System",
+      "type": "string"
+    },
+    "source_workspace": {
+      "title": "Source Workspace",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_system",
+    "source_workspace",
+    "note_count"
+  ],
+  "title": "SyncSource",
+  "type": "object"
+}

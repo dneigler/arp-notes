@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "attachments": {
+      "items": {
+        "description": "64 lowercase hex characters",
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Attachments",
+      "type": "array"
+    },
+    "content_hash": {
+      "description": "64 lowercase hex characters",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "deleted_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deleted At"
+    },
+    "last_synced_at": {
+      "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+      "title": "Last Synced At",
+      "type": "string"
+    },
+    "source_doc_id": {
+      "title": "Source Doc Id",
+      "type": "string"
+    },
+    "source_path": {
+      "title": "Source Path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_doc_id",
+    "source_path",
+    "content_hash",
+    "attachments",
+    "last_synced_at"
+  ],
+  "title": "ManifestRow",
+  "type": "object"
+}

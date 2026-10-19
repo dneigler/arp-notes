@@ -1,0 +1,118 @@
+{
+  "$defs": {
+    "ProposalCandidate": {
+      "additionalProperties": true,
+      "description": "One pickable candidate on an ambiguous ProposedLink or an unresolved mention.",
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "duplicate_group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "K§2: equal values mark the same work or composer by the K§4 dedupe key",
+          "title": "Duplicate Group"
+        },
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_label": {
+          "title": "Entity Label",
+          "type": "string"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "entity_label",
+        "confidence"
+      ],
+      "title": "ProposalCandidate",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "anchor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Anchor"
+    },
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/ProposalCandidate"
+      },
+      "title": "Candidates",
+      "type": "array"
+    },
+    "composer_label": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Composer Label"
+    },
+    "kind_hint": {
+      "anyOf": [
+        {
+          "enum": [
+            "work",
+            "composer",
+            "movement",
+            "technique",
+            "person"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Kind Hint"
+    },
+    "mention": {
+      "title": "Mention",
+      "type": "string"
+    },
+    "quote": {
+      "title": "Quote",
+      "type": "string"
+    }
+  },
+  "required": [
+    "mention",
+    "quote",
+    "candidates"
+  ],
+  "title": "UnresolvedMention",
+  "type": "object"
+}

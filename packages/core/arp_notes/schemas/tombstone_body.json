@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "source_doc_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Doc Ids",
+      "type": "array"
+    },
+    "source_system": {
+      "title": "Source System",
+      "type": "string"
+    },
+    "source_workspace": {
+      "title": "Source Workspace",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_system",
+    "source_workspace",
+    "source_doc_ids"
+  ],
+  "title": "TombstoneBody",
+  "type": "object"
+}

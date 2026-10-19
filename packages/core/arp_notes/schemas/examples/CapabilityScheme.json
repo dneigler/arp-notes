@@ -1,0 +1,7 @@
+{
+  "prefix": "ex",
+  "entity_types": [
+    "piece",
+    "person"
+  ]
+}

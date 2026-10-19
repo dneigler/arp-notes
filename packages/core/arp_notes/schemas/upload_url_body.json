@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "filename": {
+      "title": "Filename",
+      "type": "string"
+    },
+    "mime": {
+      "title": "Mime",
+      "type": "string"
+    },
+    "sha256": {
+      "description": "64 lowercase hex characters",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "size_bytes": {
+      "title": "Size Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "sha256",
+    "mime",
+    "size_bytes",
+    "filename"
+  ],
+  "title": "UploadUrlBody",
+  "type": "object"
+}

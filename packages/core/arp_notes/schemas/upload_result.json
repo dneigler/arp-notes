@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "PUT /attachments/upload/{token} response (201).",
+  "properties": {
+    "blob_id": {
+      "title": "Blob Id",
+      "type": "integer"
+    },
+    "sha256": {
+      "description": "64 lowercase hex characters",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "blob_id",
+    "sha256"
+  ],
+  "title": "UploadResult",
+  "type": "object"
+}

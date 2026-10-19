@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "action": {
+      "enum": [
+        "keep",
+        "delete"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "note_id": {
+      "title": "Note Id",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "note_id",
+    "action"
+  ],
+  "title": "ResolveTombstoneResult",
+  "type": "object"
+}

@@ -1,0 +1,56 @@
+{
+  "note_id": 7,
+  "outcome": "updated",
+  "missing_attachments": [
+    "cbaf3b5b99647d572abf11a7c2648fc0e27fac903b2160ce65cba17d64bf2467"
+  ],
+  "links_orphaned": 1,
+  "hygiene": {
+    "issues": [
+      {
+        "key": "duplicate_entities:repertoire:18,19,26",
+        "kind": "duplicate_entities",
+        "severity": "warn",
+        "title": "Three repertoire rows look like the same book",
+        "explanation": "Préludes, Livre 1 exists three times in the library. Notes can only link to one of them, so links are split. Merge them after previewing the plan.",
+        "subjects": [
+          {
+            "entity_type": "repertoire",
+            "entity_id": 18,
+            "label": "Préludes, Livre 1"
+          },
+          {
+            "entity_type": "repertoire",
+            "entity_id": 19,
+            "label": "Preludes (Book 1)"
+          },
+          {
+            "entity_type": "repertoire",
+            "entity_id": 26,
+            "label": "Préludes (Book 1)"
+          }
+        ],
+        "fixes": [
+          {
+            "label": "Preview merging the duplicate rows into Préludes, Livre 1",
+            "tool": "merge_entities",
+            "arguments": {
+              "entity_type": "repertoire",
+              "keep_id": 18,
+              "merge_ids": [
+                19,
+                26
+              ],
+              "dry_run": true
+            },
+            "dry_run_first": true,
+            "reversible": false
+          }
+        ],
+        "detected_by": "host"
+      }
+    ],
+    "total": 1,
+    "truncated": false
+  }
+}

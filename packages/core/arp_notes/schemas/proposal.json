@@ -1,0 +1,520 @@
+{
+  "$defs": {
+    "HygieneBlock": {
+      "additionalProperties": true,
+      "properties": {
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/HygieneIssue"
+          },
+          "maxItems": 10,
+          "title": "Issues",
+          "type": "array"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "truncated": {
+          "title": "Truncated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "issues",
+        "total",
+        "truncated"
+      ],
+      "title": "HygieneBlock",
+      "type": "object"
+    },
+    "HygieneFix": {
+      "additionalProperties": true,
+      "properties": {
+        "arguments": {
+          "additionalProperties": true,
+          "title": "Arguments",
+          "type": "object"
+        },
+        "dry_run_first": {
+          "title": "Dry Run First",
+          "type": "boolean"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "reversible": {
+          "title": "Reversible",
+          "type": "boolean"
+        },
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "tool",
+        "arguments",
+        "dry_run_first",
+        "reversible"
+      ],
+      "title": "HygieneFix",
+      "type": "object"
+    },
+    "HygieneIssue": {
+      "additionalProperties": true,
+      "properties": {
+        "detected_by": {
+          "enum": [
+            "core",
+            "host"
+          ],
+          "title": "Detected By",
+          "type": "string"
+        },
+        "explanation": {
+          "description": "Plain language for the client LLM to relay",
+          "title": "Explanation",
+          "type": "string"
+        },
+        "fixes": {
+          "items": {
+            "$ref": "#/$defs/HygieneFix"
+          },
+          "title": "Fixes",
+          "type": "array"
+        },
+        "key": {
+          "description": "Stable: '<kind>:<entity_type>:<sorted ids joined by ,>' or '<kind>:note:<id>'",
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "duplicate_entities",
+            "tombstoned_note",
+            "pending_review",
+            "orphaned_links",
+            "unreferenced_blobs",
+            "unresolved_mentions"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warn",
+            "action"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "subjects": {
+          "items": {
+            "$ref": "#/$defs/HygieneSubject"
+          },
+          "title": "Subjects",
+          "type": "array"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "kind",
+        "severity",
+        "title",
+        "explanation",
+        "subjects",
+        "fixes",
+        "detected_by"
+      ],
+      "title": "HygieneIssue",
+      "type": "object"
+    },
+    "HygieneSubject": {
+      "additionalProperties": true,
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "label"
+      ],
+      "title": "HygieneSubject",
+      "type": "object"
+    },
+    "ProposalCandidate": {
+      "additionalProperties": true,
+      "description": "One pickable candidate on an ambiguous ProposedLink or an unresolved mention.",
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "duplicate_group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "K§2: equal values mark the same work or composer by the K§4 dedupe key",
+          "title": "Duplicate Group"
+        },
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_label": {
+          "title": "Entity Label",
+          "type": "string"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "entity_label",
+        "confidence"
+      ],
+      "title": "ProposalCandidate",
+      "type": "object"
+    },
+    "ProposedAction": {
+      "additionalProperties": true,
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "entity_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Id"
+        },
+        "entity_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Type"
+        },
+        "lane": {
+          "enum": [
+            "practice",
+            "lesson"
+          ],
+          "title": "Lane",
+          "type": "string"
+        },
+        "proposed_by": {
+          "title": "Proposed By",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "lane",
+        "proposed_by"
+      ],
+      "title": "ProposedAction",
+      "type": "object"
+    },
+    "ProposedLink": {
+      "additionalProperties": true,
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "candidates": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/ProposalCandidate"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Present means ambiguous: the user must pick one",
+          "title": "Candidates"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_label": {
+          "title": "Entity Label",
+          "type": "string"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "mention_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "K§2: composer rows, 'Mentioned 14 times'",
+          "title": "Mention Count"
+        },
+        "proposed_by": {
+          "title": "Proposed By",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "entity_label",
+        "quote",
+        "confidence",
+        "proposed_by",
+        "reason"
+      ],
+      "title": "ProposedLink",
+      "type": "object"
+    },
+    "UnresolvedMention": {
+      "additionalProperties": true,
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/ProposalCandidate"
+          },
+          "title": "Candidates",
+          "type": "array"
+        },
+        "composer_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Composer Label"
+        },
+        "kind_hint": {
+          "anyOf": [
+            {
+              "enum": [
+                "work",
+                "composer",
+                "movement",
+                "technique",
+                "person"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kind Hint"
+        },
+        "mention": {
+          "title": "Mention",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mention",
+        "quote",
+        "candidates"
+      ],
+      "title": "UnresolvedMention",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "action_items": {
+      "items": {
+        "$ref": "#/$defs/ProposedAction"
+      },
+      "title": "Action Items",
+      "type": "array"
+    },
+    "cached": {
+      "description": "K§2: true when served from notes.proposal",
+      "title": "Cached",
+      "type": "boolean"
+    },
+    "generated_by": {
+      "items": {
+        "enum": [
+          "resolver",
+          "llm"
+        ],
+        "type": "string"
+      },
+      "title": "Generated By",
+      "type": "array"
+    },
+    "hygiene": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HygieneBlock"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "K§6.2: present only when include_hygiene=true"
+    },
+    "links": {
+      "items": {
+        "$ref": "#/$defs/ProposedLink"
+      },
+      "title": "Links",
+      "type": "array"
+    },
+    "note_id": {
+      "title": "Note Id",
+      "type": "integer"
+    },
+    "proposed_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "K§2: when the proposal was computed",
+      "title": "Proposed At"
+    },
+    "takeaways": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Takeaways",
+      "type": "array"
+    },
+    "unresolved": {
+      "items": {
+        "$ref": "#/$defs/UnresolvedMention"
+      },
+      "title": "Unresolved",
+      "type": "array"
+    }
+  },
+  "required": [
+    "note_id",
+    "links",
+    "action_items",
+    "takeaways",
+    "unresolved",
+    "generated_by",
+    "cached",
+    "proposed_at"
+  ],
+  "title": "Proposal",
+  "type": "object"
+}

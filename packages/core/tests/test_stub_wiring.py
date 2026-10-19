@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import cast
 
 import pytest
-from arp_notes import anchors, attachments, enrich, hygiene, mcp, repo, review, schema, sync
+from arp_notes import attachments, enrich, hygiene, mcp, repo, review, sync
 from arp_notes.config import HostConfig
 from arp_notes.fastapi import build_routers
 from arp_notes.hygiene import fixes, routes, tools
@@ -14,6 +14,15 @@ from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
 
 CFG = cast(HostConfig, object())  # stubs never touch the config
+UPSERT = NoteUpsert(
+    source_system="obsidian",
+    source_workspace="vault",
+    source_doc_id="doc",
+    source_path="a.md",
+    title="A",
+    body_md="",
+    content_hash="0" * 64,
+)
 
 
 def test_hooks_are_no_ops_returning_empty() -> None:
@@ -50,10 +59,8 @@ def test_fixes_router_is_included_by_hygiene_routes() -> None:
 @pytest.mark.parametrize(
     "call",
     [
-        lambda: anchors.slug("A heading"),
-        lambda: schema.ddl(),
         lambda: repo.confirm_links(CFG, "u", 1, ConfirmBody()),
-        lambda: sync.upsert(CFG, "u", NoteUpsert()),
+        lambda: sync.upsert(CFG, "u", UPSERT),
         lambda: sync.manifest(CFG, "u", "obsidian", "vault"),
         lambda: sync.tombstone(CFG, "u", "obsidian", "vault", ["a"]),
         lambda: attachments.content_url(CFG, "u", 1),

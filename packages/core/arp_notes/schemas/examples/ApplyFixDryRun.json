@@ -1,0 +1,35 @@
+{
+  "dry_run": true,
+  "plan": {
+    "entity_type": "repertoire",
+    "keep": 18,
+    "merge": [
+      19,
+      26
+    ],
+    "moves": [
+      {
+        "table": "note_links",
+        "column": "entity_id",
+        "rows": 4
+      },
+      {
+        "table": "practice_sessions",
+        "column": "repertoire_id",
+        "rows": 12
+      }
+    ],
+    "conflicts": [
+      {
+        "table": "note_links",
+        "detail": "note 7 already links 18 at anchor 'intro'"
+      }
+    ],
+    "reversible": false,
+    "warnings": [
+      "Merging cannot be undone; the pre-merge rows are kept in the audit log."
+    ]
+  },
+  "confirm_token": "ttttttttttttttttttttttttttttttttttttttttttt",
+  "expires_at": "2026-10-19T09:05:00"
+}

@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": 7,
+      "kind": "masterclass",
+      "title": "Synthetic masterclass on the Études",
+      "person": "A. Presenter",
+      "note_date": "2026-10-18",
+      "origin": "source",
+      "source_system": "obsidian",
+      "last_synced_at": "2026-10-18T14:30:00",
+      "deleted_at": null,
+      "link_count": 1,
+      "attachment_count": 1,
+      "updated_at": "2026-10-18T14:30:00",
+      "source_workspace": "ExampleVault",
+      "source_path": "Masterclasses/2026-10-18 Synthetic masterclass.md",
+      "thumbnail_url": "https://notes.example.test/api/v1/attachments/1/content?exp=1792332600&sig=abababababababababababababababab",
+      "top_links": [
+        {
+          "entity_type": "repertoire",
+          "entity_id": 35,
+          "entity_label": "Études, Op. 10"
+        }
+      ],
+      "action_count": 0,
+      "review_pending": 2,
+      "duration_min": 25
+    }
+  ],
+  "next_cursor": "eyJ1cGRhdGVkX2F0IjoiMjAyNi0xMC0xOFQxNDozMDowMCIsImlkIjo3fQ",
+  "sync_sources": [
+    {
+      "source_system": "obsidian",
+      "source_workspace": "ExampleVault",
+      "last_synced_at": "2026-10-18T14:30:00",
+      "note_count": 14
+    }
+  ]
+}

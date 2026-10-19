@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "applied": {
+      "const": true,
+      "title": "Applied",
+      "type": "boolean"
+    },
+    "result": {
+      "additionalProperties": true,
+      "title": "Result",
+      "type": "object"
+    }
+  },
+  "required": [
+    "applied",
+    "result"
+  ],
+  "title": "ApplyFixApplied",
+  "type": "object"
+}

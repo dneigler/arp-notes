@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "applied": {
+      "const": true,
+      "title": "Applied",
+      "type": "boolean"
+    },
+    "audit_event_id": {
+      "title": "Audit Event Id",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "applied",
+    "audit_event_id"
+  ],
+  "title": "MergeEntitiesApplied",
+  "type": "object"
+}

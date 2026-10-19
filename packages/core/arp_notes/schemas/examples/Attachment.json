@@ -1,0 +1,12 @@
+{
+  "id": 1,
+  "blob_id": 1,
+  "filename": "2026-10-18 Synthetic masterclass-1.webp",
+  "ref_in_markdown": "![[2026-10-18 Synthetic masterclass-1.webp]]",
+  "mime": "image/webp",
+  "size_bytes": 48211,
+  "sha256": "c3801b99a9b59b05c20cb8b74365d2a35f2d0e0b14da8917f30d591a8473e425",
+  "width": 1280,
+  "height": 960,
+  "content_url": "https://notes.example.test/api/v1/attachments/1/content?exp=1792332600&sig=abababababababababababababababab"
+}

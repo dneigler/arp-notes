@@ -16,6 +16,10 @@ dependencies = [
 
 [project.optional-dependencies]
 s3 = ["boto3>=1.34"]
+testing = [
+    "psycopg[binary]>=3.2",
+    "pytest-postgresql>=7",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["arp_notes"]

@@ -1,0 +1,16 @@
+{
+  "protocol": 1,
+  "items": [
+    {
+      "source_doc_id": "5b2f6c1e",
+      "source_path": "Masterclasses/2026-10-18 Synthetic masterclass.md",
+      "content_hash": "93215a20acc0577f22a75cb85b66cd1d953df7e89221c84da508485ffff1342f",
+      "attachments": [
+        "c3801b99a9b59b05c20cb8b74365d2a35f2d0e0b14da8917f30d591a8473e425"
+      ],
+      "last_synced_at": "2026-10-18T14:30:00",
+      "deleted_at": null
+    }
+  ],
+  "next_after": "5b2f6c1e"
+}

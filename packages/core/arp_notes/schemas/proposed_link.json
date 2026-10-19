@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "ProposalCandidate": {
+      "additionalProperties": true,
+      "description": "One pickable candidate on an ambiguous ProposedLink or an unresolved mention.",
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "duplicate_group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "K§2: equal values mark the same work or composer by the K§4 dedupe key",
+          "title": "Duplicate Group"
+        },
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_label": {
+          "title": "Entity Label",
+          "type": "string"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "entity_label",
+        "confidence"
+      ],
+      "title": "ProposalCandidate",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "anchor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Anchor"
+    },
+    "candidates": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/ProposalCandidate"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Present means ambiguous: the user must pick one",
+      "title": "Candidates"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "entity_id": {
+      "title": "Entity Id",
+      "type": "integer"
+    },
+    "entity_label": {
+      "title": "Entity Label",
+      "type": "string"
+    },
+    "entity_type": {
+      "title": "Entity Type",
+      "type": "string"
+    },
+    "mention_count": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "K§2: composer rows, 'Mentioned 14 times'",
+      "title": "Mention Count"
+    },
+    "proposed_by": {
+      "title": "Proposed By",
+      "type": "string"
+    },
+    "quote": {
+      "title": "Quote",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "entity_type",
+    "entity_id",
+    "entity_label",
+    "quote",
+    "confidence",
+    "proposed_by",
+    "reason"
+  ],
+  "title": "ProposedLink",
+  "type": "object"
+}

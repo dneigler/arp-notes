@@ -1,0 +1,21 @@
+{
+  "id": 1,
+  "entity_type": "repertoire",
+  "entity_id": 35,
+  "entity_label": "Études, Op. 10",
+  "entity_slug": "etudes-op-10",
+  "anchor": "op-10-no-3",
+  "quote": "Keep the melody singing and the left hand quiet.",
+  "comment": "Voice the top line first.",
+  "action_item": null,
+  "action_completed": 0,
+  "backlog_id": null,
+  "status": "confirmed",
+  "proposed_by": "resolver",
+  "confidence": 0.92,
+  "sort_order": 0,
+  "via": {
+    "entity_type": "movement",
+    "entity_id": 1003
+  }
+}

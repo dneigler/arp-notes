@@ -39,6 +39,11 @@
   --arpn-scrim: rgba(9,9,11,.5);
   --arpn-shot: #F4F4F5;
   --arpn-sel: #E0F2FE;
+  --arpn-shot-line: #A1A1AA;
+  --arpn-well: #F4F4F5;
+  --arpn-grab: #A1A1AA;
+  --arpn-tile: #E0F2FE;
+  --arpn-actline: #F8FAFC;
   --arpn-shadow: 0 24px 64px rgba(0,0,0,.28);
 }
 
@@ -74,6 +79,11 @@
   --arpn-scrim: rgba(0,0,0,.72);
   --arpn-shot: #27272A;
   --arpn-sel: #0C3245;
+  --arpn-shot-line: #52525B;
+  --arpn-well: #1F1F23;
+  --arpn-grab: #71717A;
+  --arpn-tile: #0C3245;
+  --arpn-actline: #1F1F23;
   --arpn-shadow: 0 24px 64px rgba(0,0,0,.8);
 }
 
@@ -110,6 +120,11 @@
     --arpn-scrim: rgba(0,0,0,.72);
     --arpn-shot: #27272A;
     --arpn-sel: #0C3245;
+    --arpn-shot-line: #52525B;
+    --arpn-well: #1F1F23;
+    --arpn-grab: #71717A;
+    --arpn-tile: #0C3245;
+    --arpn-actline: #1F1F23;
     --arpn-shadow: 0 24px 64px rgba(0,0,0,.8);
   }
 }

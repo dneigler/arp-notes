@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "K§2/K§5: an unresolved mention the user switched on as a 'someday' idea.",
+  "properties": {
+    "anchor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Anchor"
+    },
+    "composer_label": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Composer Label"
+    },
+    "kind_hint": {
+      "anyOf": [
+        {
+          "enum": [
+            "work",
+            "composer",
+            "movement",
+            "technique",
+            "person"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Kind Hint"
+    },
+    "mention": {
+      "title": "Mention",
+      "type": "string"
+    },
+    "quote": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quote"
+    }
+  },
+  "required": [
+    "mention"
+  ],
+  "title": "SomedayMention",
+  "type": "object"
+}

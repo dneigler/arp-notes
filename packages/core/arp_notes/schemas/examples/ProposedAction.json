@@ -1,0 +1,8 @@
+{
+  "text": "Play the left hand alone, listening for the line.",
+  "anchor": "op-10-no-3",
+  "entity_type": "movement",
+  "entity_id": 1003,
+  "lane": "practice",
+  "proposed_by": "resolver"
+}

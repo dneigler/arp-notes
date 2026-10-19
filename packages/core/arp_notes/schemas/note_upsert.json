@@ -1,0 +1,177 @@
+{
+  "$defs": {
+    "UpsertAttachment": {
+      "additionalProperties": true,
+      "properties": {
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        },
+        "mime": {
+          "title": "Mime",
+          "type": "string"
+        },
+        "ref_in_markdown": {
+          "title": "Ref In Markdown",
+          "type": "string"
+        },
+        "sha256": {
+          "description": "64 lowercase hex characters",
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "filename",
+        "mime",
+        "size_bytes",
+        "ref_in_markdown"
+      ],
+      "title": "UpsertAttachment",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "attachments": {
+      "items": {
+        "$ref": "#/$defs/UpsertAttachment"
+      },
+      "title": "Attachments",
+      "type": "array"
+    },
+    "body_md": {
+      "title": "Body Md",
+      "type": "string"
+    },
+    "content_hash": {
+      "description": "64 lowercase hex characters",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "frontmatter": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Frontmatter"
+    },
+    "kind": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Kind"
+    },
+    "note_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Note Date"
+    },
+    "person": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Person"
+    },
+    "place": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Place"
+    },
+    "source_doc_id": {
+      "title": "Source Doc Id",
+      "type": "string"
+    },
+    "source_modified_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Modified At"
+    },
+    "source_path": {
+      "title": "Source Path",
+      "type": "string"
+    },
+    "source_system": {
+      "title": "Source System",
+      "type": "string"
+    },
+    "source_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Url"
+    },
+    "source_workspace": {
+      "title": "Source Workspace",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_system",
+    "source_workspace",
+    "source_doc_id",
+    "source_path",
+    "title",
+    "body_md",
+    "content_hash"
+  ],
+  "title": "NoteUpsert",
+  "type": "object"
+}

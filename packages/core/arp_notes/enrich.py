@@ -5,15 +5,11 @@ Owner: C5a (ga-mxal.12).
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from arp_notes.config import HostConfig
 from arp_notes.models import Proposal
+from arp_notes.ports import Span
 
-
-@dataclass
-class Span:
-    """A tokenised mention with carried context. C5a owns the fields."""
+__all__ = ["Span", "propose", "tokenise"]
 
 
 def tokenise(body_md: str) -> list[Span]:

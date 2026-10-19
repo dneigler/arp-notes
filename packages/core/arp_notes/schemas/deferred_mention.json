@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "K§2: an ambiguous item the user left for later.",
+  "properties": {
+    "anchor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Anchor"
+    },
+    "mention": {
+      "title": "Mention",
+      "type": "string"
+    }
+  },
+  "required": [
+    "mention"
+  ],
+  "title": "DeferredMention",
+  "type": "object"
+}

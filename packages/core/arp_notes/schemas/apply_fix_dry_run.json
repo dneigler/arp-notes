@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "confirm_token": {
+      "title": "Confirm Token",
+      "type": "string"
+    },
+    "dry_run": {
+      "const": true,
+      "title": "Dry Run",
+      "type": "boolean"
+    },
+    "expires_at": {
+      "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "plan": {
+      "additionalProperties": true,
+      "title": "Plan",
+      "type": "object"
+    }
+  },
+  "required": [
+    "dry_run",
+    "plan",
+    "confirm_token",
+    "expires_at"
+  ],
+  "title": "ApplyFixDryRun",
+  "type": "object"
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "A (entity_type, entity_id) pair, used by `NoteLink.via`.",
+  "properties": {
+    "entity_id": {
+      "title": "Entity Id",
+      "type": "integer"
+    },
+    "entity_type": {
+      "title": "Entity Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "entity_type",
+    "entity_id"
+  ],
+  "title": "EntityRef",
+  "type": "object"
+}

@@ -336,25 +336,51 @@ Module: `arp_notes/review.py` (bead R1). `sync.upsert` calls `review.after_upser
 
 ## K§4 · Ports delta (§9.2) and the resolver pipeline
 
-**`LinkSchemes`**, per scheme, in addition to `resolve / search / reconcile`:
+> **v1.1 (K§12):** every port method that reads or writes one user's data takes `user_id` first. `Storage`, `LinkSchemes` and `Hygiene.merge` follow the rule; `Db`, `Principal`, `Signer`, `Policy`, `Judge`, `dedupe_key` and `Hooks.llm_complete` hold no user data and are exempt. No wire change: `protocol_version` stays 1.
+
+**`Storage`** (K§12.1): bytes are per user, keyed by `(user_id, sha256)`, never shared across users.
 ```
-children(entity_type, entity_id) -> [(entity_type, entity_id)]     optional; powers include_children (K§2)
-dedupe_key(candidate) -> str|None                                  optional; equal keys = duplicate rows (Debussy 18/19/26; Bach 7/11)
+Storage.put(user_id, sha256, stream, *, mime, size_bytes) -> str   # returns the locator stored in blobs.storage_path; idempotent
+Storage.open(user_id, sha256) -> Iterator[bytes]                   # chunks <= 1 MiB; LookupError (or a subclass) when absent -> 404
+Storage.delete(user_id, sha256) -> None                            # idempotent; absent is not an error
 ```
+The core verifies sha256 and size before it calls `put`; the locator is informational and the core never parses it.
+
+**`LinkSchemes`** (K§12.2), per scheme:
+```
+prefix: str ; entity_types: Sequence[str]
+resolve(user_id, entity_type, entity_id) -> {title, url, preview?} | None     # None = missing or not visible -> chip keeps its text, "· not found"
+search(user_id, q, *, entity_types=None, limit=20) -> [Candidate]             # [[ autocomplete; best first
+reconcile(user_id, spans: Sequence[Span]) -> list[list[Candidate]]            # len == len(spans), same order; [] = abstain for that span
+children(user_id, entity_type, entity_id) -> [(entity_type, entity_id)]       # optional; powers include_children (K§2)
+dedupe_key(candidate) -> str | None                                           # optional; pure, no user_id; equal keys = duplicate rows (Debussy 18/19/26; Bach 7/11)
+```
+`Span` is a plain dict (hosts import nothing and tolerate extra keys):
+```
+Span {text, quote, anchor: str|None, kind_hint: 'work'|'composer'|'movement'|'technique'|'person'|None,
+      context: {composer?, opus?, note_title, note_kind}}
+```
+A host `Candidate` is a `judges.Candidate` or a plain dict with the same keys; extra keys are ignored. `entity_id` is converted with `int()` (a slug raises `ValueError` naming the scheme). A candidate that arrives with `duplicate_group` set is a cluster the host already collapsed (`[it, *duplicates]`), and the core does not call `dedupe_key` on its members. With several schemes the core concatenates each scheme's list per span and sorts by `score`. A `reconcile` result of the wrong length raises `ValueError` naming the scheme.
+
+**`Hygiene`** (K§12.3): `detect(user_id, scope) -> [HygieneIssue]`; optional `merge(user_id, entity_type, keep_id, merge_ids, dry_run) -> MergePlan`.
+
 **Chip syntax.** The editor inserts `[@<Title>](<prefix>://<entity_type>/<id>)`, e.g. `[@Études, Op.10](pt://repertoire/35)` (spike ga-mxal.17 §2.2). `NoteBody` also renders PT's existing `[@Title](mention://type/slug)` chips, so pasted PT text keeps working. A chip that does not resolve **keeps its text and stays in the Markdown**, shown as "· not found" (EditorDesk).
 
 **`Judge`** (exact signatures; core module `arp_notes/judges.py`):
 ```
 Mention    {text, quote, anchor?, context: {composer?, opus?, note_title, note_kind}}
-Candidate  {entity_type, entity_id, entity_label, score, duplicate_group?, children?: [Candidate]}   -- children = stage-2 movements
+Candidate  {entity_type, entity_id, entity_label, score, duplicate_group?, children?: [Candidate],   -- children = stage-2 movements
+            composer_label?, duplicates?: [Candidate]}                                                 -- K§12.2
 Judgement  {choice: Candidate|None, confidence: float 0..1, judge: str, stage: 'work'|'movement'}
+Judge.name: str                                  -- K§12.3; fills capabilities.judge
 Judge.judge(mention, candidates) -> Judgement
 ```
+Judge names: `JevChoiceJudge.name = 'jev-choice'`; `LlmJudge(complete, name)` uses the name it is given; `ChainJudge.name = f'{primary.name}>{escalate.name}'` when `escalate` is set, else `primary.name`.
 Reference judges in core: `JevChoiceJudge(api_key, url, model='jev-1.13.0', timeout_s=2.0)` (one Choice question per stage with an explicit `none`; request shape = JJF `backend/src/llm/jev_client.py:75-149`); `LlmJudge(complete: Callable[[str], str], name)` (the host injects the provider call; the core imports no provider SDK); `ChainJudge(primary, escalate=None, threshold=0.5)`.
 
 **Pipeline** (`enrich.propose`, ADR §3.4, build order per D5):
 1. The **core tokeniser** yields spans with carried context. Example: an opus line with no composer inherits the note's dominant composer (the spike's "opus numbers refer to Chopin unless another composer is named").
-2. **Host `reconcile(spans)`** returns candidates. PT issues multi-variant `picker_search` queries per span (the spike showed literal full-mention queries return nothing) and ranks movements by number.
+2. **Host `reconcile(user_id, spans)`** returns one candidate list per span. PT issues multi-variant `picker_search` queries per span (the spike showed literal full-mention queries return nothing) and ranks movements by number.
 3. **Duplicate collapse.** Candidates with equal `dedupe_key` collapse to one cluster before the judge sees them.
 4. **Judge** (if configured). Choice `none` means unresolved. If confidence < `threshold` and `escalate` is set, the escalation judge runs. If confidence < `threshold` and nothing escalates, the item is emitted **ambiguous** (with `candidates`), never dropped and never force-linked.
 5. **No judge configured, or the judge raised** (`JevUnavailableError`, timeout): degrade to search-only. A single strong candidate becomes a link with confidence = generator score; several become ambiguous. Sync never depends on AI.

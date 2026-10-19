@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "MergeConflict": {
+      "additionalProperties": true,
+      "properties": {
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "table": {
+          "title": "Table",
+          "type": "string"
+        }
+      },
+      "required": [
+        "table",
+        "detail"
+      ],
+      "title": "MergeConflict",
+      "type": "object"
+    },
+    "MergeMove": {
+      "additionalProperties": true,
+      "properties": {
+        "column": {
+          "title": "Column",
+          "type": "string"
+        },
+        "rows": {
+          "title": "Rows",
+          "type": "integer"
+        },
+        "table": {
+          "title": "Table",
+          "type": "string"
+        }
+      },
+      "required": [
+        "table",
+        "column",
+        "rows"
+      ],
+      "title": "MergeMove",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "conflicts": {
+      "items": {
+        "$ref": "#/$defs/MergeConflict"
+      },
+      "title": "Conflicts",
+      "type": "array"
+    },
+    "entity_type": {
+      "title": "Entity Type",
+      "type": "string"
+    },
+    "keep": {
+      "title": "Keep",
+      "type": "integer"
+    },
+    "merge": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Merge",
+      "type": "array"
+    },
+    "moves": {
+      "items": {
+        "$ref": "#/$defs/MergeMove"
+      },
+      "title": "Moves",
+      "type": "array"
+    },
+    "reversible": {
+      "const": false,
+      "default": false,
+      "title": "Reversible",
+      "type": "boolean"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "entity_type",
+    "keep",
+    "merge",
+    "moves",
+    "conflicts",
+    "warnings"
+  ],
+  "title": "MergePlan",
+  "type": "object"
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "entity_types": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Entity Types",
+      "type": "array"
+    },
+    "prefix": {
+      "title": "Prefix",
+      "type": "string"
+    }
+  },
+  "required": [
+    "prefix",
+    "entity_types"
+  ],
+  "title": "CapabilityScheme",
+  "type": "object"
+}

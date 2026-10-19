@@ -1,0 +1,288 @@
+{
+  "note_id": 7,
+  "links": [
+    {
+      "entity_type": "movement",
+      "entity_id": 1001,
+      "entity_label": "Études, Op. 10 · No. 1",
+      "anchor": "op-10-no-1",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.96,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "movement",
+      "entity_id": 1003,
+      "entity_label": "Études, Op. 10 · No. 3",
+      "anchor": "op-10-no-3",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.95,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "movement",
+      "entity_id": 1004,
+      "entity_label": "Études, Op. 10 · No. 4",
+      "anchor": "op-10-no-4",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.93,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "movement",
+      "entity_id": 1005,
+      "entity_label": "Études, Op. 10 · No. 5",
+      "anchor": "op-10-no-5",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.91,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "movement",
+      "entity_id": 1006,
+      "entity_label": "Études, Op. 10 · No. 6",
+      "anchor": "op-10-no-6",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.9,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "movement",
+      "entity_id": 1009,
+      "entity_label": "Études, Op. 10 · No. 9",
+      "anchor": "op-10-no-9",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.88,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "movement",
+      "entity_id": 1012,
+      "entity_label": "Études, Op. 10 · No. 12",
+      "anchor": "op-10-no-12",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.86,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "movement",
+      "entity_id": 2001,
+      "entity_label": "Études, Op. 25 · No. 1",
+      "anchor": "op-25-no-1",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.85,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "movement",
+      "entity_id": 2006,
+      "entity_label": "Études, Op. 25 · No. 6",
+      "anchor": "op-25-no-6",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.84,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "repertoire",
+      "entity_id": 35,
+      "entity_label": "Études, Op. 10",
+      "anchor": "op-10",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.97,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "repertoire",
+      "entity_id": 33,
+      "entity_label": "Études, Op. 25",
+      "anchor": "op-25",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.89,
+      "proposed_by": "resolver",
+      "reason": "Exact title and opus number match in the heading."
+    },
+    {
+      "entity_type": "composer",
+      "entity_id": 13,
+      "entity_label": "Chopin",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.78,
+      "proposed_by": "resolver",
+      "reason": "Named in the title and mentioned 14 times.",
+      "mention_count": 14
+    },
+    {
+      "entity_type": "composer",
+      "entity_id": 7,
+      "entity_label": "Bach",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.66,
+      "proposed_by": "resolver",
+      "reason": "Named twice; same composer as 11 (duplicate entity).",
+      "mention_count": 2
+    },
+    {
+      "entity_type": "composer",
+      "entity_id": 11,
+      "entity_label": "J.S. Bach",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.61,
+      "proposed_by": "resolver",
+      "reason": "Named once; same composer as 7 (duplicate entity).",
+      "mention_count": 1
+    },
+    {
+      "entity_type": "technique",
+      "entity_id": 301,
+      "entity_label": "Let the hand fall",
+      "anchor": "technique",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.42,
+      "proposed_by": "resolver",
+      "reason": "Matched the technique vocabulary by trigram."
+    },
+    {
+      "entity_type": "technique",
+      "entity_id": 302,
+      "entity_label": "Pedalling",
+      "anchor": "technique",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.38,
+      "proposed_by": "resolver",
+      "reason": "Matched the technique vocabulary by trigram."
+    },
+    {
+      "entity_type": "repertoire",
+      "entity_id": 18,
+      "entity_label": "Préludes, Livre 1",
+      "anchor": "debussy",
+      "quote": "Synthetic quote from the note body.",
+      "confidence": 0.55,
+      "proposed_by": "resolver",
+      "reason": "Three library rows look like the same book; pick one.",
+      "candidates": [
+        {
+          "entity_type": "repertoire",
+          "entity_id": 18,
+          "entity_label": "Préludes, Livre 1",
+          "confidence": 0.55,
+          "duplicate_group": "repertoire:preludes-book-1"
+        },
+        {
+          "entity_type": "repertoire",
+          "entity_id": 19,
+          "entity_label": "Preludes (Book 1)",
+          "confidence": 0.54,
+          "duplicate_group": "repertoire:preludes-book-1"
+        },
+        {
+          "entity_type": "repertoire",
+          "entity_id": 26,
+          "entity_label": "Préludes (Book 1)",
+          "confidence": 0.53,
+          "duplicate_group": "repertoire:preludes-book-1"
+        },
+        {
+          "entity_type": "repertoire",
+          "entity_id": 20,
+          "entity_label": "Préludes, Livre 2",
+          "confidence": 0.31
+        }
+      ]
+    }
+  ],
+  "action_items": [
+    {
+      "text": "Play the left hand alone, listening for the line.",
+      "anchor": "op-10-no-3",
+      "entity_type": "movement",
+      "entity_id": 1003,
+      "lane": "practice",
+      "proposed_by": "resolver"
+    },
+    {
+      "text": "Bring a clock-like reference recording to the next lesson.",
+      "anchor": null,
+      "entity_type": null,
+      "entity_id": null,
+      "lane": "lesson",
+      "proposed_by": "resolver"
+    },
+    {
+      "text": "Mark the pedal changes in the score.",
+      "anchor": "pedalling",
+      "entity_type": "movement",
+      "entity_id": 1006,
+      "lane": "practice",
+      "proposed_by": "resolver"
+    }
+  ],
+  "takeaways": [
+    "Sing the top line; keep the accompaniment quieter than you think."
+  ],
+  "unresolved": [
+    {
+      "mention": "Bach WTC book 1",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "candidates": [],
+      "kind_hint": "work",
+      "composer_label": "WTC Book 1 · Bach"
+    },
+    {
+      "mention": "E major nocturne",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "candidates": [],
+      "kind_hint": "work",
+      "composer_label": "Nocturne · Chopin"
+    },
+    {
+      "mention": "Op. 27 no. 2",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "candidates": [],
+      "kind_hint": "work",
+      "composer_label": "Nocturne · Chopin"
+    },
+    {
+      "mention": "Fauré",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "candidates": [],
+      "kind_hint": "composer"
+    },
+    {
+      "mention": "Duparc",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "candidates": [],
+      "kind_hint": "composer"
+    },
+    {
+      "mention": "Delacroix",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body.",
+      "candidates": [],
+      "kind_hint": "person"
+    }
+  ],
+  "generated_by": [
+    "resolver"
+  ],
+  "cached": false,
+  "proposed_at": "2026-10-18T14:30:00"
+}

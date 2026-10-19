@@ -32,6 +32,10 @@ class Candidate:
     score: float
     duplicate_group: str | None = None
     children: list[Candidate] | None = None  # stage-2 movements
+    # K§12.2: feeds unresolved[].composer_label and the "· Debussy" row suffix.
+    composer_label: str | None = None
+    # K§12.2: the other members of a cluster the host already collapsed.
+    duplicates: list[Candidate] | None = None
 
 
 @dataclass

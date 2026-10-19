@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "manifest_page_size": {
+      "title": "Manifest Page Size",
+      "type": "integer"
+    },
+    "max_attachment_bytes": {
+      "title": "Max Attachment Bytes",
+      "type": "integer"
+    },
+    "max_attachments_per_note": {
+      "title": "Max Attachments Per Note",
+      "type": "integer"
+    },
+    "max_body_chars": {
+      "title": "Max Body Chars",
+      "type": "integer"
+    },
+    "max_note_bytes": {
+      "title": "Max Note Bytes",
+      "type": "integer"
+    },
+    "upload_ticket_ttl_s": {
+      "title": "Upload Ticket Ttl S",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "max_attachment_bytes",
+    "max_note_bytes",
+    "max_body_chars",
+    "max_attachments_per_note",
+    "manifest_page_size",
+    "upload_ticket_ttl_s"
+  ],
+  "title": "CapabilityLimits",
+  "type": "object"
+}

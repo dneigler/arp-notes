@@ -17,11 +17,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+      # FakeDb (arp_notes.testing.fakedb) runs the core tests against a real Postgres 16.
+      - run: dpkg -s postgresql-16 >/dev/null 2>&1 || sudo apt-get install -y postgresql-16
       - run: uv sync --python 3.12 --frozen
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pyright
       - run: uv run pytest
+        env:
+          ARPN_PG_CTL: /usr/lib/postgresql/16/bin/pg_ctl
 
   ui:
     runs-on: ubuntu-latest

@@ -20,3 +20,12 @@ def test_base_contract_and_amendments_are_present() -> None:
 
 def test_private_fixture_is_not_vendored() -> None:
     assert "howat" not in PROTOCOL.read_text().lower()
+
+
+def test_k4_copy_carries_the_k12_port_signatures() -> None:
+    text = PROTOCOL.read_text()
+    assert "Storage.put(user_id, sha256, stream, *, mime, size_bytes) -> str" in text
+    assert "reconcile(user_id, spans: Sequence[Span]) -> list[list[Candidate]]" in text
+    assert "Judge.name: str" in text
+    assert "merge(user_id, entity_type, keep_id, merge_ids, dry_run)" in text
+    assert "protocol_version: 1" in text

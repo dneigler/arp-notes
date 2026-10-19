@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "POST /attachments/upload-url response: status 'exists' or 'upload'.",
+  "properties": {
+    "blob_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "status=exists",
+      "title": "Blob Id"
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "status=upload",
+      "title": "Expires At"
+    },
+    "method": {
+      "anyOf": [
+        {
+          "const": "PUT",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "status=upload",
+      "title": "Method"
+    },
+    "status": {
+      "enum": [
+        "exists",
+        "upload"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "upload_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "status=upload",
+      "title": "Upload Url"
+    }
+  },
+  "required": [
+    "status"
+  ],
+  "title": "UploadUrlResult",
+  "type": "object"
+}
