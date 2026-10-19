@@ -48,4 +48,5 @@ select = ["E", "F", "I", "B", "UP"]
 include = ["packages/core", "packages/cli", "packages/conformance"]
 exclude = ["**/node_modules", "**/.venv"]
 pythonVersion = "3.12"
+extraPaths = ["packages/core/tests"]  # tests import their shared fakes as `repo_support`
 typeCheckingMode = "basic"
