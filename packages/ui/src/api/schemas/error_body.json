@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "The `{\"error\": ...}` envelope used by 409/422/503 responses in A.2 and K§2.",
+  "properties": {
+    "error": {
+      "description": "blob_missing | hash_mismatch | read_only_import | llm_disabled | someday_unsupported | plan_changed | ...",
+      "title": "Error",
+      "type": "string"
+    },
+    "missing": {
+      "anyOf": [
+        {
+          "items": {
+            "description": "64 lowercase hex characters",
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "error=blob_missing",
+      "title": "Missing"
+    }
+  },
+  "required": [
+    "error"
+  ],
+  "title": "ErrorBody",
+  "type": "object"
+}

@@ -1,0 +1,15 @@
+{
+  "label": "Preview merging the duplicate rows into Préludes, Livre 1",
+  "tool": "merge_entities",
+  "arguments": {
+    "entity_type": "repertoire",
+    "keep_id": 18,
+    "merge_ids": [
+      19,
+      26
+    ],
+    "dry_run": true
+  },
+  "dry_run_first": true,
+  "reversible": false
+}

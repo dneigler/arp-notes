@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "confirm_token": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confirm Token"
+    },
+    "fix_index": {
+      "title": "Fix Index",
+      "type": "integer"
+    },
+    "issue_key": {
+      "title": "Issue Key",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issue_key",
+    "fix_index"
+  ],
+  "title": "ApplyFixBody",
+  "type": "object"
+}

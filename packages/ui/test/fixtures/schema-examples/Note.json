@@ -1,0 +1,111 @@
+{
+  "id": 7,
+  "user_id": "user-1",
+  "kind": "masterclass",
+  "title": "Synthetic masterclass on the Études",
+  "body_md": "---\narp_id: 5b2f6c1e\n---\n# Op. 10 no. 3\n\nKeep the melody singing and the left hand quiet.\n\n![[2026-10-18 Synthetic masterclass-1.webp]]\n",
+  "frontmatter": {
+    "arp_id": "5b2f6c1e",
+    "duration": "25"
+  },
+  "person": "A. Presenter",
+  "note_date": "2026-10-18",
+  "place": "Studio B",
+  "origin": "source",
+  "source_system": "obsidian",
+  "source_workspace": "ExampleVault",
+  "source_doc_id": "5b2f6c1e",
+  "source_path": "Masterclasses/2026-10-18 Synthetic masterclass.md",
+  "source_url": "obsidian://open?vault=ExampleVault&file=2026-10-18%20Synthetic%20masterclass",
+  "source_modified_at": "2026-10-18T14:12:09Z",
+  "content_hash": "93215a20acc0577f22a75cb85b66cd1d953df7e89221c84da508485ffff1342f",
+  "last_synced_at": "2026-10-18T14:30:00",
+  "deleted_at": null,
+  "created_via": "cli",
+  "version": 1,
+  "created_at": "2026-10-18T14:30:00",
+  "updated_at": "2026-10-18T14:30:00",
+  "attachments": [
+    {
+      "id": 1,
+      "blob_id": 1,
+      "filename": "2026-10-18 Synthetic masterclass-1.webp",
+      "ref_in_markdown": "![[2026-10-18 Synthetic masterclass-1.webp]]",
+      "mime": "image/webp",
+      "size_bytes": 48211,
+      "sha256": "c3801b99a9b59b05c20cb8b74365d2a35f2d0e0b14da8917f30d591a8473e425",
+      "width": 1280,
+      "height": 960,
+      "content_url": "https://notes.example.test/api/v1/attachments/1/content?exp=1792332600&sig=abababababababababababababababab"
+    }
+  ],
+  "links": [
+    {
+      "id": 1,
+      "entity_type": "repertoire",
+      "entity_id": 35,
+      "entity_label": "Études, Op. 10",
+      "entity_slug": "etudes-op-10",
+      "anchor": "op-10-no-3",
+      "quote": "Keep the melody singing and the left hand quiet.",
+      "comment": "Voice the top line first.",
+      "action_item": null,
+      "action_completed": 0,
+      "backlog_id": null,
+      "status": "confirmed",
+      "proposed_by": "resolver",
+      "confidence": 0.92,
+      "sort_order": 0
+    }
+  ],
+  "review_pending": 2,
+  "proposed_at": "2026-10-18T14:30:00",
+  "hygiene": {
+    "issues": [
+      {
+        "key": "duplicate_entities:repertoire:18,19,26",
+        "kind": "duplicate_entities",
+        "severity": "warn",
+        "title": "Three repertoire rows look like the same book",
+        "explanation": "Préludes, Livre 1 exists three times in the library. Notes can only link to one of them, so links are split. Merge them after previewing the plan.",
+        "subjects": [
+          {
+            "entity_type": "repertoire",
+            "entity_id": 18,
+            "label": "Préludes, Livre 1"
+          },
+          {
+            "entity_type": "repertoire",
+            "entity_id": 19,
+            "label": "Preludes (Book 1)"
+          },
+          {
+            "entity_type": "repertoire",
+            "entity_id": 26,
+            "label": "Préludes (Book 1)"
+          }
+        ],
+        "fixes": [
+          {
+            "label": "Preview merging the duplicate rows into Préludes, Livre 1",
+            "tool": "merge_entities",
+            "arguments": {
+              "entity_type": "repertoire",
+              "keep_id": 18,
+              "merge_ids": [
+                19,
+                26
+              ],
+              "dry_run": true
+            },
+            "dry_run_first": true,
+            "reversible": false
+          }
+        ],
+        "detected_by": "host"
+      }
+    ],
+    "total": 1,
+    "truncated": false
+  }
+}

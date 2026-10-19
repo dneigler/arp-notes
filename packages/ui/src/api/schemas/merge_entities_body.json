@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "confirm_token": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confirm Token"
+    },
+    "dry_run": {
+      "default": true,
+      "title": "Dry Run",
+      "type": "boolean"
+    },
+    "entity_type": {
+      "title": "Entity Type",
+      "type": "string"
+    },
+    "keep_id": {
+      "title": "Keep Id",
+      "type": "integer"
+    },
+    "merge_ids": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Merge Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "entity_type",
+    "keep_id",
+    "merge_ids"
+  ],
+  "title": "MergeEntitiesBody",
+  "type": "object"
+}

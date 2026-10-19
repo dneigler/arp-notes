@@ -1,0 +1,207 @@
+{
+  "$defs": {
+    "TopLink": {
+      "additionalProperties": true,
+      "description": "K§2 NoteSummary.top_links item.",
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_label": {
+          "title": "Entity Label",
+          "type": "string"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "entity_label"
+      ],
+      "title": "TopLink",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "action_count": {
+      "title": "Action Count",
+      "type": "integer"
+    },
+    "attachment_count": {
+      "title": "Attachment Count",
+      "type": "integer"
+    },
+    "deleted_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deleted At"
+    },
+    "duration_min": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Duration Min"
+    },
+    "id": {
+      "title": "Id",
+      "type": "integer"
+    },
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "last_synced_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Synced At"
+    },
+    "link_count": {
+      "title": "Link Count",
+      "type": "integer"
+    },
+    "note_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Note Date"
+    },
+    "origin": {
+      "enum": [
+        "app",
+        "source"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "person": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Person"
+    },
+    "review_pending": {
+      "title": "Review Pending",
+      "type": "integer"
+    },
+    "source_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Path"
+    },
+    "source_system": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source System"
+    },
+    "source_workspace": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Workspace"
+    },
+    "thumbnail_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Signed content_url of the first image attachment, valid 1 h",
+      "title": "Thumbnail Url"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "top_links": {
+      "description": "At most 4 confirmed links",
+      "items": {
+        "$ref": "#/$defs/TopLink"
+      },
+      "title": "Top Links",
+      "type": "array"
+    },
+    "updated_at": {
+      "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+      "title": "Updated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "title",
+    "origin",
+    "link_count",
+    "attachment_count",
+    "updated_at",
+    "top_links",
+    "action_count",
+    "review_pending"
+  ],
+  "title": "NoteSummary",
+  "type": "object"
+}

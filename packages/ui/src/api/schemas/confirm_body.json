@@ -1,0 +1,384 @@
+{
+  "$defs": {
+    "ConfirmAction": {
+      "additionalProperties": true,
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "entity_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Id"
+        },
+        "entity_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Type"
+        },
+        "lane": {
+          "enum": [
+            "practice",
+            "lesson"
+          ],
+          "title": "Lane",
+          "type": "string"
+        },
+        "link_index": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Attach to links[i]",
+          "title": "Link Index"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "lane"
+      ],
+      "title": "ConfirmAction",
+      "type": "object"
+    },
+    "ConfirmLink": {
+      "additionalProperties": true,
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "comment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comment"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "proposed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proposed By"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id"
+      ],
+      "title": "ConfirmLink",
+      "type": "object"
+    },
+    "ConfirmTakeaway": {
+      "additionalProperties": true,
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "comment": {
+          "title": "Comment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "comment"
+      ],
+      "title": "ConfirmTakeaway",
+      "type": "object"
+    },
+    "DeferredMention": {
+      "additionalProperties": true,
+      "description": "K§2: an ambiguous item the user left for later.",
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "mention": {
+          "title": "Mention",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mention"
+      ],
+      "title": "DeferredMention",
+      "type": "object"
+    },
+    "RejectedLink": {
+      "additionalProperties": true,
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id"
+      ],
+      "title": "RejectedLink",
+      "type": "object"
+    },
+    "SomedayMention": {
+      "additionalProperties": true,
+      "description": "K§2/K§5: an unresolved mention the user switched on as a 'someday' idea.",
+      "properties": {
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Anchor"
+        },
+        "composer_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Composer Label"
+        },
+        "kind_hint": {
+          "anyOf": [
+            {
+              "enum": [
+                "work",
+                "composer",
+                "movement",
+                "technique",
+                "person"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kind Hint"
+        },
+        "mention": {
+          "title": "Mention",
+          "type": "string"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote"
+        }
+      },
+      "required": [
+        "mention"
+      ],
+      "title": "SomedayMention",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "action_items": {
+      "items": {
+        "$ref": "#/$defs/ConfirmAction"
+      },
+      "title": "Action Items",
+      "type": "array"
+    },
+    "deferred": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/DeferredMention"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deferred"
+    },
+    "links": {
+      "items": {
+        "$ref": "#/$defs/ConfirmLink"
+      },
+      "title": "Links",
+      "type": "array"
+    },
+    "rejected": {
+      "items": {
+        "$ref": "#/$defs/RejectedLink"
+      },
+      "title": "Rejected",
+      "type": "array"
+    },
+    "someday": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/SomedayMention"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "K§5: 422 {\"error\":\"someday_unsupported\"} when capabilities.someday=false",
+      "title": "Someday"
+    },
+    "takeaways": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/ConfirmTakeaway"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Takeaways"
+    }
+  },
+  "title": "ConfirmBody",
+  "type": "object"
+}

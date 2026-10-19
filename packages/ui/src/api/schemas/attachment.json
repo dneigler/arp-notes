@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "blob_id": {
+      "title": "Blob Id",
+      "type": "integer"
+    },
+    "content_url": {
+      "description": "Signed URL; expires within 1 hour",
+      "title": "Content Url",
+      "type": "string"
+    },
+    "filename": {
+      "title": "Filename",
+      "type": "string"
+    },
+    "height": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Height"
+    },
+    "id": {
+      "title": "Id",
+      "type": "integer"
+    },
+    "mime": {
+      "title": "Mime",
+      "type": "string"
+    },
+    "ref_in_markdown": {
+      "title": "Ref In Markdown",
+      "type": "string"
+    },
+    "sha256": {
+      "description": "64 lowercase hex characters",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "size_bytes": {
+      "title": "Size Bytes",
+      "type": "integer"
+    },
+    "width": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Width"
+    }
+  },
+  "required": [
+    "id",
+    "blob_id",
+    "filename",
+    "ref_in_markdown",
+    "mime",
+    "size_bytes",
+    "sha256",
+    "content_url"
+  ],
+  "title": "Attachment",
+  "type": "object"
+}

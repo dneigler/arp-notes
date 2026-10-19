@@ -1,0 +1,183 @@
+{
+  "$defs": {
+    "EntityRef": {
+      "additionalProperties": true,
+      "description": "A (entity_type, entity_id) pair, used by `NoteLink.via`.",
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id"
+      ],
+      "title": "EntityRef",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "action_completed": {
+      "title": "Action Completed",
+      "type": "integer"
+    },
+    "action_item": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Action Item"
+    },
+    "anchor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Heading slug or ^block-id; null = whole note",
+      "title": "Anchor"
+    },
+    "backlog_id": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Backlog Id"
+    },
+    "comment": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Comment"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "entity_id": {
+      "title": "Entity Id",
+      "type": "integer"
+    },
+    "entity_label": {
+      "title": "Entity Label",
+      "type": "string"
+    },
+    "entity_slug": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entity Slug"
+    },
+    "entity_type": {
+      "title": "Entity Type",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "integer"
+    },
+    "proposed_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Proposed By"
+    },
+    "quote": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quote"
+    },
+    "sort_order": {
+      "title": "Sort Order",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "confirmed",
+        "rejected",
+        "orphaned"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "via": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EntityRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "K§2: set on by-entity results that matched through a child entity"
+    }
+  },
+  "required": [
+    "id",
+    "entity_type",
+    "entity_id",
+    "entity_label",
+    "action_completed",
+    "status",
+    "sort_order"
+  ],
+  "title": "NoteLink",
+  "type": "object"
+}

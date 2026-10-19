@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "tombstoned": {
+      "title": "Tombstoned",
+      "type": "integer"
+    },
+    "unknown": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unknown",
+      "type": "array"
+    }
+  },
+  "required": [
+    "tombstoned",
+    "unknown"
+  ],
+  "title": "TombstoneResult",
+  "type": "object"
+}

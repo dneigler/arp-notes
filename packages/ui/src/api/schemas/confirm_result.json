@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "backlog_created": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Backlog Created",
+      "type": "array"
+    },
+    "links_created": {
+      "title": "Links Created",
+      "type": "integer"
+    },
+    "links_rejected": {
+      "title": "Links Rejected",
+      "type": "integer"
+    },
+    "review_pending": {
+      "title": "Review Pending",
+      "type": "integer"
+    },
+    "someday_created": {
+      "title": "Someday Created",
+      "type": "integer"
+    },
+    "takeaways_created": {
+      "title": "Takeaways Created",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "links_created",
+    "links_rejected",
+    "backlog_created",
+    "takeaways_created",
+    "someday_created",
+    "review_pending"
+  ],
+  "title": "ConfirmResult",
+  "type": "object"
+}

@@ -1,0 +1,48 @@
+{
+  "protocol": 1,
+  "attachments": true,
+  "mime_allowlist": [
+    "image/webp",
+    "image/png",
+    "application/pdf"
+  ],
+  "limits": {
+    "max_attachment_bytes": 26214400,
+    "max_note_bytes": 209715200,
+    "max_body_chars": 2097152,
+    "max_attachments_per_note": 500,
+    "manifest_page_size": 50,
+    "upload_ticket_ttl_s": 900
+  },
+  "kinds": [
+    "masterclass",
+    "workshop",
+    "lecture",
+    "reading",
+    "video",
+    "reflection",
+    "meeting",
+    "note"
+  ],
+  "source_systems": [
+    "obsidian",
+    "notion",
+    "apple_notes",
+    "llm"
+  ],
+  "export": true,
+  "llm_enrich": false,
+  "schemes": [
+    {
+      "prefix": "ex",
+      "entity_types": [
+        "piece",
+        "person"
+      ]
+    }
+  ],
+  "someday": false,
+  "hygiene": true,
+  "propose_on_sync": "search",
+  "judge": "jev-choice"
+}

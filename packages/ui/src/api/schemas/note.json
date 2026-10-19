@@ -1,0 +1,685 @@
+{
+  "$defs": {
+    "Attachment": {
+      "additionalProperties": true,
+      "properties": {
+        "blob_id": {
+          "title": "Blob Id",
+          "type": "integer"
+        },
+        "content_url": {
+          "description": "Signed URL; expires within 1 hour",
+          "title": "Content Url",
+          "type": "string"
+        },
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        },
+        "height": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Height"
+        },
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "mime": {
+          "title": "Mime",
+          "type": "string"
+        },
+        "ref_in_markdown": {
+          "title": "Ref In Markdown",
+          "type": "string"
+        },
+        "sha256": {
+          "description": "64 lowercase hex characters",
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Width"
+        }
+      },
+      "required": [
+        "id",
+        "blob_id",
+        "filename",
+        "ref_in_markdown",
+        "mime",
+        "size_bytes",
+        "sha256",
+        "content_url"
+      ],
+      "title": "Attachment",
+      "type": "object"
+    },
+    "EntityRef": {
+      "additionalProperties": true,
+      "description": "A (entity_type, entity_id) pair, used by `NoteLink.via`.",
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id"
+      ],
+      "title": "EntityRef",
+      "type": "object"
+    },
+    "HygieneBlock": {
+      "additionalProperties": true,
+      "properties": {
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/HygieneIssue"
+          },
+          "maxItems": 10,
+          "title": "Issues",
+          "type": "array"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "truncated": {
+          "title": "Truncated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "issues",
+        "total",
+        "truncated"
+      ],
+      "title": "HygieneBlock",
+      "type": "object"
+    },
+    "HygieneFix": {
+      "additionalProperties": true,
+      "properties": {
+        "arguments": {
+          "additionalProperties": true,
+          "title": "Arguments",
+          "type": "object"
+        },
+        "dry_run_first": {
+          "title": "Dry Run First",
+          "type": "boolean"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "reversible": {
+          "title": "Reversible",
+          "type": "boolean"
+        },
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "tool",
+        "arguments",
+        "dry_run_first",
+        "reversible"
+      ],
+      "title": "HygieneFix",
+      "type": "object"
+    },
+    "HygieneIssue": {
+      "additionalProperties": true,
+      "properties": {
+        "detected_by": {
+          "enum": [
+            "core",
+            "host"
+          ],
+          "title": "Detected By",
+          "type": "string"
+        },
+        "explanation": {
+          "description": "Plain language for the client LLM to relay",
+          "title": "Explanation",
+          "type": "string"
+        },
+        "fixes": {
+          "items": {
+            "$ref": "#/$defs/HygieneFix"
+          },
+          "title": "Fixes",
+          "type": "array"
+        },
+        "key": {
+          "description": "Stable: '<kind>:<entity_type>:<sorted ids joined by ,>' or '<kind>:note:<id>'",
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "duplicate_entities",
+            "tombstoned_note",
+            "pending_review",
+            "orphaned_links",
+            "unreferenced_blobs",
+            "unresolved_mentions"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warn",
+            "action"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "subjects": {
+          "items": {
+            "$ref": "#/$defs/HygieneSubject"
+          },
+          "title": "Subjects",
+          "type": "array"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "kind",
+        "severity",
+        "title",
+        "explanation",
+        "subjects",
+        "fixes",
+        "detected_by"
+      ],
+      "title": "HygieneIssue",
+      "type": "object"
+    },
+    "HygieneSubject": {
+      "additionalProperties": true,
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "label"
+      ],
+      "title": "HygieneSubject",
+      "type": "object"
+    },
+    "NoteLink": {
+      "additionalProperties": true,
+      "properties": {
+        "action_completed": {
+          "title": "Action Completed",
+          "type": "integer"
+        },
+        "action_item": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Action Item"
+        },
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Heading slug or ^block-id; null = whole note",
+          "title": "Anchor"
+        },
+        "backlog_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Backlog Id"
+        },
+        "comment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comment"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_label": {
+          "title": "Entity Label",
+          "type": "string"
+        },
+        "entity_slug": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Slug"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "proposed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proposed By"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote"
+        },
+        "sort_order": {
+          "title": "Sort Order",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "confirmed",
+            "rejected",
+            "orphaned"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "via": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntityRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "K§2: set on by-entity results that matched through a child entity"
+        }
+      },
+      "required": [
+        "id",
+        "entity_type",
+        "entity_id",
+        "entity_label",
+        "action_completed",
+        "status",
+        "sort_order"
+      ],
+      "title": "NoteLink",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "attachments": {
+      "items": {
+        "$ref": "#/$defs/Attachment"
+      },
+      "title": "Attachments",
+      "type": "array"
+    },
+    "body_md": {
+      "title": "Body Md",
+      "type": "string"
+    },
+    "content_hash": {
+      "anyOf": [
+        {
+          "description": "64 lowercase hex characters",
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Content Hash"
+    },
+    "created_at": {
+      "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+      "title": "Created At",
+      "type": "string"
+    },
+    "created_via": {
+      "title": "Created Via",
+      "type": "string"
+    },
+    "deleted_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deleted At"
+    },
+    "frontmatter": {
+      "additionalProperties": true,
+      "title": "Frontmatter",
+      "type": "object"
+    },
+    "hygiene": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HygieneBlock"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "K§6.2: present only when include_hygiene=true"
+    },
+    "id": {
+      "title": "Id",
+      "type": "integer"
+    },
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "last_synced_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Synced At"
+    },
+    "links": {
+      "items": {
+        "$ref": "#/$defs/NoteLink"
+      },
+      "title": "Links",
+      "type": "array"
+    },
+    "note_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Note Date"
+    },
+    "origin": {
+      "enum": [
+        "app",
+        "source"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "person": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Person"
+    },
+    "place": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Place"
+    },
+    "proposed_at": {
+      "anyOf": [
+        {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Proposed At"
+    },
+    "review_pending": {
+      "title": "Review Pending",
+      "type": "integer"
+    },
+    "source_doc_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Doc Id"
+    },
+    "source_modified_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Modified At"
+    },
+    "source_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Path"
+    },
+    "source_system": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source System"
+    },
+    "source_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Url"
+    },
+    "source_workspace": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Workspace"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "updated_at": {
+      "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+      "title": "Updated At",
+      "type": "string"
+    },
+    "user_id": {
+      "title": "User Id",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "kind",
+    "title",
+    "body_md",
+    "frontmatter",
+    "origin",
+    "created_via",
+    "version",
+    "created_at",
+    "updated_at",
+    "attachments",
+    "links",
+    "review_pending"
+  ],
+  "title": "Note",
+  "type": "object"
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "K§2 NoteSummary.top_links item.",
+  "properties": {
+    "entity_id": {
+      "title": "Entity Id",
+      "type": "integer"
+    },
+    "entity_label": {
+      "title": "Entity Label",
+      "type": "string"
+    },
+    "entity_type": {
+      "title": "Entity Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "entity_type",
+    "entity_id",
+    "entity_label"
+  ],
+  "title": "TopLink",
+  "type": "object"
+}

@@ -1,0 +1,28 @@
+{
+  "source_system": "obsidian",
+  "source_workspace": "ExampleVault",
+  "source_doc_id": "5b2f6c1e",
+  "source_path": "Masterclasses/2026-10-18 Synthetic masterclass.md",
+  "title": "Synthetic masterclass on the Études",
+  "body_md": "---\narp_id: 5b2f6c1e\n---\n# Op. 10 no. 3\n\nKeep the melody singing and the left hand quiet.\n\n![[2026-10-18 Synthetic masterclass-1.webp]]\n",
+  "frontmatter": {
+    "arp_id": "5b2f6c1e",
+    "duration": "25"
+  },
+  "source_modified_at": "2026-10-18T14:12:09Z",
+  "source_url": "obsidian://open?vault=ExampleVault&file=2026-10-18%20Synthetic%20masterclass",
+  "content_hash": "93215a20acc0577f22a75cb85b66cd1d953df7e89221c84da508485ffff1342f",
+  "kind": "masterclass",
+  "person": "A. Presenter",
+  "note_date": "2026-10-18",
+  "place": "Studio B",
+  "attachments": [
+    {
+      "sha256": "c3801b99a9b59b05c20cb8b74365d2a35f2d0e0b14da8917f30d591a8473e425",
+      "filename": "2026-10-18 Synthetic masterclass-1.webp",
+      "mime": "image/webp",
+      "size_bytes": 48211,
+      "ref_in_markdown": "![[2026-10-18 Synthetic masterclass-1.webp]]"
+    }
+  ]
+}

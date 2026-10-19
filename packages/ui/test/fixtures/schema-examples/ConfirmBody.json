@@ -1,0 +1,51 @@
+{
+  "links": [
+    {
+      "entity_type": "movement",
+      "entity_id": 1003,
+      "anchor": "op-10-no-3",
+      "quote": "Synthetic quote from the note body.",
+      "comment": "Voice the top line first.",
+      "proposed_by": "resolver",
+      "confidence": 0.95
+    }
+  ],
+  "rejected": [
+    {
+      "entity_type": "technique",
+      "entity_id": 302,
+      "anchor": "technique"
+    }
+  ],
+  "action_items": [
+    {
+      "text": "Play the left hand alone.",
+      "anchor": "op-10-no-3",
+      "entity_type": "movement",
+      "entity_id": 1003,
+      "lane": "practice",
+      "link_index": 0
+    }
+  ],
+  "takeaways": [
+    {
+      "anchor": "op-10-no-3",
+      "comment": "Sing the top line."
+    }
+  ],
+  "deferred": [
+    {
+      "mention": "Debussy preludes",
+      "anchor": "debussy"
+    }
+  ],
+  "someday": [
+    {
+      "mention": "Bach WTC book 1",
+      "kind_hint": "work",
+      "composer_label": "WTC Book 1 · Bach",
+      "anchor": null,
+      "quote": "Synthetic quote from the note body."
+    }
+  ]
+}

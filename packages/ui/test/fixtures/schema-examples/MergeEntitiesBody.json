@@ -1,0 +1,10 @@
+{
+  "entity_type": "repertoire",
+  "keep_id": 18,
+  "merge_ids": [
+    19,
+    26
+  ],
+  "dry_run": true,
+  "confirm_token": null
+}

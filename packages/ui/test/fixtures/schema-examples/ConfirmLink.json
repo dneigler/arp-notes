@@ -1,0 +1,9 @@
+{
+  "entity_type": "movement",
+  "entity_id": 1003,
+  "anchor": "op-10-no-3",
+  "quote": "Synthetic quote from the note body.",
+  "comment": "Voice the top line first.",
+  "proposed_by": "resolver",
+  "confidence": 0.95
+}

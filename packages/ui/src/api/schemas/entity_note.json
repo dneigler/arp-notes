@@ -1,0 +1,408 @@
+{
+  "$defs": {
+    "EntityRef": {
+      "additionalProperties": true,
+      "description": "A (entity_type, entity_id) pair, used by `NoteLink.via`.",
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id"
+      ],
+      "title": "EntityRef",
+      "type": "object"
+    },
+    "NoteLink": {
+      "additionalProperties": true,
+      "properties": {
+        "action_completed": {
+          "title": "Action Completed",
+          "type": "integer"
+        },
+        "action_item": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Action Item"
+        },
+        "anchor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Heading slug or ^block-id; null = whole note",
+          "title": "Anchor"
+        },
+        "backlog_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Backlog Id"
+        },
+        "comment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comment"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_label": {
+          "title": "Entity Label",
+          "type": "string"
+        },
+        "entity_slug": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entity Slug"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "proposed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proposed By"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote"
+        },
+        "sort_order": {
+          "title": "Sort Order",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "confirmed",
+            "rejected",
+            "orphaned"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "via": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntityRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "K§2: set on by-entity results that matched through a child entity"
+        }
+      },
+      "required": [
+        "id",
+        "entity_type",
+        "entity_id",
+        "entity_label",
+        "action_completed",
+        "status",
+        "sort_order"
+      ],
+      "title": "NoteLink",
+      "type": "object"
+    },
+    "NoteSummary": {
+      "additionalProperties": true,
+      "properties": {
+        "action_count": {
+          "title": "Action Count",
+          "type": "integer"
+        },
+        "attachment_count": {
+          "title": "Attachment Count",
+          "type": "integer"
+        },
+        "deleted_at": {
+          "anyOf": [
+            {
+              "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Deleted At"
+        },
+        "duration_min": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Min"
+        },
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "last_synced_at": {
+          "anyOf": [
+            {
+              "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Synced At"
+        },
+        "link_count": {
+          "title": "Link Count",
+          "type": "integer"
+        },
+        "note_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note Date"
+        },
+        "origin": {
+          "enum": [
+            "app",
+            "source"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "person": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Person"
+        },
+        "review_pending": {
+          "title": "Review Pending",
+          "type": "integer"
+        },
+        "source_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Path"
+        },
+        "source_system": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source System"
+        },
+        "source_workspace": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Workspace"
+        },
+        "thumbnail_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Signed content_url of the first image attachment, valid 1 h",
+          "title": "Thumbnail Url"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "top_links": {
+          "description": "At most 4 confirmed links",
+          "items": {
+            "$ref": "#/$defs/TopLink"
+          },
+          "title": "Top Links",
+          "type": "array"
+        },
+        "updated_at": {
+          "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+          "title": "Updated At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "title",
+        "origin",
+        "link_count",
+        "attachment_count",
+        "updated_at",
+        "top_links",
+        "action_count",
+        "review_pending"
+      ],
+      "title": "NoteSummary",
+      "type": "object"
+    },
+    "TopLink": {
+      "additionalProperties": true,
+      "description": "K§2 NoteSummary.top_links item.",
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_label": {
+          "title": "Entity Label",
+          "type": "string"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "entity_label"
+      ],
+      "title": "TopLink",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "links": {
+      "items": {
+        "$ref": "#/$defs/NoteLink"
+      },
+      "title": "Links",
+      "type": "array"
+    },
+    "note": {
+      "$ref": "#/$defs/NoteSummary"
+    }
+  },
+  "required": [
+    "note",
+    "links"
+  ],
+  "title": "EntityNote",
+  "type": "object"
+}

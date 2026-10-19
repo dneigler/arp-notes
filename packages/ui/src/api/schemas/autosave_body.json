@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "body_md": {
+      "title": "Body Md",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "body_md",
+    "version"
+  ],
+  "title": "AutosaveBody",
+  "type": "object"
+}

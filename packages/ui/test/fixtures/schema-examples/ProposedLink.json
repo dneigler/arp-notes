@@ -1,0 +1,39 @@
+{
+  "entity_type": "repertoire",
+  "entity_id": 18,
+  "entity_label": "Préludes, Livre 1",
+  "anchor": "debussy",
+  "quote": "Synthetic quote from the note body.",
+  "confidence": 0.55,
+  "proposed_by": "resolver",
+  "reason": "Three library rows look like the same book; pick one.",
+  "candidates": [
+    {
+      "entity_type": "repertoire",
+      "entity_id": 18,
+      "entity_label": "Préludes, Livre 1",
+      "confidence": 0.55,
+      "duplicate_group": "repertoire:preludes-book-1"
+    },
+    {
+      "entity_type": "repertoire",
+      "entity_id": 19,
+      "entity_label": "Preludes (Book 1)",
+      "confidence": 0.54,
+      "duplicate_group": "repertoire:preludes-book-1"
+    },
+    {
+      "entity_type": "repertoire",
+      "entity_id": 26,
+      "entity_label": "Préludes (Book 1)",
+      "confidence": 0.53,
+      "duplicate_group": "repertoire:preludes-book-1"
+    },
+    {
+      "entity_type": "repertoire",
+      "entity_id": 20,
+      "entity_label": "Préludes, Livre 2",
+      "confidence": 0.31
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "$defs": {
+    "HygieneFix": {
+      "additionalProperties": true,
+      "properties": {
+        "arguments": {
+          "additionalProperties": true,
+          "title": "Arguments",
+          "type": "object"
+        },
+        "dry_run_first": {
+          "title": "Dry Run First",
+          "type": "boolean"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "reversible": {
+          "title": "Reversible",
+          "type": "boolean"
+        },
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "tool",
+        "arguments",
+        "dry_run_first",
+        "reversible"
+      ],
+      "title": "HygieneFix",
+      "type": "object"
+    },
+    "HygieneIssue": {
+      "additionalProperties": true,
+      "properties": {
+        "detected_by": {
+          "enum": [
+            "core",
+            "host"
+          ],
+          "title": "Detected By",
+          "type": "string"
+        },
+        "explanation": {
+          "description": "Plain language for the client LLM to relay",
+          "title": "Explanation",
+          "type": "string"
+        },
+        "fixes": {
+          "items": {
+            "$ref": "#/$defs/HygieneFix"
+          },
+          "title": "Fixes",
+          "type": "array"
+        },
+        "key": {
+          "description": "Stable: '<kind>:<entity_type>:<sorted ids joined by ,>' or '<kind>:note:<id>'",
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "duplicate_entities",
+            "tombstoned_note",
+            "pending_review",
+            "orphaned_links",
+            "unreferenced_blobs",
+            "unresolved_mentions"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warn",
+            "action"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "subjects": {
+          "items": {
+            "$ref": "#/$defs/HygieneSubject"
+          },
+          "title": "Subjects",
+          "type": "array"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "kind",
+        "severity",
+        "title",
+        "explanation",
+        "subjects",
+        "fixes",
+        "detected_by"
+      ],
+      "title": "HygieneIssue",
+      "type": "object"
+    },
+    "HygieneSubject": {
+      "additionalProperties": true,
+      "properties": {
+        "entity_id": {
+          "title": "Entity Id",
+          "type": "integer"
+        },
+        "entity_type": {
+          "title": "Entity Type",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_type",
+        "entity_id",
+        "label"
+      ],
+      "title": "HygieneSubject",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "issues": {
+      "items": {
+        "$ref": "#/$defs/HygieneIssue"
+      },
+      "maxItems": 10,
+      "title": "Issues",
+      "type": "array"
+    },
+    "total": {
+      "title": "Total",
+      "type": "integer"
+    },
+    "truncated": {
+      "title": "Truncated",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "issues",
+    "total",
+    "truncated"
+  ],
+  "title": "HygieneBlock",
+  "type": "object"
+}
