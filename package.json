@@ -1,0 +1,12 @@
+{
+  "name": "arp-notes",
+  "private": true,
+  "description": "npm workspace root for arp-notes. Not published.",
+  "license": "MIT",
+  "workspaces": ["packages/ui"],
+  "scripts": {
+    "test": "npm test --workspace packages/ui",
+    "test:e2e": "npm run test:e2e --workspace packages/ui",
+    "build": "npm run build --workspace packages/ui"
+  }
+}

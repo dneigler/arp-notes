@@ -1,0 +1,115 @@
+/*
+ * @arpinator/notes-ui design tokens (contract K§8).
+ *
+ * The package styles itself only with these --arpn-* variables. Light defaults live on :root;
+ * dark defaults apply under [data-theme="dark"] and under prefers-color-scheme: dark unless the
+ * host pins [data-theme="light"]. Values are the approved mockup palette (the .lt / .dk blocks in
+ * every artboard). Hosts map these names onto their own tokens.
+ */
+
+:root {
+  --arpn-bg: #FFFFFF;
+  --arpn-surface: #F4F4F5;
+  --arpn-card: #FFFFFF;
+  --arpn-raised: #FFFFFF;
+  --arpn-fg: #0A0A0F;
+  --arpn-fg2: #3F3F46;
+  --arpn-muted: #52525B;
+  --arpn-marker: #71717A;
+  --arpn-border: #E4E4E7;
+  --arpn-border2: #D4D4D8;
+  --arpn-accent: #0369A1;
+  --arpn-accent-fill: #6DD6FF;
+  --arpn-on-accent: #0A0A0F;
+  --arpn-primary: #18181B;
+  --arpn-on-primary: #FAFAFA;
+  --arpn-chip-bg: #E0F2FE;
+  --arpn-chip-fg: #075985;
+  --arpn-chip-bd: #BAE6FD;
+  --arpn-imp-bg: #EDE9FE;
+  --arpn-imp-fg: #5B21B6;
+  --arpn-app-bg: #DCFCE7;
+  --arpn-app-fg: #166534;
+  --arpn-amb-bg: #FEF3C7;
+  --arpn-amb-fg: #92400E;
+  --arpn-neu-bg: #F4F4F5;
+  --arpn-neu-fg: #3F3F46;
+  --arpn-del-bg: #FEE2E2;
+  --arpn-del-fg: #991B1B;
+  --arpn-scrim: rgba(9,9,11,.5);
+  --arpn-shot: #F4F4F5;
+  --arpn-sel: #E0F2FE;
+  --arpn-shadow: 0 24px 64px rgba(0,0,0,.28);
+}
+
+:root[data-theme="dark"] {
+  --arpn-bg: #09090B;
+  --arpn-surface: #18181B;
+  --arpn-card: #18181B;
+  --arpn-raised: #27272A;
+  --arpn-fg: #FAFAFA;
+  --arpn-fg2: #E4E4E7;
+  --arpn-muted: #A1A1AA;
+  --arpn-marker: #8E8E98;
+  --arpn-border: #3F3F46;
+  --arpn-border2: #52525B;
+  --arpn-accent: #6DD6FF;
+  --arpn-accent-fill: #6DD6FF;
+  --arpn-on-accent: #0A0A0F;
+  --arpn-primary: #FAFAFA;
+  --arpn-on-primary: #18181B;
+  --arpn-chip-bg: #0C3245;
+  --arpn-chip-fg: #A5E8FF;
+  --arpn-chip-bd: #155E75;
+  --arpn-imp-bg: #2E1065;
+  --arpn-imp-fg: #DDD6FE;
+  --arpn-app-bg: #052E16;
+  --arpn-app-fg: #BBF7D0;
+  --arpn-amb-bg: #451A03;
+  --arpn-amb-fg: #FDE68A;
+  --arpn-neu-bg: #3F3F46;
+  --arpn-neu-fg: #F4F4F5;
+  --arpn-del-bg: #450A0A;
+  --arpn-del-fg: #FECACA;
+  --arpn-scrim: rgba(0,0,0,.72);
+  --arpn-shot: #27272A;
+  --arpn-sel: #0C3245;
+  --arpn-shadow: 0 24px 64px rgba(0,0,0,.8);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --arpn-bg: #09090B;
+    --arpn-surface: #18181B;
+    --arpn-card: #18181B;
+    --arpn-raised: #27272A;
+    --arpn-fg: #FAFAFA;
+    --arpn-fg2: #E4E4E7;
+    --arpn-muted: #A1A1AA;
+    --arpn-marker: #8E8E98;
+    --arpn-border: #3F3F46;
+    --arpn-border2: #52525B;
+    --arpn-accent: #6DD6FF;
+    --arpn-accent-fill: #6DD6FF;
+    --arpn-on-accent: #0A0A0F;
+    --arpn-primary: #FAFAFA;
+    --arpn-on-primary: #18181B;
+    --arpn-chip-bg: #0C3245;
+    --arpn-chip-fg: #A5E8FF;
+    --arpn-chip-bd: #155E75;
+    --arpn-imp-bg: #2E1065;
+    --arpn-imp-fg: #DDD6FE;
+    --arpn-app-bg: #052E16;
+    --arpn-app-fg: #BBF7D0;
+    --arpn-amb-bg: #451A03;
+    --arpn-amb-fg: #FDE68A;
+    --arpn-neu-bg: #3F3F46;
+    --arpn-neu-fg: #F4F4F5;
+    --arpn-del-bg: #450A0A;
+    --arpn-del-fg: #FECACA;
+    --arpn-scrim: rgba(0,0,0,.72);
+    --arpn-shot: #27272A;
+    --arpn-sel: #0C3245;
+    --arpn-shadow: 0 24px 64px rgba(0,0,0,.8);
+  }
+}

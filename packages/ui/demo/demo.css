@@ -1,0 +1,32 @@
+/* Demo chrome only. Everything is styled with the package's own --arpn-* tokens. */
+body {
+  margin: 0;
+  background: var(--arpn-bg);
+  color: var(--arpn-fg);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+#demo-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--arpn-surface);
+  border-bottom: 1px solid var(--arpn-border);
+}
+#demo-nav a {
+  color: var(--arpn-accent);
+  min-height: 24px;
+}
+#demo-nav a[aria-current='page'] {
+  color: var(--arpn-fg);
+  font-weight: 700;
+}
+#demo-nav .sep {
+  color: var(--arpn-muted);
+}
+#demo-stage {
+  padding: 24px;
+}
