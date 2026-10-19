@@ -25,7 +25,7 @@ def test_hooks_are_no_ops_returning_empty() -> None:
 
 
 def test_mcp_tools_compose_hygiene_tools() -> None:
-    assert mcp.NOTES_TOOLS == []
+    assert len(mcp.NOTES_TOOLS) == 13  # C4 (ga-mxal.11)
     assert tools.TOOLS == []
     assert mcp.TOOLS == [*mcp.NOTES_TOOLS, *tools.TOOLS]
 
@@ -54,7 +54,6 @@ def test_fixes_router_is_included_by_hygiene_routes() -> None:
         lambda: enrich.tokenise("# x"),
         lambda: enrich.propose(CFG, "u", 1),
         lambda: review.get_cached(CFG, "u", 1),
-        lambda: mcp.register_fastmcp(object(), CFG),
     ],
 )
 def test_stub_bodies_raise_not_implemented(call) -> None:  # type: ignore[no-untyped-def]
