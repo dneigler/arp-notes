@@ -27,6 +27,7 @@ dev = [
     "ruff>=0.6",
     "pyright>=1.1.380",
     "jsonschema>=4.21",
+    "respx>=0.21",
     "pytest-postgresql>=7",
     "psycopg[binary]>=3.2",
 ]
