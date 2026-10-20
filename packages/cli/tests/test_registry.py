@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
+import argparse
+
 import pytest
 from arp_notes_cli.main import build_parser, main
+from arp_notes_cli.registry import add_stub
 
 IMPLEMENTED = [
     "config", "login", "scan", "status", "capabilities",  # CLI-a, ga-mxal.6
     "sync", "verify", "tombstone",  # CLI-b, ga-mxal.36
     "pull",  # CLI-c, ga-mxal.37
     "conformance",  # C7b, ga-mxal.38
+    "init",  # C9, ga-mxal.23
 ]  # fmt: skip
-STUBS = [
-    "init",
-]
-COMMANDS = IMPLEMENTED + STUBS
 
 
 def _registered() -> set[str]:
@@ -27,20 +27,16 @@ def _registered() -> set[str]:
 
 
 def test_all_subcommands_are_registered() -> None:
-    assert set(COMMANDS) <= _registered()
+    assert set(IMPLEMENTED) <= _registered()
 
 
-@pytest.mark.parametrize("command", STUBS)
-def test_stub_prints_not_implemented_and_exits_2(
-    command: str, capsys: pytest.CaptureFixture[str]
-) -> None:
-    assert main([command]) == 2
-    assert "not implemented" in capsys.readouterr().err
-
-
-def test_stub_accepts_arbitrary_arguments(capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["init", "my-app", "--app", "pt", "--to", "out/", "--anything"]) == 2
-    assert "arp-notes init: not implemented" in capsys.readouterr().err
+def test_a_stub_prints_not_implemented_and_exits_2(capsys: pytest.CaptureFixture[str]) -> None:
+    """`add_stub` is how a lane registers a command before its handler lands (every one has)."""
+    parser = argparse.ArgumentParser(prog="arp-notes")
+    add_stub(parser.add_subparsers(), "later", "A command whose lane has not landed.")
+    args = parser.parse_args(["later", "my-app", "--anything"])
+    assert args.func(args) == 2
+    assert "arp-notes later: not implemented" in capsys.readouterr().err
 
 
 def test_no_command_prints_help_and_exits_2(capsys: pytest.CaptureFixture[str]) -> None:

@@ -1,0 +1,57 @@
+"""arp-notes: migration drift and the conformance kit (`arp-notes init --host fastapi`).
+
+Adoption is done when this file passes (ADR §9.3). A failure names the check, the request and what
+came back; fix the adapter in @@MODULE@@/arp_notes_host.py and run it again.
+"""
+
+from __future__ import annotations
+
+import dataclasses
+from pathlib import Path
+
+import pytest
+from arp_notes.schema import ddl, migrations
+from arp_notes_conformance import DEFAULT, load_fixture, suite
+from fastapi import FastAPI
+from @@MODULE@@.arp_notes_host import mount_notes, mount_notes_mcp_http
+
+MIGRATIONS = (Path(__file__).resolve().parent / "@@MIGRATIONS_FROM_TESTS@@").resolve()
+# arp-notes-core's SQL file -> the file in this app's migrations folder that holds a copy of it.
+COPIES = {
+@@COPIES@@
+}
+
+# TODO(arp-notes): a Bearer token that HostPrincipal accepts, for a test user.
+TOKEN = "TODO-test-token"
+
+# The kit's link checks need an entity that exists in this app, and a note it can recognise. Until
+# HostLinks knows one they are skipped (the report says so). TODO(arp-notes): then set, for example,
+#   link_target=LinkTarget("thing", 42, child=("subthing", 43)), recognised_document="masterclass"
+# (LinkTarget comes from arp_notes_conformance; "masterclass" is the bundled note that mentions
+# "Op. 10 nº 3". If your scheme cannot recognise that, write a fixture of your own and pass
+# `suite(fixture="path/to/dir")`; INTEGRATING.md shows the format.)
+FIXTURE = dataclasses.replace(load_fixture(DEFAULT), link_target=None, recognised_document=None)
+
+
+def test_migrations_match_arp_notes_core() -> None:
+    """The copies in the migrations folder equal what the pinned arp-notes-core ships."""
+    shipped = {"001_notes.sql": ddl(), **dict(migrations())}
+    for name, text in shipped.items():
+        assert name in COPIES, (
+            f"arp-notes-core now ships {name}: copy it into the migrations folder "
+            "(`arp-notes init --host fastapi --only migrations`) and add it to COPIES"
+        )
+        copy = MIGRATIONS / COPIES[name]
+        assert copy.read_text(encoding="utf-8") == text, f"{copy.name} drifted from arp-notes-core"
+
+
+def test_conformance(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    # TODO(arp-notes): the database HostDb talks to must have the migrations applied (your usual
+    # test-database setup), and HostPrincipal must know TOKEN. To test the real app instead of a
+    # bare one, replace `app = FastAPI()` with your app and drop the mount_notes call it has.
+    monkeypatch.setenv("ARP_NOTES_SIGNER_SECRET", "test-secret")
+    monkeypatch.setenv("ARP_NOTES_BLOB_DIR", str(tmp_path / "blobs"))
+    app = FastAPI()
+    cfg = mount_notes(app)
+    mount_notes_mcp_http(app, cfg)
+    suite(app=app, token=TOKEN, fixture=FIXTURE)

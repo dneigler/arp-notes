@@ -41,6 +41,7 @@ testpaths = [
     "packages/cli/tests",
     "packages/conformance/tests",
     "skills/arp-notes/tests",
+    "examples/fastapi-minimal",
 ]
 addopts = "-ra"
 
@@ -53,12 +54,13 @@ extend-exclude = ["packages/ui"]
 select = ["E", "F", "I", "B", "UP"]
 
 [tool.pyright]
-include = ["packages/core", "packages/cli", "packages/conformance", "skills"]
+include = ["packages/core", "packages/cli", "packages/conformance", "skills", "examples"]
 exclude = ["**/node_modules", "**/.venv"]
 pythonVersion = "3.12"
 extraPaths = [
     "packages/core/tests",  # tests import their shared fakes as `repo_support`
     "packages/cli/tests",  # ... and the CLI tests theirs as `cli_support`
     "packages/conformance/tests",  # ... and the kit's tests their reference host as `ref_host`
+    "examples/fastapi-minimal",  # ... and its tests import the host as `app`
 ]
 typeCheckingMode = "basic"

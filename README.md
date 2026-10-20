@@ -23,7 +23,9 @@ on by default, and a later sync of the exported folder round-trips to the same n
 
 | Path | What |
 |---|---|
+| [`INTEGRATING.md`](INTEGRATING.md) | **Start here to add notes to your app.** One-page recipe for a FastAPI + React host: install, `arp-notes init`, every `HostConfig` port with an example, mount, MCP, run the kit. [`llms.txt`](llms.txt) points an agent at it. |
 | [`PROTOCOL.md`](PROTOCOL.md) | The wire contract (`protocol_version: 1`). With the conformance kit, this is the product. |
+| [`examples/fastapi-minimal`](examples/fastapi-minimal) | A complete single-file host that passes the conformance kit in CI. |
 | `packages/core` | `arp-notes-core` (`import arp_notes`): ports, sync, attachments, enrichment, FastAPI routers, MCP tool specs. ORM-free. |
 | `packages/cli` | `arp-notes`: scan, sync, pull, verify. `uvx arp-notes` needs no install step. |
 | `packages/ui` | `@arpinator/notes-ui`: note view, editor and proposal review, styled only with `--arpn-*` CSS variables. |

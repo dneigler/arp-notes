@@ -1,0 +1,32 @@
+# arp-notes
+
+> Portable notes-sync component for AI-forward apps. A host app embeds a Python package (FastAPI routers, MCP tool specs, link-scheme ports) and a React UI package; users sync notes from Obsidian (or an LLM) through a small CLI. Adoption is defined as passing the black-box conformance kit.
+
+To integrate arp-notes into a FastAPI + React app, read INTEGRATING.md first and follow it end to end: install, `arp-notes init --host fastapi`, fill in the ports, mount the routes and MCP tools, run the kit until it is green. The wire contract is PROTOCOL.md and the JSON Schemas; every response validates against them. The core is ORM-free: it never touches your models, users table or connections, only the ports you hand it in one HostConfig.
+
+## Integrate
+
+- [INTEGRATING.md](https://raw.githubusercontent.com/dneigler/arp-notes/main/INTEGRATING.md): the one-page recipe, a worked example for every HostConfig field, the React wiring
+- [examples/fastapi-minimal/app.py](https://raw.githubusercontent.com/dneigler/arp-notes/main/examples/fastapi-minimal/app.py): a complete single-file host (database, auth, one link scheme, routers, MCP) that passes the kit
+- [examples/fastapi-minimal/README.md](https://raw.githubusercontent.com/dneigler/arp-notes/main/examples/fastapi-minimal/README.md): how to run it and what it demonstrates
+
+## Contract
+
+- [PROTOCOL.md](https://raw.githubusercontent.com/dneigler/arp-notes/main/PROTOCOL.md): the wire contract, protocol version 1 (REST, MCP tools, upload protocol, CLI wire format)
+- [JSON Schemas](https://github.com/dneigler/arp-notes/tree/main/packages/core/arp_notes/schemas): one file per REST shape; `examples/` holds valid samples
+- [openapi.json](https://raw.githubusercontent.com/dneigler/arp-notes/main/schemas/openapi.json): the OpenAPI document of the routes `build_routers` mounts
+
+## Reference
+
+- [Core package](https://raw.githubusercontent.com/dneigler/arp-notes/main/packages/core/README.md): ports, MCP wiring options, tool list
+- [Ports and HostConfig](https://raw.githubusercontent.com/dneigler/arp-notes/main/packages/core/arp_notes/ports.py): the exact signatures a host implements
+- [Conformance kit](https://raw.githubusercontent.com/dneigler/arp-notes/main/packages/conformance/README.md): every check, MCP mode, running against a live host
+- [CLI](https://raw.githubusercontent.com/dneigler/arp-notes/main/packages/cli/README.md): `arp-notes init`, `scan`, `sync`, `pull`, `verify`
+- [Storage adapters](https://raw.githubusercontent.com/dneigler/arp-notes/main/docs/storage.md): disk, Postgres and S3 for attachment bytes
+- [Releasing](https://raw.githubusercontent.com/dneigler/arp-notes/main/RELEASING.md): tags and the install-by-tag lines
+
+## Optional
+
+- [README](https://raw.githubusercontent.com/dneigler/arp-notes/main/README.md): what the project is and the three rules
+- [Claude skill](https://raw.githubusercontent.com/dneigler/arp-notes/main/skills/arp-notes/SKILL.md): how an end-user LLM runs the CLI to sync notes
+- [UI demo harness](https://github.com/dneigler/arp-notes/tree/main/packages/ui/demo): every component on mock data

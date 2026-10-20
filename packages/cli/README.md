@@ -8,8 +8,8 @@ The CLI moves verbatim bytes between a notes tool (Obsidian first) and an arp-no
 never carries note text through an LLM. Wire format: [`PROTOCOL.md`](../../PROTOCOL.md).
 
 Subcommands: `login`, `config`, `capabilities`, `scan`, `status`, `sync`, `verify`, `tombstone`,
-`pull` (this page), and `init`, `conformance`, which are stubs until their lanes land (a stub
-prints `not implemented` and exits 2).
+`pull`, `conformance` (see [the kit](../conformance/README.md)) and `init` (for developers adding
+notes to an app, not for users syncing them).
 
 Exit codes: `0` ok, `1` a runtime failure (network, HTTP error, protocol mismatch, a file that
 could not be scanned), `2` bad input or configuration (unknown app, vault root, missing path).
@@ -184,6 +184,22 @@ Enrichment (links, takeaways, action items) is opt-in. `frontmatter` adds `arp_l
 `<title>.arp.md` beside it (a second request). The companion repeats the note's `arp_id`, so keep it
 out of folders you `sync`. Prints `{pulled, errors}` (`outcome`: `created`, `unchanged`, `updated`);
 exits 1 if any note failed.
+
+### Add notes to your app (developers)
+
+```
+uv run arp-notes init --host fastapi [--dry-run] [--package app] [--migration-number 43]
+```
+
+Run from the app's root, in an environment that has `arp-notes-core` installed. Scaffolds the
+adapter file (`<package>/arp_notes_host.py`: port stubs marked `TODO(arp-notes)`, `mount_notes(app)`,
+`register_notes_mcp`), copies arp-notes-core's SQL into the migrations folder (verbatim; the host
+applies it) and writes `tests/test_arp_notes_conformance.py` (drift test and the conformance kit).
+Folders are detected (`app/`, `src/<pkg>/`, `migrations/`, `tests/`) and `--package`, `--module`,
+`--migrations-dir`, `--tests-dir` override them. Nothing that exists is overwritten without
+`--force`; a file that differs is reported and exits 1. After bumping the arp-notes-core pin,
+`--only migrations` copies the new SQL and touches nothing else. The recipe is
+[INTEGRATING.md](../../INTEGRATING.md).
 
 ## Adding a subcommand
 

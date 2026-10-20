@@ -1,0 +1,191 @@
+"""arp-notes host adapter, scaffolded by `arp-notes init --host fastapi` (arp-notes-core @@CORE_VERSION@@).
+
+Search this file for TODO(arp-notes) and fill each one in: the database (HostDb), who is calling
+(HostPrincipal) and what a note can link to (HostLinks). The rest works as generated. Then:
+
+    from @@MODULE@@.arp_notes_host import mount_notes
+    mount_notes(app)                      # once, where you create your FastAPI app
+
+and make @@TESTS_PATH@@ pass: that is the definition of done.
+Recipe and a worked example of every port: INTEGRATING.md in https://github.com/dneigler/arp-notes
+"""
+
+from __future__ import annotations
+
+import json
+import os
+from collections.abc import Sequence
+from contextlib import AbstractContextManager
+from pathlib import Path
+from typing import Any
+
+from arp_notes.config import HostConfig
+from arp_notes.fastapi import DEFAULT_PREFIX, build_routers
+from arp_notes.mcp import TOOLS, register_fastmcp
+from arp_notes.ports import Policy
+from arp_notes.storage.disk import DiskStorage
+from fastapi import FastAPI, Request
+from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import JSONResponse, Response
+
+
+class HostDb:
+    """ports.Db: raw SQL over this app's database.
+
+    TODO(arp-notes): wrap the connection or session your app already uses.
+      run(sql, params)  executes one statement and returns a list of dicts, one per row (an empty
+                        list for statements that return none). The core writes %s placeholders.
+      transaction()     a context manager: commit on a clean exit, roll back on an exception, and
+                        every run() inside it shares the transaction. Nesting is a savepoint.
+    The routes are plain `def`s that FastAPI runs in its threadpool, so the adapter must be safe to
+    call from several threads. Statements outside transaction() should autocommit.
+    """
+
+    def run(self, sql: str, params: Sequence[Any] = ()) -> list[dict[str, Any]]:
+        raise NotImplementedError("TODO(arp-notes): HostDb.run")
+
+    def transaction(self) -> AbstractContextManager[Any]:
+        raise NotImplementedError("TODO(arp-notes): HostDb.transaction")
+
+
+class HostPrincipal:
+    """ports.Principal: who is calling.
+
+    TODO(arp-notes): return this request's user id as a string, the way your own auth does, and
+    raise fastapi.HTTPException(401) when nobody is signed in. Read the Bearer token from
+    request.headers["authorization"] and decode it with the code your auth dependency uses. The
+    user id is stored as TEXT with no foreign key, so any stable id works.
+    """
+
+    def current_user_id(self, request: Request) -> str:
+        raise NotImplementedError("TODO(arp-notes): HostPrincipal.current_user_id")
+
+
+class HostSigner:
+    """ports.Signer: signs the expiring URLs that serve attachments.
+
+    TODO(arp-notes): set ARP_NOTES_SIGNER_SECRET, or return your app's session secret here.
+    """
+
+    ttl_s = 3600  # seconds a signed attachment URL stays valid
+
+    @property
+    def secret(self) -> str:
+        return os.environ["ARP_NOTES_SIGNER_SECRET"]
+
+
+class HostLinks:
+    """ports.LinkSchemes: one link scheme, what a note's passages can point at in this app.
+
+    As generated it abstains everywhere: notes sync, attachments work and the review sheet is
+    empty. TODO(arp-notes): make each method answer for your own things (a venue, an invoice, a
+    piece). `user_id` is the first argument of every method, so filter by it. `entity_id` is an
+    int. Candidates are dicts: {"entity_type", "entity_id", "entity_label", "score": 0..1}.
+    """
+
+    prefix = "app"  # TODO(arp-notes): the scheme in chips, [@Title](app://thing/42)
+    entity_types = ("thing",)  # TODO(arp-notes): your entity types
+
+    def resolve(self, user_id: str, entity_type: str, entity_id: int) -> dict[str, Any] | None:
+        """-> {"title", "url", "preview"?}, or None when missing or not visible to this user."""
+        return None  # TODO(arp-notes)
+
+    def search(
+        self, user_id: str, q: str, *, entity_types: Sequence[str] | None = None, limit: int = 20
+    ) -> list[dict[str, Any]]:
+        """The `[[` autocomplete in the editor: best match first."""
+        return []  # TODO(arp-notes)
+
+    def reconcile(self, user_id: str, spans: Sequence[Any]) -> list[list[dict[str, Any]]]:
+        """One candidate list per span, in order (len(result) == len(spans)); [] abstains.
+
+        A span is a dict: {"text", "quote", "anchor", "kind_hint", "context": {...}}.
+        """
+        return [[] for _ in spans]  # TODO(arp-notes)
+
+
+def build_host_config() -> HostConfig:
+    """The one object everything takes. INTEGRATING.md shows the optional judge, hooks, hygiene."""
+    return HostConfig(
+        db=HostDb(),
+        principal=HostPrincipal(),
+        # Attachment bytes on local disk. Swap for PostgresStorage or S3Storage (INTEGRATING.md)
+        # when the app runs on more than one machine or has no persistent disk.
+        storage=DiskStorage(Path(os.environ.get("ARP_NOTES_BLOB_DIR", "data/arp-notes-blobs"))),
+        signer=HostSigner(),
+        schemes=[HostLinks()],
+        policy=Policy(),  # attachments, MIME allowlist, size limits, kinds, export (ports.Policy)
+        # judge=None,     # a Judge ranks ambiguous candidates (JevChoiceJudge, ChainJudge)
+        # hooks=None,     # Hooks(on_event=..., on_action_item=...): activity log, backlog items
+        # hygiene=None,   # Hygiene(detect=..., merge=...): duplicate entities in this app
+    )
+
+
+def mount_notes(
+    app: FastAPI, prefix: str = DEFAULT_PREFIX, public_base_url: str | None = None
+) -> HostConfig:
+    """Mount the notes routes on `app` under `prefix` and return the config (for the MCP calls).
+
+    Keep the default prefix: the CLI and the UI package call /api/v1/notes/... Set
+    `public_base_url` (https://app.example.com) when the app sits behind a proxy, so signed
+    attachment URLs name the public host.
+    """
+    cfg = build_host_config()
+    private, public = build_routers(cfg, prefix, public_base_url)
+    app.include_router(private, prefix=prefix)  # Bearer-authenticated through HostPrincipal
+    app.include_router(public, prefix=prefix)  # signed attachment URLs, no Authorization header
+    return cfg
+
+
+def register_notes_mcp(mcp_server: Any, cfg: HostConfig | None = None) -> None:
+    """Register the notes tools (13, plus 4 for hygiene) on a FastMCP server.
+
+    TODO(arp-notes): call this where your app creates its FastMCP server. An app that keeps its
+    own tool registry iterates `arp_notes.mcp.TOOLS` instead (INTEGRATING.md).
+    """
+    register_fastmcp(mcp_server, cfg or build_host_config())
+
+
+def mount_notes_mcp_http(app: FastAPI, cfg: HostConfig, path: str = "/mcp") -> None:
+    """A stand-in MCP endpoint (JSON-RPC on one POST route) so the conformance kit's MCP checks run.
+
+    Delete it once the app serves the same tools through a real MCP server; point the kit at that
+    with ARP_NOTES_MCP_URL.
+    """
+    tools = {spec.name: spec for spec in TOOLS}
+
+    @app.post(path)
+    async def mcp(request: Request) -> Response:
+        user_id = cfg.principal.current_user_id(request)
+        message = await request.json()
+        if "id" not in message:  # a notification
+            return Response(status_code=202)
+        method, params = message["method"], message.get("params") or {}
+        result: dict[str, Any]
+        if method == "initialize":
+            result = {
+                "protocolVersion": params.get("protocolVersion", "2025-03-26"),
+                "capabilities": {"tools": {}},
+                "serverInfo": {"name": "arp-notes-host", "version": "0"},
+            }
+        elif method == "tools/list":
+            result = {
+                "tools": [
+                    {"name": t.name, "description": t.description, "inputSchema": t.input_schema}
+                    for t in tools.values()
+                ]
+            }
+        elif method == "tools/call":
+            spec = tools[params["name"]]
+            data = await run_in_threadpool(
+                lambda: spec.handler(cfg, user_id, **(params.get("arguments") or {}))
+            )
+            result = {
+                "content": [{"type": "text", "text": json.dumps(data)}],
+                "structuredContent": data,
+                "isError": False,
+            }
+        else:
+            error = {"code": -32601, "message": f"no method {method}"}
+            return JSONResponse({"jsonrpc": "2.0", "id": message["id"], "error": error})
+        return JSONResponse({"jsonrpc": "2.0", "id": message["id"], "result": result})
