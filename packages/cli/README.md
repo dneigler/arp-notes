@@ -7,9 +7,9 @@ uvx arp-notes --help
 The CLI moves verbatim bytes between a notes tool (Obsidian first) and an arp-notes host app. It
 never carries note text through an LLM. Wire format: [`PROTOCOL.md`](../../PROTOCOL.md).
 
-Subcommands: `login`, `config`, `capabilities`, `scan`, `status` (this page), and `sync`,
-`verify`, `tombstone`, `pull`, `init`, `conformance`, which are stubs until their lanes land (a
-stub prints `not implemented` and exits 2).
+Subcommands: `login`, `config`, `capabilities`, `scan`, `status`, `sync`, `verify`, `tombstone`
+(this page), and `pull`, `init`, `conformance`, which are stubs until their lanes land (a stub
+prints `not implemented` and exits 2).
 
 Exit codes: `0` ok, `1` a runtime failure (network, HTTP error, protocol mismatch, a file that
 could not be scanned), `2` bad input or configuration (unknown app, vault root, missing path).
@@ -89,6 +89,68 @@ arp-notes status --app pt [--workspace Dave2025]... [--json]
 
 Read from the server manifest. Without `--workspace`, every source the host lists in
 `sync_sources` (`GET /notes`) is shown.
+
+### Sync notes
+
+```
+arp-notes sync "Masterclasses/" --app pt [--dry-run] [--json] [--no-write-id] [--kind masterclass] [--verify]
+```
+
+Takes the same explicit files and folders as `scan`. For each Markdown note:
+
+1. **`arp_id`.** A note without one gets exactly one line, `arp_id: <uuid4>`, inserted right after
+   the opening `---` (a note with no frontmatter gets a three-line block in front). This is the only
+   write the CLI ever makes to a vault; every other byte is unchanged, whatever the line endings,
+   BOM, Templater expressions, dataview fields or keys with spaces. The write goes to a dot-file and
+   is renamed over the note, and is refused if the note changed on disk meanwhile.
+   `--no-write-id` writes nothing: a note with no `arp_id` is identified by its path, and renaming
+   it later makes the host see a new note.
+2. **Hash** of the file as it is after that write (`content_hash`, SHA-256 of the bytes).
+3. **Upload first.** Each distinct attachment the host does not already hold for the note:
+   `POST /attachments/upload-url`, then `PUT` of the raw bytes to the returned URL with
+   `Content-Type` and `Content-Length` and no Bearer token. Identical bytes (two embeds, two
+   notes) are sent once per run.
+4. **One upsert.** `POST /notes/sync/upsert` with the whole file as `body_md`; if the host still
+   reports `missing_attachments` (or `409 blob_missing`), those are uploaded and the upsert is
+   repeated once.
+
+Title, `note_date`, `person` and `kind` come from the note (frontmatter `title`, else the filename;
+`meeting-date`/`date`/`created`, else a leading `YYYY-MM-DD` in the filename; the first `[[…]]`
+after `Attendees::`, `presenter` or `author`; `--kind`, else guessed from the title and tags). The
+`frontmatter` sent is a lenient read of the block with every value kept as a string.
+
+Prints `{synced: [{path, note_id, outcome, uploaded: [sha256]}], errors: []}` and exits 1 if any
+note failed (the rest are still synced). Additive keys appear only when relevant: `workspace`,
+`renamed_from`, `unresolved_embeds`, `verified`, and a top-level `warnings`. `outcome` is the
+host's `created`, `updated` or `unchanged`.
+
+`--dry-run` reads the manifest and prints what would happen (`would_create`, `would_update`,
+`unchanged`, with `would_upload` and `would_write_id`); it writes nothing, locally or on the host.
+A host that does not accept attachments gets the notes without them, with a warning. There is no
+local state file: the host manifest is fetched on every run and is the truth.
+
+### Verify byte for byte
+
+```
+arp-notes verify "Masterclasses/" --app pt [--json]
+arp-notes sync "Masterclasses/" --app pt --verify
+```
+
+Downloads each note (`GET /notes/{id}`) and checks that its `content_hash` equals the SHA-256 of the
+local file and that its `body_md`, as UTF-8, equals the file's bytes. This is how "the LLM did not
+paraphrase" is proven. `verify` finds the note id by matching the manifest path to `GET /notes`
+rows (the manifest carries no id), and also checks the note's `source_doc_id`. Exits 1 on any
+mismatch.
+
+### Tombstone
+
+```
+arp-notes tombstone <arp_id>... --app pt [--workspace Dave2025] [--json]
+```
+
+Tells the host the source of those notes was deleted (`POST /notes/sync/tombstone`); the host keeps
+the body and hides the note. Without `--workspace` each id is looked up in the manifests of the
+sources the host lists. Prints `{tombstoned, unknown}`; exits 1 if any id is unknown.
 
 ## Adding a subcommand
 
