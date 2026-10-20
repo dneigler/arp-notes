@@ -23,7 +23,12 @@ def test_hooks_are_no_ops_returning_empty() -> None:
 
 def test_mcp_tools_compose_hygiene_tools() -> None:
     assert len(mcp.NOTES_TOOLS) == 13  # C4 (ga-mxal.11)
-    assert [spec.name for spec in tools.TOOLS] == ["dismiss_issue", "resolve_tombstone"]  # H1a
+    assert [spec.name for spec in tools.TOOLS] == [
+        "dismiss_issue",
+        "resolve_tombstone",  # H1a
+        "apply_fix",
+        "merge_entities",  # H1b
+    ]
     assert mcp.TOOLS == [*mcp.NOTES_TOOLS, *tools.TOOLS]
 
 

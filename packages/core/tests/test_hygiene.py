@@ -590,7 +590,7 @@ def test_post_resolve_tombstone(client: TestClient, notes_db: FakeDb) -> None:
 def test_the_config_free_router_stays_includable() -> None:
     assert routes.router is not None
     app = FastAPI()
-    app.include_router(routes.router)  # H1b's routes mount here until they take a config
+    app.include_router(routes.router)
 
 
 # --- MCP tools -------------------------------------------------------------------------------
@@ -600,8 +600,13 @@ def spec(name: str) -> mcp.ToolSpec:
     return next(s for s in mcp.TOOLS if s.name == name)
 
 
-def test_the_two_h1a_tools_are_registered_as_writes() -> None:
-    assert [s.name for s in hygiene_tools.TOOLS] == ["dismiss_issue", "resolve_tombstone"]
+def test_the_hygiene_tools_are_registered_as_writes() -> None:
+    assert [s.name for s in hygiene_tools.TOOLS] == [
+        "dismiss_issue",
+        "resolve_tombstone",
+        "apply_fix",
+        "merge_entities",
+    ]
     assert mcp.TOOLS == [*mcp.NOTES_TOOLS, *hygiene_tools.TOOLS]
     assert all(s.writes for s in hygiene_tools.TOOLS)
     assert {s.name for s in hygiene_tools.TOOLS} <= set(mcp.REST_BINDINGS)
@@ -670,7 +675,7 @@ def test_every_core_fix_names_a_registered_tool(cfg: HostConfig, notes_db: FakeD
     age(notes_db, "blobs", "created_at", blob_id, 50)
     gone = add_note(notes_db)
     tombstone(notes_db, gone)
-    known = {s.name for s in mcp.TOOLS} | {"apply_fix", "merge_entities"}  # H1b registers these
+    known = {s.name for s in mcp.TOOLS}
 
     issues = hygiene.block(cfg, USER).issues
 
@@ -707,11 +712,11 @@ def test_tools_and_mcp_agree_whichever_is_imported_first(first: str) -> None:
         "from arp_notes import mcp; from arp_notes.hygiene import tools; "
         "assert tools.TOOLS is tools.TOOLS; "
         "assert mcp.TOOLS == [*mcp.NOTES_TOOLS, *tools.TOOLS]; "
-        "assert all(a is b for a, b in zip(mcp.TOOLS[-2:], tools.TOOLS)); "
+        "assert all(a is b for a, b in zip(mcp.TOOLS[-len(tools.TOOLS):], tools.TOOLS)); "
         "print(len(mcp.TOOLS))"
     )
     done = subprocess.run(
         [sys.executable, "-I", "-c", code], capture_output=True, text=True, check=False
     )
     assert done.returncode == 0, done.stderr
-    assert done.stdout.strip() == "15"
+    assert done.stdout.strip() == "17"

@@ -2,8 +2,9 @@
 
 Routes need the request's HostConfig, so they are built per config: `build_router(cfg)` returns a
 router with GET /notes/hygiene, POST /hygiene/dismiss and POST /notes/{note_id}/resolve-tombstone,
-plus H1b's fixes router. The module-level `router` is the config-free part (H1b's fixes router
-only, until it too takes a config). `build_routers` must mount `build_router(cfg)`.
+plus H1b's POST /hygiene/apply-fix and /hygiene/merge-entities (`fixes.build_router(cfg)`). The
+module-level `router` is the config-free part (empty: H1b's routes take a config too).
+`build_routers` must mount `build_router(cfg)`.
 
 Mount it before any `/notes/{note_id}` route, so `/notes/hygiene` is not read as a note id.
 """
@@ -78,5 +79,6 @@ def build_router(cfg: HostConfig) -> APIRouter:
             request, lambda user_id: hygiene.resolve_tombstone(cfg, user_id, note_id, body.action)
         )
 
+    built.include_router(fixes.build_router(cfg))
     built.include_router(router)
     return built
