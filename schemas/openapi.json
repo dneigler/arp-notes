@@ -1,0 +1,4337 @@
+{
+  "components": {
+    "schemas": {
+      "ApplyFixApplied": {
+        "additionalProperties": true,
+        "properties": {
+          "applied": {
+            "const": true,
+            "title": "Applied",
+            "type": "boolean"
+          },
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "applied",
+          "result"
+        ],
+        "title": "ApplyFixApplied",
+        "type": "object"
+      },
+      "ApplyFixBody": {
+        "additionalProperties": true,
+        "properties": {
+          "confirm_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirm Token"
+          },
+          "fix_index": {
+            "title": "Fix Index",
+            "type": "integer"
+          },
+          "issue_key": {
+            "title": "Issue Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "issue_key",
+          "fix_index"
+        ],
+        "title": "ApplyFixBody",
+        "type": "object"
+      },
+      "ApplyFixDryRun": {
+        "additionalProperties": true,
+        "properties": {
+          "confirm_token": {
+            "title": "Confirm Token",
+            "type": "string"
+          },
+          "dry_run": {
+            "const": true,
+            "title": "Dry Run",
+            "type": "boolean"
+          },
+          "expires_at": {
+            "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "plan": {
+            "additionalProperties": true,
+            "title": "Plan",
+            "type": "object"
+          }
+        },
+        "required": [
+          "dry_run",
+          "plan",
+          "confirm_token",
+          "expires_at"
+        ],
+        "title": "ApplyFixDryRun",
+        "type": "object"
+      },
+      "Attachment": {
+        "additionalProperties": true,
+        "properties": {
+          "blob_id": {
+            "title": "Blob Id",
+            "type": "integer"
+          },
+          "content_url": {
+            "description": "Signed URL; expires within 1 hour",
+            "title": "Content Url",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "mime": {
+            "title": "Mime",
+            "type": "string"
+          },
+          "ref_in_markdown": {
+            "title": "Ref In Markdown",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "64 lowercase hex characters",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          }
+        },
+        "required": [
+          "id",
+          "blob_id",
+          "filename",
+          "ref_in_markdown",
+          "mime",
+          "size_bytes",
+          "sha256",
+          "content_url"
+        ],
+        "title": "Attachment",
+        "type": "object"
+      },
+      "AutosaveBody": {
+        "additionalProperties": true,
+        "properties": {
+          "body_md": {
+            "title": "Body Md",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "body_md",
+          "version"
+        ],
+        "title": "AutosaveBody",
+        "type": "object"
+      },
+      "AutosaveResult": {
+        "additionalProperties": true,
+        "description": "PATCH /notes/{id}/autosave: {note} on success, or the house conflict envelope.",
+        "properties": {
+          "conflict": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conflict"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Note"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "server_data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Note"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "server_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Server Version"
+          }
+        },
+        "title": "AutosaveResult",
+        "type": "object"
+      },
+      "Capabilities": {
+        "additionalProperties": true,
+        "description": "GET /notes/capabilities: built from Policy plus schemes and the judge name (K§12.4).",
+        "properties": {
+          "attachments": {
+            "title": "Attachments",
+            "type": "boolean"
+          },
+          "export": {
+            "title": "Export",
+            "type": "boolean"
+          },
+          "hygiene": {
+            "title": "Hygiene",
+            "type": "boolean"
+          },
+          "judge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge"
+          },
+          "kinds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Kinds",
+            "type": "array"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/CapabilityLimits"
+          },
+          "llm_enrich": {
+            "title": "Llm Enrich",
+            "type": "boolean"
+          },
+          "mime_allowlist": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mime Allowlist"
+          },
+          "propose_on_sync": {
+            "enum": [
+              "off",
+              "search",
+              "judge"
+            ],
+            "title": "Propose On Sync",
+            "type": "string"
+          },
+          "protocol": {
+            "const": 1,
+            "title": "Protocol",
+            "type": "integer"
+          },
+          "schemes": {
+            "items": {
+              "$ref": "#/components/schemas/CapabilityScheme"
+            },
+            "title": "Schemes",
+            "type": "array"
+          },
+          "someday": {
+            "title": "Someday",
+            "type": "boolean"
+          },
+          "source_systems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Systems",
+            "type": "array"
+          }
+        },
+        "required": [
+          "protocol",
+          "attachments",
+          "mime_allowlist",
+          "limits",
+          "kinds",
+          "source_systems",
+          "export",
+          "llm_enrich",
+          "schemes",
+          "someday",
+          "hygiene",
+          "propose_on_sync",
+          "judge"
+        ],
+        "title": "Capabilities",
+        "type": "object"
+      },
+      "CapabilityLimits": {
+        "additionalProperties": true,
+        "properties": {
+          "manifest_page_size": {
+            "title": "Manifest Page Size",
+            "type": "integer"
+          },
+          "max_attachment_bytes": {
+            "title": "Max Attachment Bytes",
+            "type": "integer"
+          },
+          "max_attachments_per_note": {
+            "title": "Max Attachments Per Note",
+            "type": "integer"
+          },
+          "max_body_chars": {
+            "title": "Max Body Chars",
+            "type": "integer"
+          },
+          "max_note_bytes": {
+            "title": "Max Note Bytes",
+            "type": "integer"
+          },
+          "upload_ticket_ttl_s": {
+            "title": "Upload Ticket Ttl S",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "max_attachment_bytes",
+          "max_note_bytes",
+          "max_body_chars",
+          "max_attachments_per_note",
+          "manifest_page_size",
+          "upload_ticket_ttl_s"
+        ],
+        "title": "CapabilityLimits",
+        "type": "object"
+      },
+      "CapabilityScheme": {
+        "additionalProperties": true,
+        "properties": {
+          "entity_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Entity Types",
+            "type": "array"
+          },
+          "prefix": {
+            "title": "Prefix",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prefix",
+          "entity_types"
+        ],
+        "title": "CapabilityScheme",
+        "type": "object"
+      },
+      "ConfirmAction": {
+        "additionalProperties": true,
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type"
+          },
+          "lane": {
+            "enum": [
+              "practice",
+              "lesson"
+            ],
+            "title": "Lane",
+            "type": "string"
+          },
+          "link_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Attach to links[i]",
+            "title": "Link Index"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "lane"
+        ],
+        "title": "ConfirmAction",
+        "type": "object"
+      },
+      "ConfirmBody": {
+        "additionalProperties": true,
+        "properties": {
+          "action_items": {
+            "items": {
+              "$ref": "#/components/schemas/ConfirmAction"
+            },
+            "title": "Action Items",
+            "type": "array"
+          },
+          "deferred": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DeferredMention"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deferred"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/ConfirmLink"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "rejected": {
+            "items": {
+              "$ref": "#/components/schemas/RejectedLink"
+            },
+            "title": "Rejected",
+            "type": "array"
+          },
+          "someday": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/SomedayMention"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§5: 422 {\"error\":\"someday_unsupported\"} when capabilities.someday=false",
+            "title": "Someday"
+          },
+          "takeaways": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ConfirmTakeaway"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Takeaways"
+          }
+        },
+        "title": "ConfirmBody",
+        "type": "object"
+      },
+      "ConfirmLink": {
+        "additionalProperties": true,
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "integer"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "proposed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposed By"
+          },
+          "quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quote"
+          }
+        },
+        "required": [
+          "entity_type",
+          "entity_id"
+        ],
+        "title": "ConfirmLink",
+        "type": "object"
+      },
+      "ConfirmResult": {
+        "additionalProperties": true,
+        "properties": {
+          "backlog_created": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Backlog Created",
+            "type": "array"
+          },
+          "links_created": {
+            "title": "Links Created",
+            "type": "integer"
+          },
+          "links_rejected": {
+            "title": "Links Rejected",
+            "type": "integer"
+          },
+          "review_pending": {
+            "title": "Review Pending",
+            "type": "integer"
+          },
+          "someday_created": {
+            "title": "Someday Created",
+            "type": "integer"
+          },
+          "takeaways_created": {
+            "title": "Takeaways Created",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "links_created",
+          "links_rejected",
+          "backlog_created",
+          "takeaways_created",
+          "someday_created",
+          "review_pending"
+        ],
+        "title": "ConfirmResult",
+        "type": "object"
+      },
+      "ConfirmTakeaway": {
+        "additionalProperties": true,
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comment"
+        ],
+        "title": "ConfirmTakeaway",
+        "type": "object"
+      },
+      "DeferredMention": {
+        "additionalProperties": true,
+        "description": "K§2: an ambiguous item the user left for later.",
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "mention": {
+            "title": "Mention",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mention"
+        ],
+        "title": "DeferredMention",
+        "type": "object"
+      },
+      "DismissBody": {
+        "additionalProperties": true,
+        "properties": {
+          "issue_key": {
+            "title": "Issue Key",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "issue_key"
+        ],
+        "title": "DismissBody",
+        "type": "object"
+      },
+      "DismissResult": {
+        "additionalProperties": true,
+        "properties": {
+          "dismissed": {
+            "title": "Dismissed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "dismissed"
+        ],
+        "title": "DismissResult",
+        "type": "object"
+      },
+      "EntityNote": {
+        "additionalProperties": true,
+        "properties": {
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/NoteLink"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "note": {
+            "$ref": "#/components/schemas/NoteSummary"
+          }
+        },
+        "required": [
+          "note",
+          "links"
+        ],
+        "title": "EntityNote",
+        "type": "object"
+      },
+      "EntityNotes": {
+        "additionalProperties": true,
+        "description": "GET /notes/by-entity/{entity_type}/{entity_id} response.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EntityNote"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "EntityNotes",
+        "type": "object"
+      },
+      "EntityRef": {
+        "additionalProperties": true,
+        "description": "A (entity_type, entity_id) pair, used by `NoteLink.via`.",
+        "properties": {
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "integer"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_type",
+          "entity_id"
+        ],
+        "title": "EntityRef",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HygieneBlock": {
+        "additionalProperties": true,
+        "properties": {
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/HygieneIssue"
+            },
+            "maxItems": 10,
+            "title": "Issues",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "issues",
+          "total",
+          "truncated"
+        ],
+        "title": "HygieneBlock",
+        "type": "object"
+      },
+      "HygieneFix": {
+        "additionalProperties": true,
+        "properties": {
+          "arguments": {
+            "additionalProperties": true,
+            "title": "Arguments",
+            "type": "object"
+          },
+          "dry_run_first": {
+            "title": "Dry Run First",
+            "type": "boolean"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "reversible": {
+            "title": "Reversible",
+            "type": "boolean"
+          },
+          "tool": {
+            "title": "Tool",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "tool",
+          "arguments",
+          "dry_run_first",
+          "reversible"
+        ],
+        "title": "HygieneFix",
+        "type": "object"
+      },
+      "HygieneIssue": {
+        "additionalProperties": true,
+        "properties": {
+          "detected_by": {
+            "enum": [
+              "core",
+              "host"
+            ],
+            "title": "Detected By",
+            "type": "string"
+          },
+          "explanation": {
+            "description": "Plain language for the client LLM to relay",
+            "title": "Explanation",
+            "type": "string"
+          },
+          "fixes": {
+            "items": {
+              "$ref": "#/components/schemas/HygieneFix"
+            },
+            "title": "Fixes",
+            "type": "array"
+          },
+          "key": {
+            "description": "Stable: '<kind>:<entity_type>:<sorted ids joined by ,>' or '<kind>:note:<id>'",
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "duplicate_entities",
+              "tombstoned_note",
+              "pending_review",
+              "orphaned_links",
+              "unreferenced_blobs",
+              "unresolved_mentions"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "info",
+              "warn",
+              "action"
+            ],
+            "title": "Severity",
+            "type": "string"
+          },
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/HygieneSubject"
+            },
+            "title": "Subjects",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "kind",
+          "severity",
+          "title",
+          "explanation",
+          "subjects",
+          "fixes",
+          "detected_by"
+        ],
+        "title": "HygieneIssue",
+        "type": "object"
+      },
+      "HygieneSubject": {
+        "additionalProperties": true,
+        "properties": {
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "integer"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_type",
+          "entity_id",
+          "label"
+        ],
+        "title": "HygieneSubject",
+        "type": "object"
+      },
+      "ManifestPage": {
+        "additionalProperties": true,
+        "description": "GET /notes/sync/manifest response (K§12.4). `protocol` is ADR §9.4.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ManifestRow"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_after": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next After"
+          },
+          "protocol": {
+            "default": 1,
+            "title": "Protocol",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ManifestPage",
+        "type": "object"
+      },
+      "ManifestRow": {
+        "additionalProperties": true,
+        "properties": {
+          "attachments": {
+            "items": {
+              "description": "64 lowercase hex characters",
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "title": "Attachments",
+            "type": "array"
+          },
+          "content_hash": {
+            "description": "64 lowercase hex characters",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Hash",
+            "type": "string"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          },
+          "last_synced_at": {
+            "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+            "title": "Last Synced At",
+            "type": "string"
+          },
+          "source_doc_id": {
+            "title": "Source Doc Id",
+            "type": "string"
+          },
+          "source_path": {
+            "title": "Source Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_doc_id",
+          "source_path",
+          "content_hash",
+          "attachments",
+          "last_synced_at"
+        ],
+        "title": "ManifestRow",
+        "type": "object"
+      },
+      "MergeConflict": {
+        "additionalProperties": true,
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "table": {
+            "title": "Table",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table",
+          "detail"
+        ],
+        "title": "MergeConflict",
+        "type": "object"
+      },
+      "MergeEntitiesApplied": {
+        "additionalProperties": true,
+        "properties": {
+          "applied": {
+            "const": true,
+            "title": "Applied",
+            "type": "boolean"
+          },
+          "audit_event_id": {
+            "title": "Audit Event Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "applied",
+          "audit_event_id"
+        ],
+        "title": "MergeEntitiesApplied",
+        "type": "object"
+      },
+      "MergeEntitiesBody": {
+        "additionalProperties": true,
+        "properties": {
+          "confirm_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirm Token"
+          },
+          "dry_run": {
+            "default": true,
+            "title": "Dry Run",
+            "type": "boolean"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "keep_id": {
+            "title": "Keep Id",
+            "type": "integer"
+          },
+          "merge_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Merge Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "entity_type",
+          "keep_id",
+          "merge_ids"
+        ],
+        "title": "MergeEntitiesBody",
+        "type": "object"
+      },
+      "MergeEntitiesDryRun": {
+        "additionalProperties": true,
+        "properties": {
+          "confirm_token": {
+            "title": "Confirm Token",
+            "type": "string"
+          },
+          "expires_at": {
+            "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/MergePlan"
+          }
+        },
+        "required": [
+          "plan",
+          "confirm_token",
+          "expires_at"
+        ],
+        "title": "MergeEntitiesDryRun",
+        "type": "object"
+      },
+      "MergeMove": {
+        "additionalProperties": true,
+        "properties": {
+          "column": {
+            "title": "Column",
+            "type": "string"
+          },
+          "rows": {
+            "title": "Rows",
+            "type": "integer"
+          },
+          "table": {
+            "title": "Table",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table",
+          "column",
+          "rows"
+        ],
+        "title": "MergeMove",
+        "type": "object"
+      },
+      "MergePlan": {
+        "additionalProperties": true,
+        "properties": {
+          "conflicts": {
+            "items": {
+              "$ref": "#/components/schemas/MergeConflict"
+            },
+            "title": "Conflicts",
+            "type": "array"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "keep": {
+            "title": "Keep",
+            "type": "integer"
+          },
+          "merge": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Merge",
+            "type": "array"
+          },
+          "moves": {
+            "items": {
+              "$ref": "#/components/schemas/MergeMove"
+            },
+            "title": "Moves",
+            "type": "array"
+          },
+          "reversible": {
+            "const": false,
+            "default": false,
+            "title": "Reversible",
+            "type": "boolean"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "entity_type",
+          "keep",
+          "merge",
+          "moves",
+          "conflicts",
+          "warnings"
+        ],
+        "title": "MergePlan",
+        "type": "object"
+      },
+      "Note": {
+        "additionalProperties": true,
+        "properties": {
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/Attachment"
+            },
+            "title": "Attachments",
+            "type": "array"
+          },
+          "body_md": {
+            "title": "Body Md",
+            "type": "string"
+          },
+          "content_hash": {
+            "anyOf": [
+              {
+                "description": "64 lowercase hex characters",
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Hash"
+          },
+          "created_at": {
+            "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_via": {
+            "title": "Created Via",
+            "type": "string"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          },
+          "frontmatter": {
+            "additionalProperties": true,
+            "title": "Frontmatter",
+            "type": "object"
+          },
+          "hygiene": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HygieneBlock"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§6.2: present only when include_hygiene=true"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "last_synced_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Synced At"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/NoteLink"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "note_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Date"
+          },
+          "origin": {
+            "enum": [
+              "app",
+              "source"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "person": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place"
+          },
+          "proposed_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposed At"
+          },
+          "review_pending": {
+            "title": "Review Pending",
+            "type": "integer"
+          },
+          "source_doc_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Doc Id"
+          },
+          "source_modified_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Modified At"
+          },
+          "source_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Path"
+          },
+          "source_system": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source System"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "source_workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Workspace"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "kind",
+          "title",
+          "body_md",
+          "frontmatter",
+          "origin",
+          "created_via",
+          "version",
+          "created_at",
+          "updated_at",
+          "attachments",
+          "links",
+          "review_pending"
+        ],
+        "title": "Note",
+        "type": "object"
+      },
+      "NoteCreate": {
+        "additionalProperties": true,
+        "description": "POST /notes body (origin='app').",
+        "properties": {
+          "body_md": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body Md"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "note_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Date"
+          },
+          "person": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "NoteCreate",
+        "type": "object"
+      },
+      "NoteLink": {
+        "additionalProperties": true,
+        "properties": {
+          "action_completed": {
+            "title": "Action Completed",
+            "type": "integer"
+          },
+          "action_item": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action Item"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Heading slug or ^block-id; null = whole note",
+            "title": "Anchor"
+          },
+          "backlog_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backlog Id"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "integer"
+          },
+          "entity_label": {
+            "title": "Entity Label",
+            "type": "string"
+          },
+          "entity_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Slug"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "proposed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposed By"
+          },
+          "quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quote"
+          },
+          "sort_order": {
+            "title": "Sort Order",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "confirmed",
+              "rejected",
+              "orphaned"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "via": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EntityRef"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§2: set on by-entity results that matched through a child entity"
+          }
+        },
+        "required": [
+          "id",
+          "entity_type",
+          "entity_id",
+          "entity_label",
+          "action_completed",
+          "status",
+          "sort_order"
+        ],
+        "title": "NoteLink",
+        "type": "object"
+      },
+      "NoteList": {
+        "additionalProperties": true,
+        "description": "GET /notes response.",
+        "properties": {
+          "hygiene": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HygieneBlock"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§6.2: present only when include_hygiene=true"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NoteSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "sync_sources": {
+            "items": {
+              "$ref": "#/components/schemas/SyncSource"
+            },
+            "title": "Sync Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items",
+          "sync_sources"
+        ],
+        "title": "NoteList",
+        "type": "object"
+      },
+      "NotePatch": {
+        "additionalProperties": true,
+        "description": "PATCH /notes/{id} body. kind/person/note_date/place are editable on both origins.",
+        "properties": {
+          "body_md": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body Md"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "note_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Date"
+          },
+          "person": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "NotePatch",
+        "type": "object"
+      },
+      "NoteSummary": {
+        "additionalProperties": true,
+        "properties": {
+          "action_count": {
+            "title": "Action Count",
+            "type": "integer"
+          },
+          "attachment_count": {
+            "title": "Attachment Count",
+            "type": "integer"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          },
+          "duration_min": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Min"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "last_synced_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Synced At"
+          },
+          "link_count": {
+            "title": "Link Count",
+            "type": "integer"
+          },
+          "note_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Date"
+          },
+          "origin": {
+            "enum": [
+              "app",
+              "source"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "person": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person"
+          },
+          "review_pending": {
+            "title": "Review Pending",
+            "type": "integer"
+          },
+          "source_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Path"
+          },
+          "source_system": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source System"
+          },
+          "source_workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Workspace"
+          },
+          "thumbnail_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Signed content_url of the first image attachment, valid 1 h",
+            "title": "Thumbnail Url"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "top_links": {
+            "description": "At most 4 confirmed links",
+            "items": {
+              "$ref": "#/components/schemas/TopLink"
+            },
+            "title": "Top Links",
+            "type": "array"
+          },
+          "updated_at": {
+            "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "origin",
+          "link_count",
+          "attachment_count",
+          "updated_at",
+          "top_links",
+          "action_count",
+          "review_pending"
+        ],
+        "title": "NoteSummary",
+        "type": "object"
+      },
+      "NoteUpsert": {
+        "additionalProperties": true,
+        "properties": {
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/UpsertAttachment"
+            },
+            "title": "Attachments",
+            "type": "array"
+          },
+          "body_md": {
+            "title": "Body Md",
+            "type": "string"
+          },
+          "content_hash": {
+            "description": "64 lowercase hex characters",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Hash",
+            "type": "string"
+          },
+          "frontmatter": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frontmatter"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "note_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Date"
+          },
+          "person": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place"
+          },
+          "source_doc_id": {
+            "title": "Source Doc Id",
+            "type": "string"
+          },
+          "source_modified_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Modified At"
+          },
+          "source_path": {
+            "title": "Source Path",
+            "type": "string"
+          },
+          "source_system": {
+            "title": "Source System",
+            "type": "string"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "source_workspace": {
+            "title": "Source Workspace",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_system",
+          "source_workspace",
+          "source_doc_id",
+          "source_path",
+          "title",
+          "body_md",
+          "content_hash"
+        ],
+        "title": "NoteUpsert",
+        "type": "object"
+      },
+      "Proposal": {
+        "additionalProperties": true,
+        "properties": {
+          "action_items": {
+            "items": {
+              "$ref": "#/components/schemas/ProposedAction"
+            },
+            "title": "Action Items",
+            "type": "array"
+          },
+          "cached": {
+            "description": "K§2: true when served from notes.proposal",
+            "title": "Cached",
+            "type": "boolean"
+          },
+          "generated_by": {
+            "items": {
+              "enum": [
+                "resolver",
+                "llm"
+              ],
+              "type": "string"
+            },
+            "title": "Generated By",
+            "type": "array"
+          },
+          "hygiene": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HygieneBlock"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§6.2: present only when include_hygiene=true"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/ProposedLink"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "note_id": {
+            "title": "Note Id",
+            "type": "integer"
+          },
+          "proposed_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§2: when the proposal was computed",
+            "title": "Proposed At"
+          },
+          "takeaways": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Takeaways",
+            "type": "array"
+          },
+          "unresolved": {
+            "items": {
+              "$ref": "#/components/schemas/UnresolvedMention"
+            },
+            "title": "Unresolved",
+            "type": "array"
+          }
+        },
+        "required": [
+          "note_id",
+          "links",
+          "action_items",
+          "takeaways",
+          "unresolved",
+          "generated_by",
+          "cached",
+          "proposed_at"
+        ],
+        "title": "Proposal",
+        "type": "object"
+      },
+      "ProposalCandidate": {
+        "additionalProperties": true,
+        "description": "One pickable candidate on an ambiguous ProposedLink or an unresolved mention.",
+        "properties": {
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "duplicate_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§2: equal values mark the same work or composer by the K§4 dedupe key",
+            "title": "Duplicate Group"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "integer"
+          },
+          "entity_label": {
+            "title": "Entity Label",
+            "type": "string"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_type",
+          "entity_id",
+          "entity_label",
+          "confidence"
+        ],
+        "title": "ProposalCandidate",
+        "type": "object"
+      },
+      "ProposedAction": {
+        "additionalProperties": true,
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type"
+          },
+          "lane": {
+            "enum": [
+              "practice",
+              "lesson"
+            ],
+            "title": "Lane",
+            "type": "string"
+          },
+          "proposed_by": {
+            "title": "Proposed By",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "lane",
+          "proposed_by"
+        ],
+        "title": "ProposedAction",
+        "type": "object"
+      },
+      "ProposedLink": {
+        "additionalProperties": true,
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "candidates": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProposalCandidate"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Present means ambiguous: the user must pick one",
+            "title": "Candidates"
+          },
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "integer"
+          },
+          "entity_label": {
+            "title": "Entity Label",
+            "type": "string"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          },
+          "mention_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§2: composer rows, 'Mentioned 14 times'",
+            "title": "Mention Count"
+          },
+          "proposed_by": {
+            "title": "Proposed By",
+            "type": "string"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_type",
+          "entity_id",
+          "entity_label",
+          "quote",
+          "confidence",
+          "proposed_by",
+          "reason"
+        ],
+        "title": "ProposedLink",
+        "type": "object"
+      },
+      "RejectedLink": {
+        "additionalProperties": true,
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "integer"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_type",
+          "entity_id"
+        ],
+        "title": "RejectedLink",
+        "type": "object"
+      },
+      "ResolveTombstoneBody": {
+        "additionalProperties": true,
+        "properties": {
+          "action": {
+            "enum": [
+              "keep",
+              "delete"
+            ],
+            "title": "Action",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "ResolveTombstoneBody",
+        "type": "object"
+      },
+      "ResolveTombstoneResult": {
+        "additionalProperties": true,
+        "properties": {
+          "action": {
+            "enum": [
+              "keep",
+              "delete"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "note_id": {
+            "title": "Note Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "note_id",
+          "action"
+        ],
+        "title": "ResolveTombstoneResult",
+        "type": "object"
+      },
+      "SomedayMention": {
+        "additionalProperties": true,
+        "description": "K§2/K§5: an unresolved mention the user switched on as a 'someday' idea.",
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "composer_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Composer Label"
+          },
+          "kind_hint": {
+            "anyOf": [
+              {
+                "enum": [
+                  "work",
+                  "composer",
+                  "movement",
+                  "technique",
+                  "person"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind Hint"
+          },
+          "mention": {
+            "title": "Mention",
+            "type": "string"
+          },
+          "quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quote"
+          }
+        },
+        "required": [
+          "mention"
+        ],
+        "title": "SomedayMention",
+        "type": "object"
+      },
+      "SyncSource": {
+        "additionalProperties": true,
+        "description": "K§2: one row of the 'Last sync' line in GET /notes.",
+        "properties": {
+          "last_synced_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Synced At"
+          },
+          "note_count": {
+            "title": "Note Count",
+            "type": "integer"
+          },
+          "source_system": {
+            "title": "Source System",
+            "type": "string"
+          },
+          "source_workspace": {
+            "title": "Source Workspace",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_system",
+          "source_workspace",
+          "note_count"
+        ],
+        "title": "SyncSource",
+        "type": "object"
+      },
+      "TombstoneBody": {
+        "additionalProperties": true,
+        "properties": {
+          "source_doc_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Doc Ids",
+            "type": "array"
+          },
+          "source_system": {
+            "title": "Source System",
+            "type": "string"
+          },
+          "source_workspace": {
+            "title": "Source Workspace",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_system",
+          "source_workspace",
+          "source_doc_ids"
+        ],
+        "title": "TombstoneBody",
+        "type": "object"
+      },
+      "TombstoneResult": {
+        "additionalProperties": true,
+        "properties": {
+          "tombstoned": {
+            "title": "Tombstoned",
+            "type": "integer"
+          },
+          "unknown": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unknown",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tombstoned",
+          "unknown"
+        ],
+        "title": "TombstoneResult",
+        "type": "object"
+      },
+      "TopLink": {
+        "additionalProperties": true,
+        "description": "K§2 NoteSummary.top_links item.",
+        "properties": {
+          "entity_id": {
+            "title": "Entity Id",
+            "type": "integer"
+          },
+          "entity_label": {
+            "title": "Entity Label",
+            "type": "string"
+          },
+          "entity_type": {
+            "title": "Entity Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity_type",
+          "entity_id",
+          "entity_label"
+        ],
+        "title": "TopLink",
+        "type": "object"
+      },
+      "UnresolvedMention": {
+        "additionalProperties": true,
+        "properties": {
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/ProposalCandidate"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "composer_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Composer Label"
+          },
+          "kind_hint": {
+            "anyOf": [
+              {
+                "enum": [
+                  "work",
+                  "composer",
+                  "movement",
+                  "technique",
+                  "person"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind Hint"
+          },
+          "mention": {
+            "title": "Mention",
+            "type": "string"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mention",
+          "quote",
+          "candidates"
+        ],
+        "title": "UnresolvedMention",
+        "type": "object"
+      },
+      "UploadResult": {
+        "additionalProperties": true,
+        "description": "PUT /attachments/upload/{token} response (201).",
+        "properties": {
+          "blob_id": {
+            "title": "Blob Id",
+            "type": "integer"
+          },
+          "sha256": {
+            "description": "64 lowercase hex characters",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "blob_id",
+          "sha256"
+        ],
+        "title": "UploadResult",
+        "type": "object"
+      },
+      "UploadUrlBody": {
+        "additionalProperties": true,
+        "properties": {
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "mime": {
+            "title": "Mime",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "64 lowercase hex characters",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sha256",
+          "mime",
+          "size_bytes",
+          "filename"
+        ],
+        "title": "UploadUrlBody",
+        "type": "object"
+      },
+      "UploadUrlResult": {
+        "additionalProperties": true,
+        "description": "POST /attachments/upload-url response: status 'exists' or 'upload'.",
+        "properties": {
+          "blob_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "status=exists",
+            "title": "Blob Id"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "description": "ISO-8601 timestamp, e.g. 2026-10-18T14:30:00",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "status=upload",
+            "title": "Expires At"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "const": "PUT",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "status=upload",
+            "title": "Method"
+          },
+          "status": {
+            "enum": [
+              "exists",
+              "upload"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "upload_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "status=upload",
+            "title": "Upload Url"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "UploadUrlResult",
+        "type": "object"
+      },
+      "UpsertAttachment": {
+        "additionalProperties": true,
+        "properties": {
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "mime": {
+            "title": "Mime",
+            "type": "string"
+          },
+          "ref_in_markdown": {
+            "title": "Ref In Markdown",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "64 lowercase hex characters",
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sha256",
+          "filename",
+          "mime",
+          "size_bytes",
+          "ref_in_markdown"
+        ],
+        "title": "UpsertAttachment",
+        "type": "object"
+      },
+      "UpsertResult": {
+        "additionalProperties": true,
+        "properties": {
+          "hygiene": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HygieneBlock"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§6.2: present only when include_hygiene=true"
+          },
+          "links_orphaned": {
+            "title": "Links Orphaned",
+            "type": "integer"
+          },
+          "missing_attachments": {
+            "items": {
+              "description": "64 lowercase hex characters",
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "title": "Missing Attachments",
+            "type": "array"
+          },
+          "note_id": {
+            "title": "Note Id",
+            "type": "integer"
+          },
+          "outcome": {
+            "enum": [
+              "created",
+              "updated",
+              "unchanged"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          }
+        },
+        "required": [
+          "note_id",
+          "outcome",
+          "missing_attachments",
+          "links_orphaned"
+        ],
+        "title": "UpsertResult",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "description": "The host's API token. The host checks it.",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "summary": "Protocol 1: the notes-sync endpoints a host exposes (PROTOCOL.md A.2, K§2, K§6).",
+    "title": "arp-notes REST API",
+    "version": "1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/attachments/upload-url": {
+      "post": {
+        "operationId": "post_upload_url_api_v1_attachments_upload_url_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadUrlBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadUrlResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Upload Url"
+      }
+    },
+    "/api/v1/attachments/upload/{token}": {
+      "put": {
+        "operationId": "put_upload_api_v1_attachments_upload__token__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "title": "Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Upload"
+      }
+    },
+    "/api/v1/attachments/{blob_id}": {
+      "get": {
+        "operationId": "get_attachment_api_v1_attachments__blob_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blob_id",
+            "required": true,
+            "schema": {
+              "title": "Blob Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Attachment"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Attachment"
+      }
+    },
+    "/api/v1/attachments/{blob_id}/content": {
+      "get": {
+        "operationId": "get_content_api_v1_attachments__blob_id__content_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blob_id",
+            "required": true,
+            "schema": {
+              "title": "Blob Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exp",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Exp"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sig",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sig"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Content Api V1 Attachments  Blob Id  Content Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Content"
+      }
+    },
+    "/api/v1/hygiene/apply-fix": {
+      "post": {
+        "operationId": "post_apply_fix_api_v1_hygiene_apply_fix_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyFixBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ApplyFixDryRun"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApplyFixApplied"
+                    }
+                  ],
+                  "title": "Response Post Apply Fix Api V1 Hygiene Apply Fix Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Apply Fix"
+      }
+    },
+    "/api/v1/hygiene/dismiss": {
+      "post": {
+        "operationId": "post_dismiss_api_v1_hygiene_dismiss_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DismissBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DismissResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Dismiss"
+      }
+    },
+    "/api/v1/hygiene/merge-entities": {
+      "post": {
+        "operationId": "post_merge_entities_api_v1_hygiene_merge_entities_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeEntitiesBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/MergeEntitiesDryRun"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MergeEntitiesApplied"
+                    }
+                  ],
+                  "title": "Response Post Merge Entities Api V1 Hygiene Merge Entities Post"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Merge Entities"
+      }
+    },
+    "/api/v1/notes": {
+      "get": {
+        "operationId": "list_notes_api_v1_notes_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "origin",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "app",
+                    "source"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Origin"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_system",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source System"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_deleted",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Deleted",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_hygiene",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Hygiene",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoteList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Notes"
+      },
+      "post": {
+        "operationId": "create_note_api_v1_notes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Note"
+      }
+    },
+    "/api/v1/notes/by-entity/{entity_type}/{entity_id}": {
+      "get": {
+        "operationId": "get_by_entity_api_v1_notes_by_entity__entity_type___entity_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entity_type",
+            "required": true,
+            "schema": {
+              "title": "Entity Type",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "entity_id",
+            "required": true,
+            "schema": {
+              "title": "Entity Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_children",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Children",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityNotes"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get By Entity"
+      }
+    },
+    "/api/v1/notes/capabilities": {
+      "get": {
+        "operationId": "get_capabilities_api_v1_notes_capabilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Capabilities"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Capabilities"
+      }
+    },
+    "/api/v1/notes/hygiene": {
+      "get": {
+        "operationId": "get_hygiene_api_v1_notes_hygiene_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "default": "all",
+              "title": "Scope",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HygieneBlock"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Hygiene"
+      }
+    },
+    "/api/v1/notes/sync/manifest": {
+      "get": {
+        "operationId": "get_manifest_api_v1_notes_sync_manifest_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "source_system",
+            "required": true,
+            "schema": {
+              "title": "Source System",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_workspace",
+            "required": true,
+            "schema": {
+              "title": "Source Workspace",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 500,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "After"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManifestPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Manifest"
+      }
+    },
+    "/api/v1/notes/sync/tombstone": {
+      "post": {
+        "operationId": "post_tombstone_api_v1_notes_sync_tombstone_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TombstoneBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TombstoneResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Tombstone"
+      }
+    },
+    "/api/v1/notes/sync/upsert": {
+      "post": {
+        "operationId": "post_upsert_api_v1_notes_sync_upsert_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "include_hygiene",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Hygiene",
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoteUpsert"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpsertResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Upsert"
+      }
+    },
+    "/api/v1/notes/{note_id}": {
+      "delete": {
+        "operationId": "delete_note_api_v1_notes__note_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "note_id",
+            "required": true,
+            "schema": {
+              "title": "Note Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete Note"
+      },
+      "get": {
+        "operationId": "get_note_api_v1_notes__note_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "note_id",
+            "required": true,
+            "schema": {
+              "title": "Note Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_hygiene",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Hygiene",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Note"
+      },
+      "patch": {
+        "operationId": "patch_note_api_v1_notes__note_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "note_id",
+            "required": true,
+            "schema": {
+              "title": "Note Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotePatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Note"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Patch Note"
+      }
+    },
+    "/api/v1/notes/{note_id}/autosave": {
+      "patch": {
+        "operationId": "autosave_note_api_v1_notes__note_id__autosave_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "note_id",
+            "required": true,
+            "schema": {
+              "title": "Note Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutosaveBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutosaveResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Autosave Note"
+      }
+    },
+    "/api/v1/notes/{note_id}/confirm": {
+      "post": {
+        "operationId": "confirm_api_v1_notes__note_id__confirm_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "note_id",
+            "required": true,
+            "schema": {
+              "title": "Note Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Confirm"
+      }
+    },
+    "/api/v1/notes/{note_id}/export": {
+      "get": {
+        "operationId": "get_export_api_v1_notes__note_id__export_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "note_id",
+            "required": true,
+            "schema": {
+              "title": "Note Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "with_enrichment",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "With Enrichment",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "enrichment_style",
+            "required": false,
+            "schema": {
+              "default": "frontmatter",
+              "enum": [
+                "frontmatter",
+                "companion"
+              ],
+              "title": "Enrichment Style",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Export"
+      }
+    },
+    "/api/v1/notes/{note_id}/propose": {
+      "post": {
+        "operationId": "propose_api_v1_notes__note_id__propose_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "note_id",
+            "required": true,
+            "schema": {
+              "title": "Note Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "llm",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Llm",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "refresh",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Refresh",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_hygiene",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Hygiene",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Proposal"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Propose"
+      }
+    },
+    "/api/v1/notes/{note_id}/resolve-tombstone": {
+      "post": {
+        "operationId": "post_resolve_tombstone_api_v1_notes__note_id__resolve_tombstone_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "note_id",
+            "required": true,
+            "schema": {
+              "title": "Note Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveTombstoneBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolveTombstoneResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Resolve Tombstone"
+      }
+    }
+  }
+}

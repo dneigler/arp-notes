@@ -12,8 +12,9 @@ React packages in this repository are reference implementations.
   `protocol` in `GET /notes/sync/manifest`, and the CLI refuses a major it does not speak.
 - Part 1 is the base contract (appendix A of the design record). **Part 2 amends it and wins
   wherever the two differ.** References such as `K§3` point at sections of Part 2.
-- This is the initial copy (C0). The REST section is brought to byte-match with the routers by
-  the C3 lane; a change to anything here needs a contract bead first.
+- Parts 1 and 2 are the initial copy (C0). **Part 3 records how the reference routers behave
+  (C3)**: mounting, errors, the details the base contract leaves open. A change to anything here
+  needs a contract bead first.
 
 ---
 
@@ -430,4 +431,150 @@ POST /hygiene/merge-entities   {entity_type, keep_id, merge_ids:[int], dry_run: 
 - **Dry run first, always.** `confirm_token` = HMAC(signer secret, user_id + canonical plan JSON), 10-minute TTL. Applying with a token whose plan no longer matches the current state is refused with 409 `plan_changed`.
 - `merge_entities` calls the host port `HostConfig.hygiene.merge(entity_type, keep_id, merge_ids, dry_run) -> MergePlan`, where `MergePlan = {entity_type, keep, merge: [..], moves: [{table, column, rows}], conflicts: [{table, detail}], reversible: false, warnings: [..]}`. Every apply is audited: activity_log `note_merge_applied` with the full plan and the pre-merge row snapshots in `details_json`. It is "audited", not "reversible" (ga-mxal.24 allows either).
 - **[OWNER Q3]** Apply-mode `merge_entities` in PT (bead H3b) is gated until the owner has seen one real dry-run plan (Debussy Préludes 18/19/26, Bach 7/11). Detection, dismiss, resolve_tombstone, apply_fix for non-merge fixes and dry-run merge plans all ship in P1.
+
+---
+
+# Part 3 · REST as built (C3, ga-mxal.10)
+
+`arp_notes.fastapi.build_routers(cfg, prefix='/api/v1', public_base_url=None)` is the reference implementation of A.2, K§2
+and K§6.3. Where Parts 1 and 2 leave something open, this part says what the routers do, so
+another stack can match them. The machine-readable form is `schemas/openapi.json` (R§8).
+
+## R§1 · Mounting
+
+Two routers come back: **private** (Bearer) and **public** (the URL is the credential). Neither
+carries a prefix; the host mounts both at the same one (`app.include_router(r, prefix='/api/v1')`)
+and passes that prefix to `build_routers` so URLs in responses can be used as they are.
+- `content_url`, `thumbnail_url` and `upload_url` are **absolute URLs**: origin + prefix + path, for
+  example `https://notes.example.com/api/v1/attachments/7/content?exp=1760000000&sig=...`. Any
+  client (a browser `<img>`, `curl -T`, the CLI) uses them unchanged. The origin is the one the
+  request came to. A host behind a proxy that hides its public scheme or host passes
+  `public_base_url='https://notes.example.com'`, which then wins.
+- Routes are plain `def`, so FastAPI runs them in its threadpool and a blocking driver (psycopg2)
+  is safe. The one exception is `PUT /attachments/upload/{token}`, which reads the body stream.
+- The private router mounts the hygiene routes (K§6.3) ahead of `/notes/{id}`, so `/notes/hygiene`,
+  `/notes/capabilities`, `/notes/sync/*` and `/notes/by-entity/*` are never read as a note id.
+
+| Router | Endpoints |
+|---|---|
+| public | `PUT /attachments/upload/{token}`, `GET /attachments/{blob_id}/content` |
+| private | everything else in A.2, K§2 and K§6.3 |
+
+## R§2 · Who is calling
+
+Every private route resolves the caller with `Principal.current_user_id(request)`. A principal that
+cannot identify the caller raises its own `HTTPException` (PT: 401); the routers add nothing to it.
+Every query is scoped to that user: another user's note, blob or ticket is a 404, never a 403.
+
+## R§3 · Errors
+
+A failure the core understands is `{"error": code}` plus an optional `message`, and extra fields
+where noted. Request bodies and parameters that do not parse are FastAPI's own 422
+(`{"detail": [...]}`).
+
+| Status | `error` | When |
+|---|---|---|
+| 403 | `attachments_disabled` | Policy has attachments off (upload-url, and a PUT on a ticket issued earlier) |
+| 403 | `export_disabled` | Policy has export off |
+| 403 | `invalid_signature` | Bad signature, unknown blob, or a missing or malformed `exp` or `sig` |
+| 403 | `expired_signature` | Signature good, `exp` in the past |
+| 404 | `not_found` | Note, attachment, hygiene scope or fix not found for this user; unknown, consumed or expired upload ticket; registered blob whose bytes are gone |
+| 409 | `read_only_import` | Title or body edit, or autosave, on an `origin='source'` note |
+| 409 | `hash_mismatch` | PUT body is not the bytes the ticket was issued for (sha256 or size) |
+| 409 | `plan_changed`, `not_tombstoned`, ... | Hygiene (K§6.3) |
+| 413 | `payload_too_large` (+ `limit_bytes`) | Over the policy's `max_attachment_bytes`, or more bytes than the ticket allows |
+| 415 | `unsupported_media_type` | MIME outside the allowlist, or a PUT whose Content-Type is not the ticket's |
+| 422 | `takeaway_needs_link`, `action_needs_link`, `invalid_link_index`, `someday_unsupported`, `invalid_cursor`, `invalid_upload`, `invalid_enrichment_style`, `invalid_issue_key`, `invalid_scope` | See the endpoint |
+| 503 | `llm_disabled` | `propose?llm=true` when the host has not enabled Layer 2 |
+
+## R§4 · Parameters
+
+- `GET /notes`: `kind`, `origin` (`app`\|`source`), `source_system`, `q`, `date_from`, `date_to`,
+  `limit` (1..100, default 50), `before`, `include_deleted` (default false), `include_hygiene`.
+  Newest first by `note_date` (the created date when a note has none), then `updated_at`, then id.
+  `sync_sources` ignores the filters and the page.
+- `GET /notes/{id}`, `POST /notes/{id}/propose`, `POST /notes/sync/upsert`: `include_hygiene`
+  (default false). The `hygiene` key is **absent** unless asked for, and also when the host's
+  Policy has `hygiene` off. A detector that fails leaves the key out rather than failing the call.
+- `POST /notes/{id}/propose`: `llm` (default false) and `refresh` (default false). It returns the
+  cached proposal when there is one (`cached: true`), unless `refresh` is set, or `llm` is set and
+  the cache was built without the LLM pass.
+- `GET /notes/by-entity/{type}/{id}`: `limit` (1..100, default 50), `include_children`.
+- `GET /notes/sync/manifest`: `source_system` and `source_workspace` (required), `limit` (1..500;
+  default the Policy's `manifest_page_size`), `after`.
+- `POST /notes`: the A.2 body plus an optional `created_via` (`web`, `mobile`, `mcp`, `cli`, `chat`
+  or `ai`). Anything else, or nothing, is `web`.
+
+## R§5 · Responses
+
+- **Thumbnails.** `NoteSummary.thumbnail_url` is the signed content URL of the note's first image
+  attachment (R§1 form, valid for the signer's TTL), or null when the note has none.
+- **Autosave** answers exactly one of `{"note": Note}` or
+  `{"conflict": true, "server_version": n, "server_data": Note}`. No other keys.
+- **`POST /attachments/upload-url`** answers `{"status": "exists", "blob_id"}` or
+  `{"status": "upload", "upload_url", "method": "PUT", "expires_at"}`. Keys that do not apply are
+  absent. It answers 200 in both cases.
+- **`PUT /attachments/upload/{token}`** needs no Authorization header. The body is the raw bytes
+  with the Content-Type of the ticket's `mime`. A missing Content-Length is fine (chunked).
+  A body larger than the policy's `max_attachment_bytes` is refused with 413 before it is stored.
+  Success is 201 `{blob_id, sha256}`. A ticket works once: an accepted PUT, a 409 `hash_mismatch`
+  and a 413 raised while reading the body all spend it, and the client asks for a new one. A PUT
+  refused for its headers (415, or a Content-Length over the ticket's size) does not spend it.
+- **`GET /attachments/{blob_id}`** (Bearer) returns the `Attachment` shape for a blob the caller
+  owns. `Attachment` is per embed, so `id`, `filename` and `ref_in_markdown` come from the blob's
+  first embed; a blob no note uses yet has `id = blob_id`, `filename = sha256` and
+  `ref_in_markdown = ""`. `content_url` is freshly signed.
+- **`GET /attachments/{blob_id}/content`** answers the bytes with the stored `Content-Type`,
+  `Cache-Control: private, max-age=3600` and `X-Content-Type-Options: nosniff`. `image/svg+xml`
+  also gets `Content-Security-Policy: default-src 'none'; sandbox`, because it is user markup.
+  `exp` and `sig` are required; both missing or malformed is the same 403 as a wrong signature.
+- `frontmatter` is the user's own data and is returned exactly as stored.
+
+## R§6 · Sync details
+
+- `POST /notes/sync/upsert` always answers 200 `UpsertResult`. Attachments whose sha256 has no blob
+  yet are listed in `missing_attachments` and the note is stored without them (A.4 step 3): upload
+  them and upsert again. The routers never answer 409 `blob_missing`; the `ErrorBody` shape keeps
+  that value for hosts that choose to. Clients treat a non-empty `missing_attachments` as the
+  signal, and must also handle a 409 `blob_missing` with `missing: [sha256]`.
+- Created notes are stamped `created_via='cli'`.
+- A tombstoned note that is synced again comes back (`outcome='updated'`, `deleted_at` cleared).
+
+## R§7 · Export (`GET /notes/{id}/export`, ADR §3.7)
+
+`?with_enrichment=false&enrichment_style=frontmatter|companion` (an unknown style is 422).
+Answers `text/markdown; charset=utf-8` and two headers:
+- `X-Arp-Attachments`: compact ASCII JSON, a list of `Attachment` objects (`content_url` signed
+  and absolute, R§1). The embeds in the body are left as stored; rewriting them to relative
+  paths is the pull command's job. A note with hundreds of attachments can exceed a proxy's header
+  limit; the client then lists them with `GET /notes/{id}`.
+- `X-Arp-Export-Part`: `note` or `companion`.
+
+**What the body is**
+- `origin='app'`: the stored body behind a frontmatter block with `arp_id`, `kind`, `person`,
+  `note_date`, `place`, `exported_at` (UTC, `YYYY-MM-DDTHH:MM:SSZ`). Empty fields are left out. If
+  the body already opens with a frontmatter block, the lines go **into** that block and keys it
+  already has are not repeated (no second block, the user's value wins). Line endings of an
+  existing block are kept.
+- `origin='source'`: the stored body **verbatim**. Nothing is added unless enrichment is asked for.
+- `arp_id` is the note's `source_doc_id` when it has one. Otherwise it is a UUID derived from the
+  user and note id: the same on every export, and it reveals neither.
+- `with_enrichment=true`, style `frontmatter`: adds `arp_links`, `arp_takeaways` and `arp_actions`
+  properties to the note's frontmatter block (created if there is none; an existing key of the same
+  name is left alone). `arp_links` has `entity_type, entity_id, entity_label, anchor?, quote?,
+  confidence?` for every confirmed link; `arp_takeaways` has `anchor?, comment`; `arp_actions` has
+  `text, anchor?, entity_type, entity_id, completed` (one per line of a link's `action_item`).
+  Rejected and orphaned links are not exported.
+- `with_enrichment=true`, style `companion`: the body is **the companion document**
+  (`<name>.arp.md`), not the note: a frontmatter block with `arp_id`, `arp_companion_for` (the
+  title), `exported_at` and the same three properties. The note itself is the plain export
+  (`with_enrichment=false`). A pull makes two requests when it writes a companion.
+- A tombstoned note exports like any other.
+
+## R§8 · OpenAPI
+
+`schemas/openapi.json` (repository root) is the OpenAPI 3 document of the routers mounted at
+`/api/v1`. It is generated: `python -m arp_notes.fastapi` writes it, `--check` fails on drift, and
+a test runs the check. Private operations carry a Bearer security requirement; the two public ones
+do not.
 
