@@ -21,8 +21,9 @@ Three ways to wire them, depending on the host:
 
    ```python
    from arp_notes import mcp
-   mcp.register_fastmcp(app, cfg)                    # blocking handlers run in a worker thread
-   mcp.register_fastmcp(app, cfg, wrap=my_wrapper)   # or choose how: wrap(run) -> run2
+
+   mcp.register_fastmcp(app, cfg)  # blocking handlers run in a worker thread
+   mcp.register_fastmcp(app, cfg, wrap=my_wrapper)  # or choose how: wrap(run) -> run2
    ```
 
    Each call resolves the caller with `cfg.principal.current_user_id(request)`; `request` is the
@@ -35,7 +36,7 @@ Three ways to wire them, depending on the host:
 
    ```python
    for tool in mcp.TOOLS:
-       req = mcp.rest_request(tool.name, args)        # -> (method, path, params, json)
+       req = mcp.rest_request(tool.name, args)  # -> (method, path, params, json)
        api_call(req.method, req.path, params=req.params, json=req.json)
    ```
 
