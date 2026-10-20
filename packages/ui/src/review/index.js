@@ -1,6 +1,3 @@
-// ProposalReview.
-// Owner: C6c ga-mxal.33. C0 stub: every export throws until the lane lands.
+// ProposalReview. Owner: C6c ga-mxal.33.
 
-import { notImplemented } from '../stub.js'
-
-export const ProposalReview = notImplemented('ProposalReview', 'C6c ga-mxal.33')
+export { ProposalReview } from './ProposalReview.jsx'

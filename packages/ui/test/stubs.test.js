@@ -10,8 +10,17 @@ const EXPORTS = {
   preview: ['livePreview', 'EditorToolbar', 'ModeToggle'],
 }
 
+// Areas whose lane has landed: still exported, no longer stubs.
+const IMPLEMENTED = new Set(['review'])
+
 describe('src/index.js re-exports every area stub', () => {
   for (const [area, names] of Object.entries(EXPORTS)) {
+    if (IMPLEMENTED.has(area)) {
+      it.each(names)(`${area}: %s is exported and implemented`, (name) => {
+        expect(typeof ui[name]).toBe('function')
+      })
+      continue
+    }
     it.each(names)(`${area}: %s is exported and not implemented`, (name) => {
       expect(typeof ui[name]).toBe('function')
       expect(() => ui[name]()).toThrow(/not implemented/)
