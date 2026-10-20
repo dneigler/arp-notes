@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import cast
 
 import pytest
-from arp_notes import attachments, enrich, mcp, review
+from arp_notes import attachments, mcp, review
 from arp_notes.config import HostConfig
 from arp_notes.fastapi import build_routers
 from arp_notes.hygiene import fixes, routes, tools
@@ -48,8 +48,6 @@ def test_fixes_router_is_included_by_hygiene_routes() -> None:
     "call",
     [
         lambda: attachments.content_url(CFG, "u", 1),
-        lambda: enrich.tokenise("# x"),
-        lambda: enrich.propose(CFG, "u", 1),
         lambda: review.get_cached(CFG, "u", 1),
     ],
 )
