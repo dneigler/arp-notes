@@ -53,6 +53,8 @@ export const styles = {
     overflowX: 'auto',
   }),
   group: { display: 'flex', alignItems: 'center', gap: 2, flex: '0 0 auto' },
+  // The desk bar is a page-flow row, so its buttons wrap onto a second line rather than push the page wider than a phone.
+  groupDesk: { display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2, flex: '0 1 auto', minWidth: 0 },
   spacer: { flex: '1 1 8px', minWidth: 0 },
   button: target,
   buttonOff: { ...target, color: v('muted'), cursor: 'not-allowed' },

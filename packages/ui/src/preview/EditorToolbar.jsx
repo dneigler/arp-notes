@@ -147,7 +147,7 @@ export function EditorToolbar({
   }
 
   const group = (
-    <div ref={bar} role="toolbar" aria-label={strings.formatting} aria-orientation="horizontal" style={s.group} onKeyDown={onKeyDown}>
+    <div ref={bar} role="toolbar" aria-label={strings.formatting} aria-orientation="horizontal" style={phone ? s.group : s.groupDesk} onKeyDown={onKeyDown}>
       {buttons.map((button, index) => (
         <button
           key={button.id}

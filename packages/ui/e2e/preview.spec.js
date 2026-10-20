@@ -48,6 +48,18 @@ for (const viewport of VIEWPORTS) {
   }
 }
 
+// system-ui resolves to a different, wider face on a Linux CI runner than on the developer's Mac. The desk
+// bar must wrap its buttons, not push the page past the screen, whatever the face.
+for (const scene of SCENES) {
+  test(`${scene.id} still fits 390px in a wide font`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openScene(page, scene.id, THEMES[0])
+    await page.addStyleTag({ content: 'body { font-family: Verdana, "DejaVu Sans", sans-serif !important }' })
+    await scene.ready(page)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
+  })
+}
+
 const editor = (page) => page.getByRole('textbox', { name: 'Note body' })
 const sizeOf = (locator) => locator.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))
 
