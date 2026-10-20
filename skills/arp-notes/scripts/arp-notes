@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+# Run the arp-notes CLI for the arp-notes skill: `arp-notes` on PATH, else uvx.
+#
+# ARP_NOTES_REF pins the git tag or branch uvx installs from (default: the release this skill
+# shipped with). ARP_NOTES_REPO overrides the repository URL.
+set -eu
+
+REF="${ARP_NOTES_REF:-v0.1.0}"
+REPO="${ARP_NOTES_REPO:-https://github.com/dneigler/arp-notes}"
+
+if command -v arp-notes >/dev/null 2>&1; then
+    exec arp-notes "$@"
+fi
+
+if command -v uvx >/dev/null 2>&1; then
+    exec uvx --from "arp-notes @ git+${REPO}@${REF}#subdirectory=packages/cli" arp-notes "$@"
+fi
+
+printf '%s\n' \
+    "arp-notes: neither 'arp-notes' nor 'uvx' is on PATH." \
+    "Install uv (https://docs.astral.sh/uv/getting-started/installation/), then run this again." >&2
+exit 127
