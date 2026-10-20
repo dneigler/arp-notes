@@ -19,6 +19,7 @@ from typing import Any
 
 from arp_notes_cli.client import ClientError, NotesClient, open_client, run_command
 from arp_notes_cli.config import ConfigError, add_app_argument
+from arp_notes_cli.conformance_cmd import add_options, run_conformance
 from arp_notes_cli.registry import Subparsers
 from arp_notes_cli.scan import SOURCE_SYSTEM, ScanRefusal, scan_vault_notes
 
@@ -154,6 +155,19 @@ def verify_paths(
 
 def _cmd_verify(args: argparse.Namespace) -> int:
     def body() -> int:
+        if args.conformance:  # C7b: the kit against the live host, no local files involved
+            if args.paths:
+                raise ConfigError("--conformance takes no paths: it checks the host, not files")
+            return run_conformance(
+                args.app,
+                only=args.only,
+                fixture=args.fixture,
+                schemas=args.schemas,
+                mcp_url=args.mcp_url,
+                as_json=args.json,
+            )
+        if not args.paths:
+            raise ConfigError("verify needs Markdown files or folders (or --conformance)")
         with open_client(args.app) as client:
             verified, errors = verify_paths(client, [Path(p) for p in args.paths])
         if args.json:
@@ -176,10 +190,18 @@ def register(subparsers: Subparsers) -> None:
         help="Verify synced notes byte-for-byte.",
         description=(
             "Download each note from the host and check that its content_hash and body bytes "
-            "equal the local file. Reads only; exits non-zero on any mismatch."
+            "equal the local file. Reads only; exits non-zero on any mismatch. With "
+            "--conformance, run the conformance kit against the live host (see "
+            "`arp-notes conformance`)."
         ),
     )
-    parser.add_argument("paths", nargs="+", help="Markdown files or folders inside a vault")
+    parser.add_argument("paths", nargs="*", help="Markdown files or folders inside a vault")
     add_app_argument(parser)
     parser.add_argument("--json", action="store_true", help="machine-readable output")
+    parser.add_argument(
+        "--conformance",
+        action="store_true",
+        help="run the conformance kit against the live host instead of verifying files",
+    )
+    add_options(parser)
     parser.set_defaults(func=_cmd_verify)

@@ -9,10 +9,10 @@ IMPLEMENTED = [
     "config", "login", "scan", "status", "capabilities",  # CLI-a, ga-mxal.6
     "sync", "verify", "tombstone",  # CLI-b, ga-mxal.36
     "pull",  # CLI-c, ga-mxal.37
+    "conformance",  # C7b, ga-mxal.38
 ]  # fmt: skip
 STUBS = [
     "init",
-    "conformance",
 ]
 COMMANDS = IMPLEMENTED + STUBS
 

@@ -9,6 +9,7 @@ Registered as a plugin in conftest.py, so tests take `host_app` and `live_url` b
 
 from __future__ import annotations
 
+import json
 import threading
 from collections.abc import Iterator, Sequence
 from pathlib import Path
@@ -18,10 +19,13 @@ import pytest
 import uvicorn
 from arp_notes.config import HostConfig
 from arp_notes.fastapi import DEFAULT_PREFIX, build_routers
+from arp_notes.mcp import TOOLS
 from arp_notes.ports import Policy
 from arp_notes.storage.disk import DiskStorage
 from arp_notes.testing.fakedb import FakeDb
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import JSONResponse, Response
 
 TOKEN = "conformance-token"
 USER = "conformance-user"
@@ -87,7 +91,51 @@ class FixedSigner:
     ttl_s = 3600
 
 
-def make_app(db: FakeDb, root: Path, *, policy: Policy | None = None) -> FastAPI:
+def mount_mcp(app: FastAPI, cfg: HostConfig, path: str = "/mcp") -> None:
+    """The smallest MCP-over-HTTP an integrator would write: JSON-RPC on one POST route, the
+    tools of `arp_notes.mcp.TOOLS` called through their handlers. (Real hosts use FastMCP.)"""
+    tools = {spec.name: spec for spec in TOOLS}
+
+    @app.post(path)
+    async def mcp(request: Request) -> Response:
+        user_id = cfg.principal.current_user_id(request)
+        message = await request.json()
+        if "id" not in message:  # a notification
+            return Response(status_code=202)
+        method, params = message["method"], message.get("params") or {}
+        result: dict[str, Any]
+        if method == "initialize":
+            result = {
+                "protocolVersion": params.get("protocolVersion", "2025-03-26"),
+                "capabilities": {"tools": {}},
+                "serverInfo": {"name": "arp-notes-reference", "version": "0"},
+            }
+        elif method == "tools/list":
+            result = {
+                "tools": [
+                    {"name": t.name, "description": t.description, "inputSchema": t.input_schema}
+                    for t in tools.values()
+                ]
+            }
+        elif method == "tools/call":
+            spec = tools[params["name"]]
+            data = await run_in_threadpool(
+                lambda: spec.handler(cfg, user_id, **(params.get("arguments") or {}))
+            )
+            result = {
+                "content": [{"type": "text", "text": json.dumps(data)}],
+                "structuredContent": data,
+                "isError": False,
+            }
+        else:
+            error = {"code": -32601, "message": f"no method {method}"}
+            return JSONResponse({"jsonrpc": "2.0", "id": message["id"], "error": error})
+        return JSONResponse({"jsonrpc": "2.0", "id": message["id"], "result": result})
+
+
+def make_app(
+    db: FakeDb, root: Path, *, policy: Policy | None = None, mcp_path: str | None = "/mcp"
+) -> FastAPI:
     cfg = HostConfig(
         db=db,
         principal=BearerPrincipal(),
@@ -100,6 +148,8 @@ def make_app(db: FakeDb, root: Path, *, policy: Policy | None = None) -> FastAPI
     private, public = build_routers(cfg, DEFAULT_PREFIX)
     app.include_router(private, prefix=DEFAULT_PREFIX)
     app.include_router(public, prefix=DEFAULT_PREFIX)
+    if mcp_path is not None:
+        mount_mcp(app, cfg, mcp_path)
     return app
 
 
