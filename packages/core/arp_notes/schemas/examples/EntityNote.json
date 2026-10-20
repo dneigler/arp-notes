@@ -39,6 +39,7 @@
       "action_item": null,
       "action_completed": 0,
       "backlog_id": null,
+      "lane": null,
       "status": "confirmed",
       "proposed_by": "resolver",
       "confidence": 0.92,

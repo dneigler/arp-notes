@@ -220,6 +220,34 @@ def test_action_items_go_through_the_hook_and_land_on_the_link(
     assert repo.list_notes(notes_cfg, USER).items[0].action_count == 1
 
 
+def test_confirm_stores_the_lane_and_reads_it_back(
+    notes_cfg: HostConfig, notes_db: FakeDb, fake_hooks: FakeHooks
+) -> None:
+    """K§13.3: the lane is written next to backlog_id and comes back on get_note and by_entity."""
+    note_id = add_note(notes_db)
+    confirm(
+        notes_cfg,
+        note_id,
+        links=[{"entity_type": "composer", "entity_id": 1}, ETUDE],
+        action_items=[{"text": "play it slowly", "link_index": 1, "lane": "lesson"}],
+    )
+    composer, etude = link_rows(notes_db, note_id)
+    assert (etude["lane"], composer["lane"]) == ("lesson", None)
+
+    by_type = {link.entity_type: link for link in repo.get_note(notes_cfg, USER, note_id).links}
+    assert by_type["repertoire"].lane == "lesson"
+    assert by_type["composer"].lane is None  # a link with no action item
+    [item] = repo.by_entity(notes_cfg, USER, "repertoire", 35).items
+    assert [link.lane for link in item.links] == ["lesson"]
+
+
+def test_the_lane_column_only_accepts_the_two_lanes(notes_db: FakeDb) -> None:
+    note_id = add_note(notes_db)
+    add_link(notes_db, note_id, "repertoire", 1, lane="practice")
+    with pytest.raises(Exception, match="check"):
+        add_link(notes_db, note_id, "repertoire", 2, lane="someday")
+
+
 def test_a_repeat_confirm_does_not_create_the_backlog_item_again(
     notes_cfg: HostConfig, notes_db: FakeDb, fake_hooks: FakeHooks
 ) -> None:

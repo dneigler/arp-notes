@@ -33,7 +33,7 @@ import pytest
 from psycopg.rows import dict_row
 from pytest_postgresql import factories
 
-from arp_notes.schema import ddl
+from arp_notes.schema import ddl, migrations
 
 _FALLBACK_GLOBS = (
     "/usr/lib/postgresql/*/bin/pg_ctl",  # Debian / Ubuntu (GitHub runners)
@@ -132,8 +132,10 @@ class FakeDb:
             yield self
 
     def apply_ddl(self) -> None:
-        """Apply `arp_notes.schema.ddl()`. Safe to call repeatedly: the DDL is idempotent."""
+        """Apply `schema.ddl()` then every later migration. Safe to repeat: all are idempotent."""
         self.run(ddl())
+        for _name, text in migrations():
+            self.run(text)
 
 
 # A private server per session on a random port, and a fresh database per test. The names are

@@ -103,3 +103,20 @@ def test_note_delete_cascades_to_links_and_attachments(notes_db: FakeDb) -> None
     assert notes_db.run("SELECT count(*) AS n FROM note_links") == [{"n": 0}]
     assert notes_db.run("SELECT count(*) AS n FROM note_attachments") == [{"n": 0}]
     assert notes_db.run("SELECT count(*) AS n FROM blobs") == [{"n": 1}]  # blobs outlive notes
+
+
+def test_migration_002_adds_the_lane_to_a_database_that_has_only_001(fakedb: FakeDb) -> None:
+    fakedb.run(schema.ddl())  # a host that applied 001 before 002 existed
+    names = [name for name, _ in schema.migrations()]
+    assert names == ["002_note_links_lane.sql"]
+    for _name, text in schema.migrations():
+        fakedb.run(text)
+        fakedb.run(text)  # idempotent
+    cols = {
+        r["column_name"]: r
+        for r in fakedb.run(
+            "SELECT column_name, is_nullable FROM information_schema.columns"
+            " WHERE table_name = 'note_links'"
+        )
+    }
+    assert cols["lane"]["is_nullable"] == "YES"

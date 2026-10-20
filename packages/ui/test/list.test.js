@@ -750,4 +750,11 @@ describe('NoteRail (NoteDesk)', () => {
     const c = mount(h(NoteRail, { note: example('Note') }))
     expect(q(c, '[data-note-rail]')).not.toBeNull()
   })
+
+  it('shows the lane badge carried by a served example link (K§13.3)', () => {
+    const c = mount(h(NoteRail, { note: example('Note') }))
+    const item = q(c, '[data-action]')
+    expect(item.textContent).toContain('Practise the left hand alone at 60 bpm.')
+    expect(item.textContent).toContain('Practice')
+  })
 })

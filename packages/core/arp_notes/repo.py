@@ -275,6 +275,7 @@ def _link_model(
         "action_item": row["action_item"],
         "action_completed": row["action_completed"] or 0,
         "backlog_id": row["backlog_id"],
+        "lane": row["lane"],
         "status": row["status"],
         "proposed_by": row["proposed_by"],
         "confidence": _confidence(row["confidence"]),
@@ -927,9 +928,9 @@ def confirm_links(cfg: HostConfig, user_id: str, note_id: int, body: ConfirmBody
                 )
                 backlog.append(backlog_id)
             cfg.db.run(
-                "UPDATE note_links SET action_item = %s, backlog_id = %s,"
+                "UPDATE note_links SET action_item = %s, backlog_id = %s, lane = %s,"
                 " updated_at = CURRENT_TIMESTAMP WHERE id = %s",
-                ["\n".join([*lines, text]), backlog_id, target_id],
+                ["\n".join([*lines, text]), backlog_id, lane, target_id],
             )
 
         if someday and hooks is not None and hooks.on_someday is not None:

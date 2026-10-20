@@ -1662,6 +1662,22 @@
             "title": "Id",
             "type": "integer"
           },
+          "lane": {
+            "anyOf": [
+              {
+                "enum": [
+                  "practice",
+                  "lesson"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "K§13.3: lane the action item was confirmed under; null without an action item",
+            "title": "Lane"
+          },
           "proposed_by": {
             "anyOf": [
               {

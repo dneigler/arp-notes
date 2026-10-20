@@ -97,6 +97,10 @@ class NoteLink(_Model):
     action_item: str | None = None
     action_completed: int
     backlog_id: int | None = None
+    lane: Lane | None = Field(
+        default=None,
+        description="K§13.3: lane the action item was confirmed under; null without an action item",
+    )
     status: LinkStatus
     proposed_by: str | None = None
     confidence: Confidence | None = None

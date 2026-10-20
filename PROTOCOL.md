@@ -151,7 +151,7 @@ Note        {id, user_id, kind, title, body_md, frontmatter, person?, note_date?
 NoteSummary {id, kind, title, person?, note_date?, origin, source_system?, last_synced_at?, deleted_at?, link_count, attachment_count, updated_at}
 Attachment  {id, blob_id, filename, ref_in_markdown, mime, size_bytes, sha256, width?, height?, content_url}   -- content_url is signed, expires ≤1 h
 NoteLink    {id, entity_type, entity_id, entity_label, entity_slug?, anchor?, quote?, comment?, action_item?, action_completed,
-             backlog_id?, status, proposed_by?, confidence?, sort_order}
+             backlog_id?, lane?: 'practice'|'lesson', status, proposed_by?, confidence?, sort_order}   -- lane: K§13.3, null without an action item
 ManifestRow {source_doc_id, source_path, content_hash, attachments: [sha256], last_synced_at, deleted_at?}
 NoteUpsert  {source_system, source_workspace, source_doc_id, source_path, title, body_md, frontmatter?, source_modified_at?,
              source_url?, content_hash, kind?, person?, note_date?, place?,
@@ -578,3 +578,13 @@ Answers `text/markdown; charset=utf-8` and two headers:
 a test runs the check. Private operations carry a Bearer security requirement; the two public ones
 do not.
 
+
+## K§13.3 · `NoteLink.lane?` (core `arp_notes/sql/002_note_links_lane.sql`)
+
+The lane is chosen at confirm (`ConfirmBody.action_items[].lane`), so core stores it next to `backlog_id`; the host is not called back to look it up. `schema.migrations()` returns the numbered files after 001. A host copies each one into its own migrations, as it does 001.
+
+```sql
+ALTER TABLE note_links ADD COLUMN IF NOT EXISTS lane TEXT CHECK (lane IN ('practice', 'lesson'));
+```
+
+`NoteLink.lane?` is `'practice'|'lesson'`, null when the link has no action item. It appears on `GET /notes/{id}` and on the by-entity links. `protocol_version` stays 1.

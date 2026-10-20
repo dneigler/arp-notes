@@ -29,6 +29,7 @@
  * @property {string|null} [action_item]
  * @property {number} action_completed
  * @property {number|null} [backlog_id]
+ * @property {'practice'|'lesson'|null} [lane]  K§13.3: lane the action item was confirmed under; null without an action item.
  * @property {'confirmed'|'rejected'|'orphaned'} status
  * @property {string|null} [proposed_by]
  * @property {number|null} [confidence]
