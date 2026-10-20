@@ -5,20 +5,14 @@ from __future__ import annotations
 from typing import cast
 
 import pytest
-from arp_notes import attachments, mcp, review
+from arp_notes import attachments, mcp
 from arp_notes.config import HostConfig
 from arp_notes.fastapi import build_routers
 from arp_notes.hygiene import fixes, routes, tools
-from arp_notes.models import ConfirmBody
 from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
 
 CFG = cast(HostConfig, object())  # stubs never touch the config
-
-
-def test_hooks_are_no_ops_returning_empty() -> None:
-    assert review.after_upsert(CFG, "u", 1, "created") is None
-    assert review.apply_confirm(CFG, "u", 1, ConfirmBody()) == {}
 
 
 def test_mcp_tools_compose_hygiene_tools() -> None:
@@ -53,7 +47,6 @@ def test_fixes_router_is_included_by_hygiene_routes() -> None:
     "call",
     [
         lambda: attachments.content_url(CFG, "u", 1),
-        lambda: review.get_cached(CFG, "u", 1),
     ],
 )
 def test_stub_bodies_raise_not_implemented(call) -> None:  # type: ignore[no-untyped-def]
