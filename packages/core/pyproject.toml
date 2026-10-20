@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arp-notes-core"
-version = "0.1.0.dev0"
+version = "0.1.0rc1"
 description = "arp-notes server core: ports, sync, attachments, enrichment, FastAPI routers and MCP tool specs. ORM-free and app-agnostic."
 readme = "README.md"
 license = { text = "MIT" }

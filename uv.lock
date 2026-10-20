@@ -42,7 +42,7 @@ wheels = [
 
 [[package]]
 name = "arp-notes"
-version = "0.1.0.dev0"
+version = "0.1.0rc1"
 source = { editable = "packages/cli" }
 dependencies = [
     { name = "httpx" },
@@ -61,7 +61,7 @@ requires-dist = [
 
 [[package]]
 name = "arp-notes-conformance"
-version = "0.1.0.dev0"
+version = "0.1.0rc1"
 source = { editable = "packages/conformance" }
 dependencies = [
     { name = "httpx" },
@@ -78,7 +78,7 @@ requires-dist = [
 
 [[package]]
 name = "arp-notes-core"
-version = "0.1.0.dev0"
+version = "0.1.0rc1"
 source = { editable = "packages/core" }
 dependencies = [
     { name = "fastapi" },

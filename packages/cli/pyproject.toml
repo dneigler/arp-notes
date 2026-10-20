@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arp-notes"
-version = "0.1.0.dev0"
+version = "0.1.0rc1"
 description = "arp-notes CLI: scan, sync and pull notes between a notes tool and an arp-notes host app. Moves verbatim bytes; the LLM never carries them."
 readme = "README.md"
 license = { text = "MIT" }
