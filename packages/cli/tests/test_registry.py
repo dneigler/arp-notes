@@ -5,11 +5,8 @@ from __future__ import annotations
 import pytest
 from arp_notes_cli.main import build_parser, main
 
-COMMANDS = [
-    "config",
-    "scan",
-    "status",
-    "capabilities",
+IMPLEMENTED = ["config", "login", "scan", "status", "capabilities"]  # CLI-a, ga-mxal.6
+STUBS = [
     "sync",
     "verify",
     "tombstone",
@@ -17,6 +14,7 @@ COMMANDS = [
     "init",
     "conformance",
 ]
+COMMANDS = IMPLEMENTED + STUBS
 
 
 def _registered() -> set[str]:
@@ -32,7 +30,7 @@ def test_all_subcommands_are_registered() -> None:
     assert set(COMMANDS) <= _registered()
 
 
-@pytest.mark.parametrize("command", COMMANDS)
+@pytest.mark.parametrize("command", STUBS)
 def test_stub_prints_not_implemented_and_exits_2(
     command: str, capsys: pytest.CaptureFixture[str]
 ) -> None:
