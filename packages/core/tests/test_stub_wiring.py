@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import cast
 
 import pytest
-from arp_notes import attachments, mcp
+from arp_notes import mcp
 from arp_notes.config import HostConfig
 from arp_notes.fastapi import build_routers
 from arp_notes.hygiene import fixes, routes, tools
@@ -41,14 +41,3 @@ def test_build_routers_mounts_hygiene_routes(monkeypatch: pytest.MonkeyPatch) ->
 def test_fixes_router_is_included_by_hygiene_routes() -> None:
     assert isinstance(fixes.router, APIRouter)
     assert isinstance(routes.router, APIRouter)
-
-
-@pytest.mark.parametrize(
-    "call",
-    [
-        lambda: attachments.content_url(CFG, "u", 1),
-    ],
-)
-def test_stub_bodies_raise_not_implemented(call) -> None:  # type: ignore[no-untyped-def]
-    with pytest.raises(NotImplementedError):
-        call()

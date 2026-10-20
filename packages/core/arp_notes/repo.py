@@ -27,7 +27,6 @@ from collections.abc import Iterable, Sequence
 from datetime import datetime
 from typing import Any
 
-from arp_notes import attachments
 from arp_notes.config import HostConfig
 from arp_notes.models import (
     Attachment,
@@ -287,6 +286,9 @@ def _link_model(
 
 
 def _attachment_models(cfg: HostConfig, user_id: str, note_id: int) -> list[Attachment]:
+    # Imported here because attachments subclasses NotesError, so it imports this module (C2).
+    from arp_notes import attachments
+
     rows = cfg.db.run(
         "SELECT a.id, a.blob_id, a.filename, a.ref_in_markdown, b.mime, b.size_bytes, b.sha256,"
         " b.width, b.height FROM note_attachments a JOIN blobs b ON b.id = a.blob_id"
