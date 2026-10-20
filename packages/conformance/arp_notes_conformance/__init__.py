@@ -8,7 +8,7 @@ Owners: C7a (ga-mxal.14) for harness, suite_core and the runner; C7b (ga-mxal.38
     suite(base_url="https://...", token=TOKEN)     # any stack, over the wire
 """
 
-from .harness import DEFAULT, Document, Fixture, LinkTarget, load_fixture
+from .harness import DEFAULT, Document, Fixture, LinkTarget, MergePair, load_fixture
 from .runner import ConformanceFailure, Outcome, Report, suite
 
 __all__ = [
@@ -17,6 +17,7 @@ __all__ = [
     "Document",
     "Fixture",
     "LinkTarget",
+    "MergePair",
     "Outcome",
     "Report",
     "load_fixture",

@@ -17,7 +17,9 @@ dismissal cannot be undone over the wire, so a run leaves a few `hygiene_dismiss
 notes it has deleted; they hide nothing a user could see. `merge_entities` needs two real
 entities of the host: with only the fixture's `link_target` the kit sends a dry run for a pair
 that cannot exist, and reports the check as skipped when the host answers 501 `not_supported` or
-refuses the pair.
+refuses the pair. A fixture `merge_pair` names a real pair instead: the kit then checks the host's
+real dry-run plan, fails when the host refuses the pair, and runs the missing-token and
+forged-token refusals against that plan.
 """
 
 from __future__ import annotations
@@ -287,30 +289,44 @@ def apply_fix_requires_a_dry_run_token(h: Harness) -> None:
 @check("hygiene.merge_entities_dry_run")
 def merge_entities_dry_run(h: Harness) -> None:
     hygiene_on(h)
-    target = link_target(h)
-    ghost = target.entity_id + 1_000_000_007  # an id of the same type that no host has
-    ask = {
-        "entity_type": target.entity_type,
-        "keep_id": target.entity_id,
-        "merge_ids": [ghost],
-        "dry_run": True,
-    }
+    pair = h.fixture.merge_pair
+    if pair is not None:
+        ask = {
+            "entity_type": pair.entity_type,
+            "keep_id": pair.keep_id,
+            "merge_ids": list(pair.merge_ids),
+            "dry_run": True,
+        }
+    else:  # no real pair: a placeholder the host can only refuse, so the check may skip
+        target = link_target(h)
+        ghost = target.entity_id + 1_000_000_007  # an id of the same type that no host has
+        ask = {
+            "entity_type": target.entity_type,
+            "keep_id": target.entity_id,
+            "merge_ids": [ghost],
+            "dry_run": True,
+        }
     response = h.send("POST", "/hygiene/merge-entities", json=ask)
     if response.status_code == 501:
         error = h.decode(response, "POST /hygiene/merge-entities")
         h.schemas.validate("ErrorBody", error, "merge-entities refusal")
         same(error["error"], "not_supported", "error of a 501 merge-entities")
         raise CheckSkipped("the host does not merge entities (501 not_supported)")
-    if response.status_code in (404, *REJECTED):
+    if pair is None and response.status_code in (404, *REJECTED):
         raise CheckSkipped(
-            f"the host merges {target.entity_type} entities but refused the kit's placeholder pair "
-            f"({response.status_code}); the fixture would need a real mergeable pair"
+            f"the host merges {ask['entity_type']} entities but refused the kit's placeholder pair "
+            f"({response.status_code}); the fixture would need a real mergeable pair "
+            "(`merge_pair`)"
         )
     h.expect_status(response, 200, "POST /hygiene/merge-entities (dry run)")
     body = h.decode(response, "POST /hygiene/merge-entities")
     h.schemas.validate("MergeEntitiesDryRun", body, "merge-entities dry run")
     need(bool(body["confirm_token"]), "a merge dry run must hand back a confirm_token")
     same(body["plan"]["reversible"], False, "plan.reversible (K§6.3: audited, not reversible)")
+    if pair is not None:  # a real plan names the pair it was asked about (K§13.4: ids)
+        same(body["plan"]["entity_type"], pair.entity_type, "plan.entity_type")
+        same(body["plan"]["keep"], pair.keep_id, "plan.keep")
+        same(sorted(body["plan"]["merge"]), sorted(pair.merge_ids), "plan.merge")
 
     unconfirmed = h.send("POST", "/hygiene/merge-entities", json={**ask, "dry_run": False})
     not_applied(h, unconfirmed, "merge_entities with dry_run=false and no token")

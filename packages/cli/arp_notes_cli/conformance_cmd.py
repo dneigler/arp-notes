@@ -94,7 +94,10 @@ def run_conformance(
         chosen = kit.load_fixture(fixture)
     else:  # the bundled one names the reference host's entities, not this host's
         chosen = dataclasses.replace(
-            kit.load_fixture(kit.DEFAULT), link_target=None, recognised_document=None
+            kit.load_fixture(kit.DEFAULT),
+            link_target=None,
+            recognised_document=None,
+            merge_pair=None,
         )
     try:
         with _mcp_url(mcp_url):

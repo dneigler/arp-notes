@@ -132,18 +132,32 @@ class LinkTarget:
 
 
 @dataclass(frozen=True)
+class MergePair:
+    """Two or more real entities of the host that `hygiene.merge` can plan a merge of: `merge_ids`
+    would fold into `keep_id`. The kit only ever asks for a dry run of it, and a forged or missing
+    token must never turn that into a merge, so the pair is never changed."""
+
+    entity_type: str
+    keep_id: int
+    merge_ids: tuple[int, ...]
+
+
+@dataclass(frozen=True)
 class Fixture:
     """The synthetic vault plus what the kit needs to know about the host's own entities.
 
     `link_target` is an entity that exists in the host. Without it the checks that need links
     are skipped. `recognised_document` names the document whose text the host's resolver turns
     into proposals (K§3: `review_pending > 0` after an upsert); without it that check is skipped.
+    `merge_pair` (optional) is a real mergeable pair: with it `hygiene.merge_entities_dry_run`
+    checks the host's real plan, without it the kit sends a placeholder pair no host has.
     """
 
     source_system: str
     documents: Mapping[str, Document]
     link_target: LinkTarget | None = None
     recognised_document: str | None = None
+    merge_pair: MergePair | None = None
 
     def doc(self, key: str) -> Document:
         if key not in self.documents:
@@ -194,6 +208,7 @@ def load_fixture(source: Fixture | _Default | str | os.PathLike[str] | None = No
     }
     target = raw.get("link_target")
     child = target.get("child") if target else None
+    pair = raw.get("merge_pair")
     return Fixture(
         source_system=raw["source_system"],
         documents=documents,
@@ -205,7 +220,18 @@ def load_fixture(source: Fixture | _Default | str | os.PathLike[str] | None = No
             None if not child else (child["entity_type"], int(child["entity_id"])),
         ),
         recognised_document=raw.get("recognised_document"),
+        merge_pair=None if not pair else _merge_pair(pair),
     )
+
+
+def _merge_pair(raw: Mapping[str, Any]) -> MergePair:
+    ids = raw.get("merge_ids")
+    if not isinstance(ids, list) or not ids:
+        raise ValueError("fixture merge_pair needs a non-empty merge_ids list")
+    pair = MergePair(raw["entity_type"], int(raw["keep_id"]), tuple(int(i) for i in ids))
+    if pair.keep_id in pair.merge_ids:
+        raise ValueError("fixture merge_pair: merge_ids must not contain keep_id")
+    return pair
 
 
 # -- connection -----------------------------------------------------------------------------

@@ -32,6 +32,12 @@ A check that cannot say anything about a host is **skipped with its reason**, ne
 `link_target` in the fixture, `attachments=false`, no MCP endpoint, a host that does not merge
 entities (501 `not_supported`).
 
+The fixture's optional `merge_pair` (`{"entity_type", "keep_id", "merge_ids": [..]}`) names a real
+mergeable pair of the host. With it `hygiene.merge_entities_dry_run` checks the host's real dry-run
+plan (`keep`/`merge` are those ids), fails if the host refuses the pair, and runs the
+missing-token and forged-token refusals against that plan. Without it the kit sends a placeholder
+pair and skips when the host refuses it. The kit only ever asks for a dry run.
+
 ## MCP mode
 
 The kit speaks JSON-RPC over Streamable HTTP itself and imports no MCP SDK. The endpoint is

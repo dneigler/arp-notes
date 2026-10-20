@@ -20,7 +20,8 @@ import uvicorn
 from arp_notes.config import HostConfig
 from arp_notes.fastapi import DEFAULT_PREFIX, build_routers
 from arp_notes.mcp import TOOLS
-from arp_notes.ports import Policy
+from arp_notes.models import MergePlan
+from arp_notes.ports import Hooks, Policy
 from arp_notes.storage.disk import DiskStorage
 from arp_notes.testing.fakedb import FakeDb
 from fastapi import FastAPI, HTTPException, Request
@@ -86,6 +87,31 @@ class ToyScheme:
         return list(CHILDREN.get((entity_type, entity_id), []))
 
 
+MERGEABLE = {"repertoire": (10, {11, 12})}  # keep id, ids that fold into it (not in ENTITIES)
+
+
+class ToyHygiene:
+    """A host that merges: it plans repertoire 11 and 12 into 10 and refuses every other pair."""
+
+    def detect(self, user_id: str, scope: str) -> list[Any]:
+        return []
+
+    def merge(
+        self, user_id: str, entity_type: str, keep_id: int, merge_ids: Sequence[int], dry_run: bool
+    ) -> MergePlan:
+        keep, others = MERGEABLE.get(entity_type, (None, set()))
+        if keep_id != keep or not set(merge_ids) <= others:
+            raise LookupError(f"no such {entity_type} pair: {keep_id} <- {list(merge_ids)}")
+        return MergePlan(
+            entity_type=entity_type,
+            keep=keep_id,
+            merge=list(merge_ids),
+            moves=[],
+            conflicts=[],
+            warnings=[],
+        )
+
+
 class FixedSigner:
     secret = "conformance-secret"
     ttl_s = 3600
@@ -134,7 +160,12 @@ def mount_mcp(app: FastAPI, cfg: HostConfig, path: str = "/mcp") -> None:
 
 
 def make_app(
-    db: FakeDb, root: Path, *, policy: Policy | None = None, mcp_path: str | None = "/mcp"
+    db: FakeDb,
+    root: Path,
+    *,
+    policy: Policy | None = None,
+    mcp_path: str | None = "/mcp",
+    merging: bool = False,
 ) -> FastAPI:
     cfg = HostConfig(
         db=db,
@@ -143,6 +174,9 @@ def make_app(
         signer=FixedSigner(),
         schemes=[ToyScheme()],
         policy=policy or Policy(),
+        hygiene=ToyHygiene() if merging else None,
+        # a merge is audited, so a host that merges must have somewhere to record it
+        hooks=Hooks(on_event=lambda *event: None) if merging else None,
     )
     app = FastAPI()
     private, public = build_routers(cfg, DEFAULT_PREFIX)
