@@ -29,3 +29,12 @@ def test_k4_copy_carries_the_k12_port_signatures() -> None:
     assert "Judge.name: str" in text
     assert "merge(user_id, entity_type, keep_id, merge_ids, dry_run)" in text
     assert "protocol_version: 1" in text
+
+
+def test_k13_amendments_are_folded_in() -> None:
+    text = PROTOCOL.read_text()
+    headings = set(re.findall(r"^## (K§13\.\d)\b", text, re.M))
+    assert headings == {"K§13.1", "K§13.2", "K§13.3", "K§13.4"}
+    assert "review_pending = len(links) + len(unresolved) + len(action_items)" in text
+    assert "len(ambiguous)" not in text
+    assert "`HostConfig.hygiene.merge(user_id, entity_type" in text

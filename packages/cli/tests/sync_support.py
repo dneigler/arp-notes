@@ -32,6 +32,10 @@ _TOMBSTONE_BODY = _schema("tombstone_body.json")
 _TOMBSTONE_RESULT = _schema("tombstone_result.json")
 
 
+def _without_mtime(payload: dict[str, Any]) -> dict[str, Any]:
+    return {k: v for k, v in payload.items() if k != "source_modified_at"}
+
+
 class FakeHost:
     def __init__(
         self,
@@ -170,7 +174,11 @@ class FakeHost:
                 "missing_attachments": [],
             }
         else:
-            same = known["payload"] == payload and not known["deleted_at"]
+            # as in the core, a new mtime alone is not a change (a pulled file is written later)
+            same = (
+                _without_mtime(known["payload"]) == _without_mtime(payload)
+                and not known["deleted_at"]
+            )
             known["payload"], known["deleted_at"] = payload, None
             answer = {
                 "note_id": known["id"],

@@ -32,9 +32,20 @@ on by default, and a later sync of the exported folder round-trips to the same n
 | `packages/conformance` | `arp-notes-conformance`: black-box kit that drives any implementation over HTTP and MCP. |
 | [`RELEASING.md`](RELEASING.md) | Tags, versions and install-by-tag lines. |
 
-> **Status: scaffold.** Every module exists as a stub with its final signature, so the parts can be
-> built in parallel; most bodies raise `NotImplementedError` (the CLI prints `not implemented`)
-> until their lane lands.
+## Install
+
+Packages are semver and tagged together; hosts install by tag (no registry in v0.1). Current
+release: **v0.1.0**, `protocol_version: 1`.
+
+```bash
+uv add "arp-notes-core @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/core"
+uv add --dev "arp-notes-conformance @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/conformance"
+uvx --from "arp-notes @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/cli" arp-notes --help
+npm install https://github.com/dneigler/arp-notes/releases/download/v0.1.0/arpinator-notes-ui-0.1.0.tgz
+```
+
+The UI line is the tarball attached to the GitHub release, because npm cannot install a git
+subdirectory; it works with `bun add` too. See [RELEASING.md](RELEASING.md).
 
 ## Develop
 

@@ -12,9 +12,11 @@ React packages in this repository are reference implementations.
   `protocol` in `GET /notes/sync/manifest`, and the CLI refuses a major it does not speak.
 - Part 1 is the base contract (appendix A of the design record). **Part 2 amends it and wins
   wherever the two differ.** References such as `K§3` point at sections of Part 2.
-- Parts 1 and 2 are the initial copy (C0). **Part 3 records how the reference routers behave
-  (C3)**: mounting, errors, the details the base contract leaves open. A change to anything here
-  needs a contract bead first.
+- **Frozen at `protocol_version: 1` in v0.1.0.** Parts 1 and 2 are ADR Appendix A plus the build
+  contract through v1.2 (K§1–K§13); the wire is unchanged since v0.1.0-rc.1 except the additive
+  `NoteLink.lane?` (K§13.3). **Part 3 records how the reference routers behave (C3)**: mounting,
+  errors, the details the base contract leaves open. A change to anything here needs a contract
+  bead first, and a breaking one bumps the protocol major.
 
 ---
 
@@ -325,7 +327,7 @@ New endpoints for hygiene and tombstones are in K§6.
 
 **Design.** The server caches the last Proposal on the note (`notes.proposal`, `proposed_at`) and keeps `review_pending` current. Confirm stays stateless in the house sense: the client still sends exactly what it accepted.
 1. **When it is computed.** (a) After `sync/upsert` with outcome `created` or `updated`, when `capabilities.propose_on_sync != 'off'` (PT: `'search'` = candidate generation only, no judge, so sync never waits on AI). (b) On `POST /propose` with no cache or `refresh=true`. That call runs the full pipeline, judge included.
-2. **The count.** Before any confirm: `review_pending = len(links) + len(ambiguous) + len(unresolved) + len(action_items)` of the cached proposal. Here `ambiguous` = ProposedLinks with `candidates`. This reproduces the mockup's 26 = 11 + 3 + 2 + 1 + 6 + 3.
+2. **The count.** Before any confirm: `review_pending = len(links) + len(unresolved) + len(action_items)` of the cached proposal. Ambiguous ProposedLinks (those with `candidates`) are inside `links`, so each counts once (K§13.1). This reproduces the mockup's 26 = 17 + 6 + 3.
 3. **Confirm.** The server removes everything the user saw from the cache except `deferred` items, then sets `review_pending = len(deferred)` (the mockup's "1 to review" after confirm). `rejected` persists as `note_links.status='rejected'` (A.2, unchanged). An unticked item is *skipped*: it is not persisted and not pending.
 4. **"Decide later"** (whole sheet, ReviewDesk) makes no call. The cache and the count stay as they are.
 5. **Re-sync with a changed body** recomputes the proposal (rule 1a). The ADR's diff rule still applies: nothing re-proposes an `(entity, anchor)` already confirmed or rejected.
@@ -429,7 +431,7 @@ POST /hygiene/merge-entities   {entity_type, keep_id, merge_ids:[int], dry_run: 
 ```
 - `resolve_tombstone keep` = the note mockup's "Keep copy" (NotePhone): dismiss the `tombstoned_note` issue; the note stays hidden from feeds. `delete` = "Delete from PT…" = `DELETE /notes/{id}` (owner 18:21: yes).
 - **Dry run first, always.** `confirm_token` = HMAC(signer secret, user_id + canonical plan JSON), 10-minute TTL. Applying with a token whose plan no longer matches the current state is refused with 409 `plan_changed`.
-- `merge_entities` calls the host port `HostConfig.hygiene.merge(entity_type, keep_id, merge_ids, dry_run) -> MergePlan`, where `MergePlan = {entity_type, keep, merge: [..], moves: [{table, column, rows}], conflicts: [{table, detail}], reversible: false, warnings: [..]}`. Every apply is audited: activity_log `note_merge_applied` with the full plan and the pre-merge row snapshots in `details_json`. It is "audited", not "reversible" (ga-mxal.24 allows either).
+- `merge_entities` calls the host port `HostConfig.hygiene.merge(user_id, entity_type, keep_id, merge_ids, dry_run) -> MergePlan`, where `MergePlan = {entity_type, keep, merge: [..], moves: [{table, column, rows}], conflicts: [{table, detail}], reversible: false, warnings: [..]}`. Every apply is audited: activity_log `note_merge_applied` with the full plan and the pre-merge row snapshots in `details_json`. It is "audited", not "reversible" (ga-mxal.24 allows either).
 - **[OWNER Q3]** Apply-mode `merge_entities` in PT (bead H3b) is gated until the owner has seen one real dry-run plan (Debussy Préludes 18/19/26, Bach 7/11). Detection, dismiss, resolve_tombstone, apply_fix for non-merge fixes and dry-run merge plans all ship in P1.
 
 ---
@@ -592,3 +594,18 @@ ALTER TABLE note_links ADD COLUMN IF NOT EXISTS lane TEXT CHECK (lane IN ('pract
 ```
 
 `NoteLink.lane?` is `'practice'|'lesson'`, null when the link has no action item. It appears on `GET /notes/{id}` and on the by-entity links. `protocol_version` stays 1.
+
+
+## K§13.1 · `review_pending` counts each ambiguous item once (amends K§3 rule 2)
+
+A.2 places ambiguous ProposedLinks (those with `candidates`) inside `links`, so `review_pending = len(links) + len(unresolved) + len(action_items)` of the cached proposal. The ReviewDesk example gives 17 + 6 + 3 = 26. K§3 rule 2 above is already written this way.
+
+## K§13.2 · How `Hooks.on_event` carries the activity payload
+
+The signature is `on_event(user_id, event_type, entity, summary)`. `entity` is a flat dict: `{"entity_type": "note", "entity_id": <note_id>, **payload}`. The payload keys are `event`, `note_id`, `note_title`, `kind`, `origin`, `link_count`, `attachment_count`, plus optional `person`, `source_system`, `source_workspace`, `links_created`, `backlog_created`, `rejected` and `deferred`, each present only when non-null. The host adapter writes `entity_type` and `entity_id` to its activity row and every other key into `details_json`. Hygiene fix events use the same shape with their own entity.
+
+`Storage.open` may raise `LookupError` either at call time or on the first `next()`. The upload and content routes prime the iterator before they send response headers, so a missing blob is still a 404.
+
+## K§13.4 · MergePlan `keep` / `merge` are ids; a host's display objects go in extras
+
+`MergePlan.keep: int` and `merge: list[int]` are ids, as in K§6.3. A host that wants to show or audit the entities puts them in extra fields, which the model allows: `keep_entity: {id, label, ...}` and `merge_entities: [{id, label, ...}]`. Pre-merge snapshots also ride along as extras. Core does not read any of these extras, and a REST or MCP dry run returns them unchanged.
