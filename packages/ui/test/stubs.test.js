@@ -2,9 +2,8 @@ import { describe, expect, it } from 'vitest'
 import * as ui from '../src/index.js'
 
 // K§7: every UI area stub is exported from src/index.js and throws until its lane lands.
-// api/ and body/ have landed (C6a ga-mxal.13), review/ (C6c ga-mxal.33) and list/ (C6b ga-mxal.32); they have their own tests.
+// api/ and body/ have landed (C6a ga-mxal.13), review/ (C6c ga-mxal.33), list/ (C6b ga-mxal.32) and editor/ (C6d ga-mxal.34); they have their own tests.
 const EXPORTS = {
-  editor: ['NoteEditor', 'NoteMetaFields', 'EditorRail'],
   preview: ['livePreview', 'EditorToolbar', 'ModeToggle'],
 }
 
