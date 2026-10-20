@@ -44,7 +44,8 @@ is built once at startup, so no port is bound to a user: **every method that tou
 takes `user_id` first**. `build_host_config()` in the scaffold is where it is assembled.
 
 **db** (`Db`): raw SQL, `%s` placeholders, one dict per row, `transaction()` commits on a clean
-exit and rolls back on an exception. Routes run in FastAPI's threadpool, so keep it thread-safe.
+exit and rolls back on an exception. Routes run in FastAPI's threadpool, so keep it thread-safe. Read the
+DSN when a call is made, not at import, if your tests create a database per test.
 
 ```python
 import threading
@@ -394,9 +395,12 @@ and the notes it names; copy `packages/conformance/fixtures/` and edit it):
 }
 ```
 
-`link_target` must exist for the test user and `child` is what your `children()` returns for it;
+`link_target` must exist for the test user (seed it with that id) and `child` is what your `children()` returns for it;
 `recognised_document` is the note whose text your `reconcile` turns into a proposal. Pass it with
-`suite(fixture="path/to/dir")`. Run the kit as a dedicated test user: it works in an
+`suite(fixture="path/to/dir")`. What reaches `reconcile` as a span: wikilinks, quoted or italic
+text, runs of capitalised names ("Village Vanguard"), opus and catalogue numbers; write the
+fixture note so some span matches an entity of yours. To test your real app, not a bare one, call
+`mount_notes(app)` once where the app is built and pass that app to `suite(app=...)`. Run the kit as a dedicated test user: it works in an
 `arpn-conformance-<id>` workspace and deletes its notes, but blobs it uploaded stay until hygiene
 sweeps them after 30 days.
 
