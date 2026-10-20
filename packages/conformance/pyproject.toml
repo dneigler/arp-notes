@@ -15,5 +15,12 @@ dependencies = [
     "jsonschema>=4",
 ]
 
+[project.scripts]
+arp-notes-conformance = "arp_notes_conformance.cli:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["arp_notes_conformance"]
+
+# The bundled synthetic vault ships inside the wheel (harness.fixtures_dir finds it there).
+[tool.hatch.build.targets.wheel.force-include]
+"fixtures" = "arp_notes_conformance/fixtures"

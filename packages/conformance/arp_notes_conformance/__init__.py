@@ -1,17 +1,24 @@
-"""arp-notes conformance kit. Owners: C7a (ga-mxal.14) for harness + suite_core, C7b (ga-mxal.38)
-for the rest. C0 stub."""
+"""arp-notes conformance kit: drives any implementation over HTTP (A.2) and, in C7b, MCP (A.3).
 
-from __future__ import annotations
+Owners: C7a (ga-mxal.14) for harness, suite_core and the runner; C7b (ga-mxal.38) for the rest.
 
-from typing import Any
+    from arp_notes_conformance import suite
 
+    suite(app=app, token=TOKEN)                    # in-process ASGI
+    suite(base_url="https://...", token=TOKEN)     # any stack, over the wire
+"""
 
-def suite(
-    *,
-    app: Any = None,
-    base_url: str | None = None,
-    token: str | None = None,
-    fixture: Any = None,
-) -> None:
-    """Run the kit against an ASGI `app` or a `base_url` (exactly one)."""
-    raise NotImplementedError("C7a: arp_notes_conformance.suite")
+from .harness import DEFAULT, Document, Fixture, LinkTarget, load_fixture
+from .runner import ConformanceFailure, Outcome, Report, suite
+
+__all__ = [
+    "DEFAULT",
+    "ConformanceFailure",
+    "Document",
+    "Fixture",
+    "LinkTarget",
+    "Outcome",
+    "Report",
+    "load_fixture",
+    "suite",
+]

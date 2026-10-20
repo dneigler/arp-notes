@@ -1,0 +1,31 @@
+{
+  "source_system": "obsidian",
+  "documents": {
+    "masterclass": {
+      "file": "vault/masterclass.md",
+      "path": "Lessons/Etudes masterclass.md",
+      "title": "Etudes masterclass",
+      "kind": "masterclass",
+      "person": "Roy Example",
+      "note_date": "2026-10-18",
+      "frontmatter": {"kind": "masterclass", "tags": ["MeetingNote", "piano/chopin"]},
+      "anchors": {"Legato practice": "legato-practice", "Pedalling": "pedalling"}
+    },
+    "corpus": {
+      "file": "vault/obsidian-synthetic.md",
+      "path": "Corpus/obsidian-synthetic.md",
+      "title": "Synthetic Obsidian corpus"
+    },
+    "scratch": {
+      "file": "vault/scratch.md",
+      "path": "Scratch/Warm-ups.md",
+      "title": "Warm-ups"
+    }
+  },
+  "link_target": {
+    "entity_type": "repertoire",
+    "entity_id": 10,
+    "child": {"entity_type": "movement", "entity_id": 103}
+  },
+  "recognised_document": "masterclass"
+}
