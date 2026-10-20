@@ -1,6 +1,6 @@
-// ProposalReview.
-// Owner: C6c ga-mxal.33. C0 stub: every export throws until the lane lands.
+// ProposalReview: desktop dialog, phone bottom sheet, iPad form sheet.
+// Owner: C6c ga-mxal.33.
 
-import { notImplemented } from '../stub.js'
-
-export const ProposalReview = notImplemented('ProposalReview', 'C6c ga-mxal.33')
+export { ProposalReview, presentationForWidth } from './ProposalReview.jsx'
+export { REVIEW_STRINGS } from './strings.js'
+export { band as confidenceBand } from './model.js'
