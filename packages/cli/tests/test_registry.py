@@ -8,9 +8,9 @@ from arp_notes_cli.main import build_parser, main
 IMPLEMENTED = [
     "config", "login", "scan", "status", "capabilities",  # CLI-a, ga-mxal.6
     "sync", "verify", "tombstone",  # CLI-b, ga-mxal.36
+    "pull",  # CLI-c, ga-mxal.37
 ]  # fmt: skip
 STUBS = [
-    "pull",
     "init",
     "conformance",
 ]
@@ -39,8 +39,8 @@ def test_stub_prints_not_implemented_and_exits_2(
 
 
 def test_stub_accepts_arbitrary_arguments(capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["pull", "arp-id-1", "--app", "pt", "--to", "out/", "--all-app-notes"]) == 2
-    assert "arp-notes pull: not implemented" in capsys.readouterr().err
+    assert main(["init", "my-app", "--app", "pt", "--to", "out/", "--anything"]) == 2
+    assert "arp-notes init: not implemented" in capsys.readouterr().err
 
 
 def test_no_command_prints_help_and_exits_2(capsys: pytest.CaptureFixture[str]) -> None:

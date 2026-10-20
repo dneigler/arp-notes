@@ -7,8 +7,8 @@ uvx arp-notes --help
 The CLI moves verbatim bytes between a notes tool (Obsidian first) and an arp-notes host app. It
 never carries note text through an LLM. Wire format: [`PROTOCOL.md`](../../PROTOCOL.md).
 
-Subcommands: `login`, `config`, `capabilities`, `scan`, `status`, `sync`, `verify`, `tombstone`
-(this page), and `pull`, `init`, `conformance`, which are stubs until their lanes land (a stub
+Subcommands: `login`, `config`, `capabilities`, `scan`, `status`, `sync`, `verify`, `tombstone`,
+`pull` (this page), and `init`, `conformance`, which are stubs until their lanes land (a stub
 prints `not implemented` and exits 2).
 
 Exit codes: `0` ok, `1` a runtime failure (network, HTTP error, protocol mismatch, a file that
@@ -151,6 +151,39 @@ arp-notes tombstone <arp_id>... --app pt [--workspace Dave2025] [--json]
 Tells the host the source of those notes was deleted (`POST /notes/sync/tombstone`); the host keeps
 the body and hides the note. Without `--workspace` each id is looked up in the manifests of the
 sources the host lists. Prints `{tombstoned, unknown}`; exits 1 if any id is unknown.
+
+### Pull notes out (export)
+
+```
+arp-notes pull --app pt --all-app-notes --to "Dave2025/From PT" [--force] [--json]
+arp-notes pull <arp_id|note id>... --app pt --to "Dave2025/From PT"
+arp-notes pull --app pt --all-app-notes --to ... --with-enrichment [--enrichment-style frontmatter|companion]
+```
+
+Export is first-class (ADR §3.7): each note comes from `GET /notes/{id}/export` as `<title>.md` with
+`arp_id` in its frontmatter, and its attachments are downloaded beside it from the signed URLs
+(hash-checked; the Bearer token is never sent to them). Embeds are rewritten to point at those files
+and keep their syntax, alias and size (`![[Attachments/a.png|300]]` -> `![[a.png|300]]`,
+`![shot](attachment://7)` -> `![shot](shot.png)`); embeds inside code are left alone. An imported
+note comes back byte for byte, so `scan` then calls it `unchanged` and `sync --verify` finds the same
+body and the same sha256s. Name notes by `arp_id` (a synced note) or by numeric note id; an
+app-authored note has no source `arp_id`, so use its id or `--all-app-notes`.
+
+Nothing in the folder is overwritten by surprise:
+
+- a note already in the folder (found by `arp_id`, wherever it sits) is updated in place; if its
+  content differs from the host's (ignoring `exported_at`, which changes on every export) pull
+  refuses and says so, until `--force`;
+- a different note, or a file of yours, that holds the wanted name is left alone and the new file is
+  numbered (`Lesson (2).md`); an attachment name taken by other bytes is numbered the same way,
+  even with `--force`;
+- a refused note writes nothing, not even its attachments.
+
+Enrichment (links, takeaways, action items) is opt-in. `frontmatter` adds `arp_links`,
+`arp_takeaways` and `arp_actions` to the note; `companion` leaves the note alone and writes
+`<title>.arp.md` beside it (a second request). The companion repeats the note's `arp_id`, so keep it
+out of folders you `sync`. Prints `{pulled, errors}` (`outcome`: `created`, `unchanged`, `updated`);
+exits 1 if any note failed.
 
 ## Adding a subcommand
 
