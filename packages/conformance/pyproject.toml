@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arp-notes-conformance"
-version = "0.1.0rc1"
+version = "0.1.0rc2"
 description = "Black-box conformance kit for arp-notes hosts: drives any implementation over HTTP and MCP."
 readme = "README.md"
 license = { text = "MIT" }

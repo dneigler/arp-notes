@@ -36,18 +36,16 @@ uvx --from "arp-notes @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdire
 
 UI package. Plain npm cannot install a subdirectory of a git repository, so the release lane
 attaches the packed tarball (`npm pack --workspace packages/ui`) to the GitHub release and hosts
-install that (verified in a clean directory at C0):
+install that. The release lane verifies both installers in clean directories before announcing the
+tag:
 
 ```bash
 npm install https://github.com/dneigler/arp-notes/releases/download/v0.1.0/arpinator-notes-ui-0.1.0.tgz
+bun add https://github.com/dneigler/arp-notes/releases/download/v0.1.0/arpinator-notes-ui-0.1.0.tgz
 ```
 
-The design record also names a git-subdirectory form for pnpm-style installers. It is **not
-verified** and is not used by anything yet; confirm it before the first host relies on it:
-
-```json
-"@arpinator/notes-ui": "github:dneigler/arp-notes#v0.1.0&path:packages/ui"
-```
+Release assets are immutable: hosts' lockfiles pin the tarball's integrity, so never replace an
+asset under an existing tag. A bad tarball means the next `rc.N`.
 
 Import the tokens once: `import '@arpinator/notes-ui/tokens.css'`.
 
