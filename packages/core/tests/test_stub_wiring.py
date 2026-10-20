@@ -5,11 +5,11 @@ from __future__ import annotations
 from typing import cast
 
 import pytest
-from arp_notes import attachments, enrich, hygiene, mcp, review
+from arp_notes import attachments, enrich, mcp, review
 from arp_notes.config import HostConfig
 from arp_notes.fastapi import build_routers
 from arp_notes.hygiene import fixes, routes, tools
-from arp_notes.models import ConfirmBody, HygieneBlock
+from arp_notes.models import ConfirmBody
 from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
 
@@ -19,14 +19,11 @@ CFG = cast(HostConfig, object())  # stubs never touch the config
 def test_hooks_are_no_ops_returning_empty() -> None:
     assert review.after_upsert(CFG, "u", 1, "created") is None
     assert review.apply_confirm(CFG, "u", 1, ConfirmBody()) == {}
-    block = hygiene.block(CFG, "u")
-    assert isinstance(block, HygieneBlock)
-    assert block.model_dump() == {"issues": [], "total": 0, "truncated": False}
 
 
 def test_mcp_tools_compose_hygiene_tools() -> None:
     assert len(mcp.NOTES_TOOLS) == 13  # C4 (ga-mxal.11)
-    assert tools.TOOLS == []
+    assert [spec.name for spec in tools.TOOLS] == ["dismiss_issue", "resolve_tombstone"]  # H1a
     assert mcp.TOOLS == [*mcp.NOTES_TOOLS, *tools.TOOLS]
 
 
