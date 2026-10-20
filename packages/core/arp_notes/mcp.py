@@ -736,7 +736,38 @@ def _current_request(app: Any) -> Any:
     return None
 
 
-def register_fastmcp(app: Any, cfg: HostConfig, wrap: Callable[..., Any] | None = None) -> None:
+DEFAULT_API_PREFIX = "/api/v1"  # where build_routers mounts the REST API (fastapi.DEFAULT_PREFIX)
+
+
+def _absolute_upload_url(
+    result: Any, request: Any, public_base_url: str | None, api_prefix: str
+) -> Any:
+    """Make `request_attachment_upload`'s `upload_url` the URL REST returns (R§1).
+
+    The core hands handlers a path under the API mount. REST builds origin + prefix + path from
+    the request; here the request is the MCP one, so the origin is the same host. With no origin
+    to use (stdio, no `public_base_url`) the path is left as the core built it.
+    """
+    url = result.get("upload_url") if isinstance(result, dict) else None
+    if not isinstance(url, str) or not url.startswith("/"):
+        return result
+    origin = public_base_url or (str(request.base_url) if request is not None else "")
+    if not origin:
+        return result
+    prefix = api_prefix.rstrip("/")
+    if not url.startswith(prefix + "/"):
+        url = prefix + url
+    return {**result, "upload_url": origin.rstrip("/") + url}
+
+
+def register_fastmcp(
+    app: Any,
+    cfg: HostConfig,
+    wrap: Callable[..., Any] | None = None,
+    *,
+    public_base_url: str | None = None,
+    api_prefix: str = DEFAULT_API_PREFIX,
+) -> None:
     """Register every tool in TOOLS on a FastMCP server (`fastmcp` or the `mcp` SDK's).
 
     Each tool resolves the caller with `cfg.principal.current_user_id(request)`, runs its handler
@@ -747,6 +778,12 @@ def register_fastmcp(app: Any, cfg: HostConfig, wrap: Callable[..., Any] | None 
     `_threaded_tool`). `run(user_id, tool_name, args) -> dict` is a plain function; `run2` takes
     the same arguments and may be sync or async. `wrap` returns the callable only: it must not
     register anything itself, this function does.
+
+    `upload_url` from `request_attachment_upload` is made absolute, exactly as REST does (R§1):
+    `public_base_url` (or, without it, the origin the MCP request came to) + `api_prefix` + the
+    core path. Pass the same two values you give `build_routers`, so a client LLM can
+    `curl -T file <upload_url>` as it is. With neither a request nor `public_base_url` (stdio)
+    the path is returned unchanged.
     """
     handlers = {spec.name: spec.handler for spec in TOOLS}
 
@@ -758,12 +795,17 @@ def register_fastmcp(app: Any, cfg: HostConfig, wrap: Callable[..., Any] | None 
     def make_tool(spec: ToolSpec) -> Callable[..., Any]:
         async def tool(**kwargs: Any) -> Any:
             # Resolve the user here, on the loop thread, where the request context is visible.
-            user_id = cfg.principal.current_user_id(_current_request(app))
+            request = _current_request(app)
+            user_id = cfg.principal.current_user_id(request)
             args = {k: v for k, v in kwargs.items() if v is not None}
             if call is None:
-                return await asyncio.to_thread(run, user_id, spec.name, args)
-            out = call(user_id, spec.name, args)
-            return await out if inspect.isawaitable(out) else out
+                out = await asyncio.to_thread(run, user_id, spec.name, args)
+            else:
+                out = call(user_id, spec.name, args)
+                out = await out if inspect.isawaitable(out) else out
+            if spec.name == "request_attachment_upload":
+                out = _absolute_upload_url(out, request, public_base_url, api_prefix)
+            return out
 
         tool.__name__ = spec.name
         tool.__doc__ = spec.description

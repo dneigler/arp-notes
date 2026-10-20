@@ -450,6 +450,10 @@ and passes that prefix to `build_routers` so URLs in responses can be used as th
   client (a browser `<img>`, `curl -T`, the CLI) uses them unchanged. The origin is the one the
   request came to. A host behind a proxy that hides its public scheme or host passes
   `public_base_url='https://notes.example.com'`, which then wins.
+  The MCP tool `request_attachment_upload` returns the same absolute `upload_url` as REST:
+  `register_fastmcp(app, cfg, public_base_url=..., api_prefix='/api/v1')` takes the same two
+  values as `build_routers` (origin of the MCP request when `public_base_url` is unset). Over
+  stdio, with no request and no `public_base_url`, it stays the path under the API mount.
 - Routes are plain `def`, so FastAPI runs them in its threadpool and a blocking driver (psycopg2)
   is safe. The one exception is `PUT /attachments/upload/{token}`, which reads the body stream.
 - The private router mounts the hygiene routes (K§6.3) ahead of `/notes/{id}`, so `/notes/hygiene`,

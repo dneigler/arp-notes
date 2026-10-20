@@ -253,3 +253,96 @@ def test_without_a_request_the_principal_gets_none(recorded: list[Any]) -> None:
     asyncio.run(app.tools["get_note"](note_id=1))
     assert principal.requests == [None]
     assert USER  # keep the shared import used
+
+
+# --- request_attachment_upload: absolute upload_url (ga-mxal.50, R§1) ------------------------
+
+
+class FakeRequest:
+    def __init__(self, base_url: str) -> None:
+        self.base_url = base_url
+
+
+def _upload_tool(
+    monkeypatch: pytest.MonkeyPatch,
+    request: Any,
+    returns: dict[str, Any] | None = None,
+    **options: Any,
+) -> Callable[..., Any]:
+    answer = returns or {
+        "status": "upload",
+        "upload_url": "/attachments/upload/tok",
+        "method": "PUT",
+    }
+    spec = next(s for s in mcp.NOTES_TOOLS if s.name == "request_attachment_upload")
+    monkeypatch.setattr(mcp, "TOOLS", [replace(spec, handler=lambda cfg, user_id, **a: answer)])
+    app = FakeApp(request=request)
+    mcp.register_fastmcp(app, make_cfg_with(RecordingPrincipal()), **options)
+    return app.tools["request_attachment_upload"][1]
+
+
+def _call(tool: Callable[..., Any]) -> dict[str, Any]:
+    return asyncio.run(tool(sha256="0" * 64, mime="image/png", size_bytes=3, filename="a.png"))
+
+
+def test_upload_url_uses_public_base_url_and_the_api_prefix(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    tool = _upload_tool(
+        monkeypatch,
+        FakeRequest("http://internal:8000/"),
+        public_base_url="https://notes.example.com/",
+    )
+    out = _call(tool)
+    assert out["upload_url"] == "https://notes.example.com/api/v1/attachments/upload/tok"
+    assert out["status"] == "upload"
+    assert out["method"] == "PUT"
+
+
+def test_upload_url_without_public_base_url_uses_the_request_origin(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    tool = _upload_tool(
+        monkeypatch, FakeRequest("https://pt.example.com/"), api_prefix="/notes-api"
+    )
+    assert _call(tool)["upload_url"] == "https://pt.example.com/notes-api/attachments/upload/tok"
+
+
+def test_upload_url_matches_what_rest_returns(monkeypatch: pytest.MonkeyPatch) -> None:
+    from arp_notes.fastapi import _mounted
+
+    tool = _upload_tool(monkeypatch, FakeRequest("https://pt.example.com/"))
+    rest = _mounted("https://pt.example.com", "/api/v1", "/attachments/upload/tok")
+    assert _call(tool)["upload_url"] == rest
+
+
+def test_upload_url_is_left_alone_with_no_origin_to_use(monkeypatch: pytest.MonkeyPatch) -> None:
+    # stdio: no request, no public_base_url
+    tool = _upload_tool(monkeypatch, None)
+    assert _call(tool)["upload_url"] == "/attachments/upload/tok"
+
+
+def test_public_base_url_works_without_a_request(monkeypatch: pytest.MonkeyPatch) -> None:
+    tool = _upload_tool(monkeypatch, None, public_base_url="https://notes.example.com")
+    assert _call(tool)["upload_url"] == "https://notes.example.com/api/v1/attachments/upload/tok"
+
+
+def test_an_existing_answer_has_no_upload_url_to_change(monkeypatch: pytest.MonkeyPatch) -> None:
+    tool = _upload_tool(
+        monkeypatch,
+        FakeRequest("https://pt.example.com/"),
+        returns={"status": "exists", "blob_id": 4},
+    )
+    assert _call(tool) == {"status": "exists", "blob_id": 4}
+
+
+def test_other_tools_are_not_rewritten(
+    recorded: list[Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    spec = next(s for s in mcp.NOTES_TOOLS if s.name == "get_note")
+    monkeypatch.setattr(
+        mcp, "TOOLS", [replace(spec, handler=lambda c, u, **a: {"upload_url": "/x"})]
+    )
+    app = FakeApp(request=FakeRequest("https://pt.example.com/"))
+    mcp.register_fastmcp(app, make_cfg_with(RecordingPrincipal()))
+    assert asyncio.run(app.tools["get_note"][1](note_id=1)) == {"upload_url": "/x"}
