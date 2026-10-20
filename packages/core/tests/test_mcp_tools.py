@@ -690,38 +690,60 @@ def test_a_notes_error_from_the_attachment_layer_reaches_the_client(
 # --- propose_note_enrichment ------------------------------------------------------------------
 
 
-def test_propose_returns_the_proposal_with_a_note_hygiene_block(
-    notes_cfg: HostConfig, monkeypatch: pytest.MonkeyPatch, scope_log: list[str]
-) -> None:
-    seen: dict[str, Any] = {}
-    proposal = Proposal.model_validate(example("Proposal"))
+def fake_enrich(monkeypatch: pytest.MonkeyPatch, seen: list[dict[str, Any]]) -> None:
+    """Stand in for the pipeline; `seen` records each call it actually gets."""
 
     def fake(cfg: HostConfig, user_id: str, note_id: int, **kw: Any) -> Proposal:
-        seen.update(user_id=user_id, note_id=note_id, **kw)
-        return proposal
+        seen.append({"user_id": user_id, "note_id": note_id, **kw})
+        return Proposal.model_validate(example("Proposal"))
 
     monkeypatch.setattr(enrich, "propose", fake)
-    out = call(notes_cfg, "propose_note_enrichment", note_id=5)
-    assert seen == {"user_id": USER, "note_id": 5, "llm": False, "refresh": False}
+
+
+def test_propose_returns_the_proposal_with_a_note_hygiene_block(
+    notes_cfg: HostConfig,
+    notes_db: FakeDb,
+    monkeypatch: pytest.MonkeyPatch,
+    scope_log: list[str],
+) -> None:
+    seen: list[dict[str, Any]] = []
+    fake_enrich(monkeypatch, seen)
+    note_id = add_note(notes_db)
+    out = call(notes_cfg, "propose_note_enrichment", note_id=note_id)
+    assert seen == [{"user_id": USER, "note_id": note_id, "llm": False, "refresh": False}]
     hygiene_block = out.pop("hygiene")
-    assert out == proposal.model_dump(mode="json", exclude={"hygiene"})
+    assert out == Proposal.model_validate(example("Proposal")).model_dump(
+        mode="json", exclude={"hygiene"}
+    )
     assert hygiene_block["total"] == 0
-    assert scope_log == ["note:5"]
+    assert scope_log == [f"note:{note_id}"]
+
+
+def test_propose_serves_the_cached_proposal_until_refresh(
+    notes_cfg: HostConfig, notes_db: FakeDb, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    seen: list[dict[str, Any]] = []
+    fake_enrich(monkeypatch, seen)
+    note_id = add_note(notes_db)
+    first = call(notes_cfg, "propose_note_enrichment", note_id=note_id)
+    again = call(notes_cfg, "propose_note_enrichment", note_id=note_id)
+    assert len(seen) == 1
+    assert again["cached"] is True
+    assert again["links"] == first["links"]
+    call(notes_cfg, "propose_note_enrichment", note_id=note_id, refresh=True)
+    assert len(seen) == 2
+    assert seen[1]["refresh"] is True
 
 
 def test_propose_forwards_refresh_and_llm(
     notes_db: FakeDb, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     cfg = make_cfg(notes_db, policy=Policy(llm_enrich=True))
-    seen: dict[str, Any] = {}
-
-    def fake(cfg: HostConfig, user_id: str, note_id: int, **kw: Any) -> Proposal:
-        seen.update(kw)
-        return Proposal.model_validate(example("Proposal"))
-
-    monkeypatch.setattr(enrich, "propose", fake)
-    call(cfg, "propose_note_enrichment", note_id=1, llm=True, refresh=True)
-    assert seen == {"llm": True, "refresh": True}
+    seen: list[dict[str, Any]] = []
+    fake_enrich(monkeypatch, seen)
+    note_id = add_note(notes_db)
+    call(cfg, "propose_note_enrichment", note_id=note_id, llm=True, refresh=True)
+    assert [(c["llm"], c["refresh"]) for c in seen] == [(True, True)]
 
 
 def test_propose_with_llm_is_refused_when_the_host_has_it_off(

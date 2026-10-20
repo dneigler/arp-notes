@@ -26,7 +26,7 @@ from typing import Annotated, Any, Literal, NamedTuple
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from arp_notes import attachments, enrich, hygiene, repo, review, sync
+from arp_notes import attachments, hygiene, repo, review, sync
 from arp_notes.config import HostConfig
 from arp_notes.hygiene import tools as hygiene_tools
 from arp_notes.models import (
@@ -433,7 +433,7 @@ def _request_attachment_upload(
 def _propose_note_enrichment(cfg: HostConfig, user_id: str, args: _Proposal) -> dict[str, Any]:
     if args.llm and not cfg.policy.llm_enrich:
         return {"error": "llm_disabled"}
-    proposal = enrich.propose(
+    proposal = review.propose(
         cfg, user_id, args.note_id, llm=bool(args.llm), refresh=bool(args.refresh)
     )
     return _with_hygiene(cfg, user_id, _json(proposal), f"note:{args.note_id}")
