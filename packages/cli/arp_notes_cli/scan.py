@@ -26,6 +26,10 @@ from arp_notes_cli.registry import Subparsers
 
 SOURCE_SYSTEM = "obsidian"
 
+# `pull --enrichment-style companion` writes `<name>.arp.md` beside a note, carrying that note's own
+# `arp_id`. It is an export artefact, not a note: scan, sync and verify never read it as one.
+COMPANION_SUFFIX = ".arp.md"
+
 # What Obsidian renders as an embed. Anything else (`![[Other note]]`, `![[data.csv]]`) is not an
 # attachment this protocol moves.
 ATTACHMENT_EXTENSIONS = frozenset(
@@ -306,6 +310,14 @@ class VaultScope:
         return any(s == "" or rel_path == s or rel_path.startswith(s + "/") for s in self.scope)
 
 
+def is_companion(path: Path) -> bool:
+    return path.name.lower().endswith(COMPANION_SUFFIX)
+
+
+def _is_note_file(path: Path) -> bool:
+    return path.suffix.lower() == ".md" and not is_companion(path)
+
+
 def scan_vault_notes(paths: list[Path]) -> tuple[list[VaultScope], list[dict[str, str]]]:
     """Resolve explicit `paths` (D2) into per-vault note facts. Raises ScanRefusal on bad input."""
     resolved: list[Path] = []
@@ -332,9 +344,11 @@ def scan_vault_notes(paths: list[Path]) -> tuple[list[VaultScope], list[dict[str
         scope = vaults.setdefault(root, VaultScope(root))
         scope.scope.append(path.relative_to(root).as_posix())
         if path.is_dir():
-            files_by_vault[root].update(f for f in _walk(path) if f.suffix.lower() == ".md")
-        elif path.suffix.lower() == ".md":
+            files_by_vault[root].update(f for f in _walk(path) if _is_note_file(f))
+        elif _is_note_file(path):
             files_by_vault[root].add(path)
+        elif is_companion(path):
+            continue
         else:
             errors.append({"path": str(path), "error": "not_markdown"})
 

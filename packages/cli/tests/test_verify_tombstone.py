@@ -53,6 +53,18 @@ def test_verify_passes_for_a_synced_note_and_only_reads(
     assert all(call.startswith("GET ") for call in host.calls)
 
 
+def test_verify_ignores_a_companion_that_carries_the_notes_arp_id(
+    tmp_path: Path, config_home: Path, api: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    vault, note, _ = _synced_vault(tmp_path, api, capsys)
+    write(vault, "Meetings/roy.arp.md", f"---\narp_id: {_arp_id(note)}\n---\nlinks\n")
+
+    code, result, _ = _run("verify", str(vault / "Meetings"), capsys=capsys)
+
+    assert code == 0 and result["errors"] == []
+    assert [v["path"] for v in result["verified"]] == ["Meetings/roy.md"]
+
+
 def test_verify_reports_a_body_the_host_changed(
     tmp_path: Path, config_home: Path, api: Any, capsys: pytest.CaptureFixture[str]
 ) -> None:

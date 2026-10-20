@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pathlib import PurePosixPath
 from typing import Any
+from urllib.parse import urljoin
 
 import httpx
 
@@ -48,8 +49,16 @@ def mime_for(filename: str) -> str:
     return MIME_BY_EXTENSION.get(PurePosixPath(filename).suffix.lower(), DEFAULT_MIME)
 
 
-def put_bytes(upload_url: str, data: bytes, mime: str) -> dict[str, Any]:
-    """PUT the raw bytes to a ticket URL. No Authorization header: the URL is the credential."""
+def put_bytes(
+    upload_url: str, data: bytes, mime: str, *, api_base: str | None = None
+) -> dict[str, Any]:
+    """PUT the raw bytes to a ticket URL. No Authorization header: the URL is the credential.
+
+    A host may answer with a host-relative path (`/api/v1/attachments/upload/<ticket>`); pass the
+    app's `api_base` and it is resolved against it, as `pull` does for `content_url`.
+    """
+    if api_base is not None:
+        upload_url = urljoin(api_base + "/", upload_url)
     try:
         response = httpx.put(
             upload_url,
@@ -88,5 +97,5 @@ def ensure_blob(client: NotesClient, *, sha256: str, mime: str, filename: str, d
         return False
     if status != "upload" or not ticket.get("upload_url"):
         raise ClientError(f"unexpected upload-url answer for {filename}: {ticket!r}")
-    put_bytes(ticket["upload_url"], data, mime)
+    put_bytes(ticket["upload_url"], data, mime, api_base=client.app.api_base)
     return True

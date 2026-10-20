@@ -14,7 +14,7 @@ from typing import Any
 
 import httpx
 import respx
-from cli_support import API, capabilities, manifest_page
+from cli_support import API, APP_URL, capabilities, manifest_page
 from jsonschema import Draft202012Validator
 
 
@@ -40,6 +40,7 @@ class FakeHost:
         attachments: bool = True,
         missing_as_409: bool = False,
         lose_blobs_once: bool = False,
+        relative_upload_url: bool = False,
     ) -> None:
         self.blobs: dict[str, bytes] = {}
         self.notes: dict[str, dict[str, Any]] = {}  # source_doc_id -> {id, payload, deleted_at}
@@ -48,6 +49,9 @@ class FakeHost:
         self.upserts: list[dict[str, Any]] = []
         self.calls: list[str] = []  # "METHOD path" in order
         self.missing_as_409 = missing_as_409
+        self.relative_upload_url = (
+            relative_upload_url  # like core's presenter: a host-relative path
+        )
         self.lose_blobs_once = lose_blobs_once  # first upsert claims every blob is missing
         self.fail_upsert_for: set[str] = set()  # source_path -> HTTP 500
         self.tamper_body: str | None = None  # what GET /notes/{id} returns instead of the body
@@ -112,10 +116,11 @@ class FakeHost:
         if body["sha256"] in self.blobs:
             answer = {"status": "exists", "blob_id": 1}
         else:
+            ticket = f"/api/v1/attachments/upload/ticket-{body['sha256'][:12]}"
             answer = {
                 "status": "upload",
                 "blob_id": None,
-                "upload_url": f"{API}/attachments/upload/ticket-{body['sha256'][:12]}",
+                "upload_url": ticket if self.relative_upload_url else f"{APP_URL}{ticket}",
                 "method": "PUT",
                 "expires_at": "2026-10-18T14:45:00",
             }

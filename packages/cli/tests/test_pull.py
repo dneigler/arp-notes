@@ -476,6 +476,29 @@ def test_a_companion_is_a_second_request_written_beside_the_note(
     assert note_id in {r["note_id"] for r in again["pulled"]}
 
 
+def test_a_pulled_companion_is_not_a_note_to_scan(
+    tmp_path: Path, config_home: Path, host: ExportHost, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _app_note(host)
+    vault = make_vault(tmp_path)
+    folder = vault / "From Practice Tracker"
+    _pull(
+        "--all-app-notes",
+        "--to", str(folder),
+        "--with-enrichment", "--enrichment-style", "companion",
+        capsys=capsys,
+    )  # fmt: skip
+    assert (folder / "Op 10 notes.arp.md").exists()  # the companion carries the note's own arp_id
+
+    scanned = _cli("scan", str(folder), capsys=capsys)
+
+    assert scanned["errors"] == []
+    listed = [
+        n["path"] for bucket in ("new", "changed", "renamed", "unchanged") for n in scanned[bucket]
+    ]
+    assert listed == ["From Practice Tracker/Op 10 notes.md"]
+
+
 # --- refusals ------------------------------------------------------------------------------
 
 

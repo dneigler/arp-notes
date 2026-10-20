@@ -37,7 +37,7 @@ import httpx
 from arp_notes_cli.client import ClientError, NotesClient, _error_detail, run_command
 from arp_notes_cli.config import ConfigError, add_app_argument, get_app, load_token
 from arp_notes_cli.registry import Subparsers
-from arp_notes_cli.scan import read_arp_id, sha256_file, split_frontmatter
+from arp_notes_cli.scan import COMPANION_SUFFIX, read_arp_id, sha256_file, split_frontmatter
 
 LIST_PAGE_LIMIT = 100  # A.2: GET /notes limit 1..100
 DOWNLOAD_TIMEOUT_S = 120.0
@@ -46,7 +46,6 @@ FRONTMATTER_HEAD = 1 << 16  # how much of an existing file is read to find its a
 MAX_STEM = 100  # characters kept from a title or attachment name
 
 STYLES = ("frontmatter", "companion")
-COMPANION_SUFFIX = ".arp.md"
 
 # Obsidian refuses these in file names; the rest are unsafe on some filesystem.
 _UNSAFE_NAME = re.compile(r'[\\/:*?"<>|#^\[\]\x00-\x1f\x7f]')

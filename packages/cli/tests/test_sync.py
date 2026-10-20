@@ -113,6 +113,51 @@ def test_the_put_carries_content_type_and_length_and_no_bearer(
     assert "authorization" not in put.headers
 
 
+def test_a_host_relative_upload_url_is_resolved_against_the_app(
+    tmp_path: Path, config_home: Path, api: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    host = FakeHost(api, relative_upload_url=True)
+    vault, _ = _vault_with_note(tmp_path)
+
+    code, result, _ = _sync(str(vault / "Masterclasses"), capsys=capsys)
+
+    (put,) = host.puts
+    assert code == 0 and result["errors"] == []
+    assert str(put.url) == f"{API}/attachments/upload/ticket-{sha(PNG_A)[:12]}"
+    assert put.content == PNG_A and "authorization" not in put.headers
+
+
+def test_a_companion_file_is_not_a_note_and_does_not_collide_with_its_note(
+    tmp_path: Path, config_home: Path, host: FakeHost, capsys: pytest.CaptureFixture[str]
+) -> None:
+    vault, note = _vault_with_note(tmp_path)
+    _sync(str(vault / "Masterclasses"), capsys=capsys)
+    arp_id = note.read_text().splitlines()[1]  # "arp_id: <id>"
+    companion = write(
+        vault, "Masterclasses/2026-10-18 Roy Howat.arp.md", f"---\n{arp_id}\n---\nlinks\n"
+    )
+    before = companion.read_bytes()
+
+    code, result, _ = _sync(str(vault / "Masterclasses"), capsys=capsys)
+
+    assert code == 0 and result["errors"] == []
+    assert not any("arp.md" in call for call in host.calls)
+    assert companion.read_bytes() == before  # left exactly as pull wrote it
+
+
+def test_a_companion_named_on_its_own_is_ignored(
+    tmp_path: Path, config_home: Path, host: FakeHost, capsys: pytest.CaptureFixture[str]
+) -> None:
+    vault = make_vault(tmp_path)
+    companion = write(vault, "Notes/Doc.arp.md", "---\narp_id: abc\n---\nx\n")
+    before = companion.read_bytes()
+
+    code, result, _ = _sync(str(companion), capsys=capsys)
+
+    assert code == 0 and result["synced"] == [] and host.upserts == []
+    assert companion.read_bytes() == before
+
+
 def test_identical_pair_uploads_once(
     tmp_path: Path, config_home: Path, host: FakeHost, capsys: pytest.CaptureFixture[str]
 ) -> None:
