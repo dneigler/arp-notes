@@ -7,7 +7,7 @@
 //   preview-images-off    desk on a host that takes no attachments: the Image button is dimmed
 // The host here is a mock: a seven-row catalogue behind the scheme callbacks, and images drawn as inline SVG.
 // Scenes unmount on hashchange.
-import { createElement as h, useState } from 'react'
+import { createElement as h, useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import { NoteEditor } from '../../src/editor/index.js'
@@ -94,6 +94,10 @@ function Page({ capabilities = CAPS, toolbar, mode: initialMode = 'preview', onV
   const [mode, setMode] = useState(initialMode)
   const [doc, setDoc] = useState(BODY)
   const [extensions] = useState(() => [livePreview({ resolveAttachment, mode: initialMode })])
+  // After the commit that hands the toolbar its view, so a scene can click the bar without a timer.
+  useEffect(() => {
+    if (view) onView?.(view, setMode)
+  }, [view])
   return h(
     'div',
     { className: 'pv-wrap' },
@@ -107,10 +111,7 @@ function Page({ capabilities = CAPS, toolbar, mode: initialMode = 'preview', onV
       upload: () => new Promise(() => {}),
       extensions,
       ariaLabel: 'Note body',
-      onReady: (v) => {
-        setView(v)
-        if (v) onView?.(v, setMode)
-      },
+      onReady: setView,
     }),
     h('p', { className: 'pv-note' }, 'Markers dim away from the cursor line; the Markdown underneath is unchanged.'),
   )
@@ -157,8 +158,7 @@ export default [
     render: (c) =>
       mount(c, {}, (host, view) => {
         view.dispatch({ selection: { anchor: view.state.doc.length } })
-        // The toolbar learns the view on the next render.
-        setTimeout(() => host.querySelector('[data-action=link]')?.click(), 0)
+        host.querySelector('[data-action=link]')?.click()
       }),
   },
   {

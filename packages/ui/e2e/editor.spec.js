@@ -61,6 +61,30 @@ test('the desk draws resolved chips, a not-found chip, and the rail agrees', asy
   await expect(page.locator('[data-arpn=policy-footer]')).toHaveText('This app allows Images and PDFs up to 25 MB · export to Markdown on')
 })
 
+test('a pending chip is dashed, not dimmed, so it stays axe-clean while it resolves', async ({ page }) => {
+  for (const theme of THEMES) {
+    await openScene(page, 'editor-desk', theme)
+    await expect(page.locator('.arpn-chip[data-state=found]').first()).toBeVisible()
+    // Chips resolve in a tick, so draw a pending one by hand instead of racing the resolver. It goes under
+    // .cm-editor (the theme's scope) but outside .cm-content, which CodeMirror would repaint.
+    await page.evaluate(() => {
+      const chip = document.createElement('span')
+      chip.className = 'arpn-chip'
+      chip.dataset.state = 'pending'
+      chip.dataset.probe = 'pending'
+      chip.textContent = '@Still resolving'
+      document.querySelector('.cm-editor').append(chip)
+    })
+    const style = await page.locator('[data-probe=pending]').evaluate((el) => {
+      const cs = getComputedStyle(el)
+      return { opacity: cs.opacity, borderStyle: cs.borderTopStyle }
+    })
+    expect(style).toEqual({ opacity: '1', borderStyle: 'dashed' })
+    expect(await axeViolations(page)).toEqual([])
+    await page.locator('[data-probe=pending]').evaluate((el) => el.remove())
+  }
+})
+
 test('typing [[ opens the popover; Enter links the chosen row', async ({ page }) => {
   await openScene(page, 'editor-desk', THEMES[0])
   await editor(page).click()

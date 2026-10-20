@@ -51,7 +51,8 @@ export const editorTheme = EditorView.theme({
     lineHeight: '1.5',
     cursor: 'pointer',
   },
-  '.arpn-chip[data-state="pending"]': { opacity: '0.8' },
+  // Pending reads as dashed, not dimmed: opacity would blend chip-fg into chip-bg below 4.5:1.
+  '.arpn-chip[data-state="pending"]': { borderStyle: 'dashed' },
   '.arpn-chip[data-state="missing"]': { background: v('amb-bg'), color: v('amb-fg'), borderColor: v('amb-fg') },
 
   // The [[ popover.
