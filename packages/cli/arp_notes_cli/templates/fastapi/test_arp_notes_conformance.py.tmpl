@@ -27,9 +27,12 @@ TOKEN = "TODO-test-token"
 # The kit's link checks need an entity that exists in this app, and a note it can recognise. Until
 # HostLinks knows one they are skipped (the report says so). TODO(arp-notes): then set, for example,
 #   link_target=LinkTarget("thing", 42, child=("subthing", 43)), recognised_document="masterclass"
-# (LinkTarget comes from arp_notes_conformance; "masterclass" is the bundled note that mentions
-# "Op. 10 nº 3". If your scheme cannot recognise that, write a fixture of your own and pass
-# `suite(fixture="path/to/dir")`; INTEGRATING.md shows the format.)
+# (LinkTarget comes from arp_notes_conformance; `child` is optional, and without it the
+# include_children check is skipped. "masterclass" is the bundled note; it mentions a piece of
+# music, so your scheme will not recognise it. Write a fixture of your own instead, with a note
+# that names one of your entities, and pass `suite(fixture="path/to/dir")`; INTEGRATING.md, step 5,
+# shows the format and a sample note.) Insert the link_target row into the test database before
+# `suite()` runs: the kit never creates your entities.
 FIXTURE = dataclasses.replace(load_fixture(DEFAULT), link_target=None, recognised_document=None)
 
 

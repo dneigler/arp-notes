@@ -1,7 +1,8 @@
 """arp-notes host adapter, scaffolded by `arp-notes init --host fastapi` (arp-notes-core @@CORE_VERSION@@).
 
-Search this file for TODO(arp-notes) and fill each one in: the database (HostDb), who is calling
-(HostPrincipal) and what a note can link to (HostLinks). The rest works as generated. Then:
+Search this file for the arp-notes TODO markers and fill each one in: the database (HostDb), who is
+calling (HostPrincipal), the signing secret (HostSigner), what a note can link to (HostLinks) and
+where the MCP tools are registered (register_notes_mcp). The rest works as generated. Then:
 
     from @@MODULE@@.arp_notes_host import mount_notes
     mount_notes(app)                      # once, where you create your FastAPI app

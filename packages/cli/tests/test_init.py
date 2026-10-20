@@ -56,6 +56,7 @@ def test_fresh_app_gets_the_adapter_the_migrations_and_the_test(
     assert "Next:" in out
     assert "mount_notes(app)" in out
     assert "from app.arp_notes_host import mount_notes" in out
+    assert "mount_notes does not serve MCP" in out and "ARP_NOTES_MCP_URL" in out
 
 
 def test_next_steps_name_the_ui_tarball_not_a_git_subdirectory(

@@ -2,6 +2,8 @@
 
 > Portable notes-sync component for AI-forward apps. A host app embeds a Python package (FastAPI routers, MCP tool specs, link-scheme ports) and a React UI package; users sync notes from Obsidian (or an LLM) through a small CLI. Adoption is defined as passing the black-box conformance kit.
 
+Links below point at `main`, which is unpinned. For the docs of one release, replace `/main/` with its tag (for example `/v0.1.0/`); the install lines in INTEGRATING.md are pinned by tag.
+
 To integrate arp-notes into a FastAPI + React app, read INTEGRATING.md first and follow it end to end: install, `arp-notes init --host fastapi`, fill in the ports, mount the routes and MCP tools, run the kit until it is green. The wire contract is PROTOCOL.md and the JSON Schemas; every response validates against them. The core is ORM-free: it never touches your models, users table or connections, only the ports you hand it in one HostConfig.
 
 ## Integrate

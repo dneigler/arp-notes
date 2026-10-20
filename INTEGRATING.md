@@ -32,7 +32,8 @@ uv run arp-notes init --host fastapi            # from the app's root; --dry-run
 
 It writes, and never overwrites without `--force`: `<package>/arp_notes_host.py` (port stubs marked
 `TODO(arp-notes)`, `mount_notes`, `register_notes_mcp`), the SQL copies in your migrations folder
-(`--migration-number 43` names them `043_notes.sql`, `044_...`) and
+(`arp_notes_001_notes.sql` and `arp_notes_002_note_links_lane.sql`; `--migration-number 43` names them
+`043_notes.sql`, `044_note_links_lane.sql` instead) and
 `tests/test_arp_notes_conformance.py` (drift test + the kit). `--package`, `--module`,
 `--migrations-dir`, `--tests-dir` override what it detected. After a version bump,
 `arp-notes init --host fastapi --only migrations` copies the new SQL and touches nothing else.
@@ -348,9 +349,13 @@ delete it once a real server serves the tools, and point the kit at it with `ARP
 ## 5 · Copy the DDL, then run the kit
 
 Migrations are **copied, never applied by the package**. `init` copied
-`arp_notes.schema.ddl()` (`001_notes.sql`) and each later delta (`002_note_links_lane.sql`, ...)
-into your migrations folder, byte for byte. Apply them with your own runner, and keep this drift
-test (the scaffold writes it) so a version bump cannot leave the copies stale:
+`arp_notes.schema.ddl()` (core's `001_notes.sql`) and each later delta (`002_note_links_lane.sql`, ...)
+into your migrations folder, byte for byte, as `arp_notes_001_notes.sql`,
+`arp_notes_002_note_links_lane.sql`, ... (or `043_notes.sql`, ... with `--migration-number`). Apply
+them with your own runner; every statement is idempotent, so running them twice is safe. The
+runner can be a dozen lines: `migrate()` in `examples/fastapi-minimal/app.py` runs each `*.sql` in
+the folder, in name order. Keep this drift test (the scaffold writes it) so a version bump cannot
+leave the copies stale:
 
 ```python
 from arp_notes.schema import ddl, migrations
@@ -362,13 +367,17 @@ def test_migrations_match_arp_notes_core():
         assert (MIGRATIONS / COPIES[name]).read_text(encoding="utf-8") == text
 ```
 
+Keep the `tests/` folder where pytest looks for it (`testpaths = ["tests"]` in `pyproject.toml`) and
+add `httpx` to your dev dependencies: the kit drives the app through Starlette's test client, which
+needs it (`uv add --dev httpx`).
+
 The kit is the feedback loop. A failure names the check, the request and the response:
 
 ```bash
 uv run pytest tests/test_arp_notes_conformance.py            # in process, as the scaffold wrote it
-uv run arp-notes-conformance --asgi myapp.main:app --token $TOKEN        # CLI, in process
-uv run arp-notes-conformance --base-url https://staging.example.com --token $TOKEN   # over the wire
-uv run arp-notes verify --conformance --app myapp            # after login; the post-release gate
+uv run arp-notes-conformance --asgi myapp.main:app --token $TOKEN --fixture tests/arpn-fixture   # CLI, in process
+uv run arp-notes-conformance --base-url https://staging.example.com --token $TOKEN --fixture tests/arpn-fixture   # over the wire
+uv run arp-notes verify --conformance --app myapp --fixture tests/arpn-fixture   # after login; the post-release gate
 uv run arp-notes-conformance --list                          # every check, grouped; --only sync
 ```
 
@@ -379,28 +388,59 @@ suite(app=app, token="test-user-token")  # raises ConformanceFailure with the re
 ```
 
 Checks the host's policy makes moot are skipped with a reason, never passed. The link checks need
-an entity that exists in your app; give the kit a fixture of its own (a folder with `fixture.json`
-and the notes it names; copy `packages/conformance/fixtures/` and edit it):
+an entity that exists in your app, so give the kit a fixture of its own: a folder with a
+`fixture.json` and the notes it names. Copy `packages/conformance/fixtures/` and edit it, or start
+from this (`tests/arpn-fixture/`, as the commands above assume):
 
 ```json
 {
   "source_system": "obsidian",
   "documents": {
-    "masterclass": {"file": "vault/masterclass.md", "path": "Lessons/Masterclass.md", "title": "Masterclass", "kind": "masterclass"},
-    "corpus":      {"file": "vault/corpus.md", "path": "Corpus/corpus.md", "title": "Corpus"},
-    "scratch":     {"file": "vault/scratch.md", "path": "Scratch/Warm-ups.md", "title": "Warm-ups"}
+    "masterclass": {
+      "file": "vault/masterclass.md",
+      "path": "Lessons/Masterclass.md",
+      "title": "Masterclass",
+      "kind": "masterclass",
+      "person": "Ann Other",
+      "note_date": "2026-10-18",
+      "frontmatter": {"kind": "masterclass", "tags": ["MeetingNote"]},
+      "anchors": {"Opening set": "opening-set", "Encore": "encore"}
+    },
+    "corpus":  {"file": "vault/corpus.md", "path": "Corpus/corpus.md", "title": "Corpus"},
+    "scratch": {"file": "vault/scratch.md", "path": "Scratch/Warm-ups.md", "title": "Warm-ups"}
   },
   "link_target": {"entity_type": "venue", "entity_id": 42, "child": {"entity_type": "show", "entity_id": 7}},
   "recognised_document": "masterclass"
 }
 ```
 
-`link_target` must exist for the test user (seed it with that id) and `child` is what your `children()` returns for it;
-`recognised_document` is the note whose text your `reconcile` turns into a proposal. Pass it with
-`suite(fixture="path/to/dir")`. What reaches `reconcile` as a span: wikilinks, quoted or italic
-text, runs of capitalised names ("Village Vanguard"), opus and catalogue numbers; write the
-fixture note so some span matches an entity of yours. To test your real app, not a bare one, call
-`mount_notes(app)` once where the app is built and pass that app to `suite(app=...)`. Run the kit as a dedicated test user: it works in an
+- The three keys under `documents` (`masterclass`, `corpus`, `scratch`) are fixed; `file` is read
+  relative to `fixture.json`. The `corpus` and `scratch` notes can hold any Markdown.
+- `person`, `note_date`, `frontmatter` and `anchors` are optional. `anchors` maps each heading in
+  the `masterclass` file to its GitHub-style slug (`arp_notes.anchors.slug`: lower case, spaces to hyphens, punctuation dropped);
+  the anchor checks are skipped unless it lists at least two. `frontmatter` is sent as is and must
+  come back unchanged.
+- `link_target` must exist for the test user (seed a row with that id). Its `child` is optional: it
+  is what your `children()` returns for that entity, and `entity.include_children` is skipped when
+  it is left out. Leave out `link_target` altogether and every link check is skipped.
+- `recognised_document` is the note whose text your `reconcile` turns into a proposal. A span that
+  reaches `reconcile` is a wikilink, quoted or italic text, a run of capitalised names ("Village
+  Vanguard"), or an opus or catalogue number; the note needs one that matches your `link_target`.
+  `vault/masterclass.md` for the fixture above can be as short as:
+
+  ```markdown
+  ## Opening set
+  We opened at [[Village Vanguard]] and the room was loud.
+
+  ## Encore
+  Short second set; nobody left early.
+  ```
+
+Pass the folder with `--fixture tests/arpn-fixture` on any command above, or
+`suite(fixture="tests/arpn-fixture")`. A test that calls `suite()` **must insert the `link_target`
+row (and its `child`) into the test database before it runs**, because the kit never creates your
+entities. To test your real app, not a bare one, call `mount_notes(app)` once where the app is built
+and pass that app to `suite(app=...)`. Run the kit as a dedicated test user: it works in an
 `arpn-conformance-<id>` workspace and deletes its notes, but blobs it uploaded stay until hygiene
 sweeps them after 30 days.
 

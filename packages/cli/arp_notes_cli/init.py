@@ -248,11 +248,16 @@ def next_steps(args: argparse.Namespace, targets: list[Target], root: Path) -> l
         module = args.module or module_name(relpath(adapter.path.parent, root))
         steps += [
             f"Fill in the {todos} {TODO_MARK} markers in {relpath(adapter.path, root)}: "
-            "HostDb, HostPrincipal, HostLinks.",
+            "HostDb, HostPrincipal, HostLinks, plus the signing secret in HostSigner and the "
+            "register_notes_mcp call.",
             "Mount the routes where you create your FastAPI app:\n"
             f"       from {module}.arp_notes_host import mount_notes\n"
             "       mount_notes(app)\n"
-            "   and call register_notes_mcp(your_fastmcp_server) where you build your MCP server.",
+            "   and call register_notes_mcp(your_fastmcp_server) where you build your MCP server.\n"
+            "   mount_notes does not serve MCP: the conformance kit's mcp.* checks are skipped "
+            "until an endpoint answers.\n"
+            "   The generated test mounts a stand-in (mount_notes_mcp_http); against your real "
+            "app, set ARP_NOTES_MCP_URL.",
         ]
     migrations = [t for t in targets if t.part == "migrations"]
     if migrations:

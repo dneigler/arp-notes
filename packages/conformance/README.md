@@ -48,6 +48,16 @@ The kit speaks JSON-RPC over Streamable HTTP itself and imports no MCP SDK. The 
 
 A run works in its own `arpn-conformance-<id>` workspace and deletes the notes it made. Two things
 cannot be undone over the wire: the (tiny) blobs it uploads, which a host's `unreferenced_blobs`
-hygiene sweep collects after 30 days, and the hygiene dismissals for the notes it deleted. The CLI
-leaves out the bundled fixture's `link_target`, which names the reference host's entities; pass
-`--fixture` with one written for the host to run the link checks too.
+hygiene sweep collects after 30 days, and the hygiene dismissals for the notes it deleted.
+
+**The two command lines treat the bundled fixture differently.** Its `link_target` (repertoire 10,
+child movement 103) names the reference host's entities.
+
+- `arp-notes verify --conformance` (and `arp-notes conformance`) leave `link_target`,
+  `recognised_document` and `merge_pair` out, so the link checks are skipped with a reason.
+- `arp-notes-conformance` (this package's own command) sends the bundled fixture as it is. Against
+  any host but the reference one the link checks then fail rather than skip (`entity.include_children`
+  is one). **Always pass `--fixture <dir>` there**, with a `fixture.json` written for the host (format:
+  INTEGRATING.md, step 5), or the checks that need your entities will not mean anything.
+
+`--fixture <dir>` works on both commands, and with it the link checks run.
