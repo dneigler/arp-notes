@@ -22,6 +22,7 @@ import base64
 import binascii
 import json
 import logging
+import re
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from datetime import datetime
@@ -621,25 +622,75 @@ def by_entity(
 # ---------------------------------------------------------------------------------------------
 
 
+# ![name](attachment://<blob_id>) is an image and [name](attachment://<blob_id>) any other file: the
+# refs the editor's paste/drop path writes. `pending-…` ids are upload placeholders, not blobs.
+_ATTACHMENT_REF = re.compile(r"!?\[([^\]\n]*)\]\(attachment://(\d+)\)")
+_CODE = re.compile(r"^(```|~~~).*?(?:^\1[^\n]*$|\Z)|`[^`\n]+`", re.DOTALL | re.MULTILINE)
+
+
+def body_attachment_refs(body_md: str) -> list[tuple[str, int, str]]:
+    """The `attachment://<blob_id>` refs in a body -> [(ref_in_markdown, blob_id, link text)].
+
+    Code (fences and inline spans) is skipped, and a repeated ref counts once, in order.
+    """
+    if "attachment://" not in body_md:
+        return []
+    text = _CODE.sub(lambda m: " " * len(m.group(0)), body_md)
+    found: dict[str, tuple[str, int, str]] = {}
+    for m in _ATTACHMENT_REF.finditer(text):
+        ref = body_md[m.start() : m.end()]
+        found.setdefault(ref, (ref, int(m.group(2)), body_md[m.start(1) : m.end(1)].strip()))
+    return list(found.values())
+
+
+def reconcile_body_attachments(cfg: HostConfig, user_id: str, note_id: int, body_md: str) -> None:
+    """Make an app note's `note_attachments` match the `attachment://<blob_id>` refs in its body.
+
+    The app-note counterpart of the sync reconciler: rows are keyed by `ref_in_markdown`, so a
+    row keeps its id while its ref stays in the body, a missing row is inserted (filename = the
+    link text) and a row whose ref left the body is deleted. A ref to a blob the user does not
+    own, or that does not exist, gets no row and the body is untouched. Call inside the write's
+    transaction.
+    """
+    refs = body_attachment_refs(body_md)
+    kept: list[str] = []
+    for order, (ref, blob_id, name) in enumerate(refs):
+        owned = cfg.db.run(
+            "INSERT INTO note_attachments (note_id, blob_id, filename, ref_in_markdown, sort_order)"
+            " SELECT %s, b.id, %s, %s, %s FROM blobs b WHERE b.id = %s AND b.user_id = %s"
+            " ON CONFLICT (note_id, ref_in_markdown) DO UPDATE SET blob_id = EXCLUDED.blob_id,"
+            " filename = EXCLUDED.filename, sort_order = EXCLUDED.sort_order RETURNING id",
+            [note_id, name or f"attachment-{blob_id}", ref, order, blob_id, user_id],
+        )
+        if owned:
+            kept.append(ref)
+    cfg.db.run(
+        "DELETE FROM note_attachments WHERE note_id = %s AND NOT (ref_in_markdown = ANY(%s))",
+        [note_id, kept],
+    )
+
+
 def create_note(
     cfg: HostConfig, user_id: str, body: NoteCreate, *, created_via: str = "web"
 ) -> Note:
     """A.2 `POST /notes`: an app-authored note (origin='app'). Emits `note_created`."""
-    rows = cfg.db.run(
-        "INSERT INTO notes (user_id, kind, title, body_md, person, note_date, place, origin,"
-        " created_via, version) VALUES (%s, %s, %s, %s, %s, %s, %s, 'app', %s, 1) RETURNING id",
-        [
-            user_id,
-            body.kind or "note",
-            body.title,
-            body.body_md or "",
-            body.person,
-            body.note_date,
-            body.place,
-            created_via,
-        ],
-    )
-    note_id = rows[0]["id"]
+    with cfg.db.transaction():
+        rows = cfg.db.run(
+            "INSERT INTO notes (user_id, kind, title, body_md, person, note_date, place, origin,"
+            " created_via, version) VALUES (%s, %s, %s, %s, %s, %s, %s, 'app', %s, 1) RETURNING id",
+            [
+                user_id,
+                body.kind or "note",
+                body.title,
+                body.body_md or "",
+                body.person,
+                body.note_date,
+                body.place,
+                created_via,
+            ],
+        )
+        note_id = rows[0]["id"]
+        reconcile_body_attachments(cfg, user_id, note_id, body.body_md or "")
     emit_event(cfg, user_id, "note_created", note_id, f"Note created: {body.title}")
     return get_note(cfg, user_id, note_id)
 
@@ -679,6 +730,8 @@ def patch_note(cfg: HostConfig, user_id: str, note_id: int, body: NotePatch) -> 
                 f"UPDATE notes SET {', '.join(assignments)} WHERE id = %s AND user_id = %s",
                 [*values.values(), note_id, user_id],
             )
+            if "body_md" in values:
+                reconcile_body_attachments(cfg, user_id, note_id, values["body_md"])
     return get_note(cfg, user_id, note_id)
 
 
@@ -703,6 +756,7 @@ def autosave_note(
                 " WHERE id = %s AND user_id = %s",
                 [body.body_md, current + 1, note_id, user_id],
             )
+            reconcile_body_attachments(cfg, user_id, note_id, body.body_md)
     note = get_note(cfg, user_id, note_id)
     if saved:
         return AutosaveResult.model_validate({"note": note})

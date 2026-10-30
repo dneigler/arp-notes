@@ -410,6 +410,116 @@ def test_autosave_is_for_app_notes_only(notes_cfg: HostConfig, notes_db: FakeDb)
         repo.autosave_note(notes_cfg, USER, 9999, AutosaveBody(body_md="x", version=1))
 
 
+# --- attachment:// refs reconcile into note_attachments (ga-mxal.53) --------------------------
+
+
+def att_rows(db: FakeDb, note_id: int) -> list[tuple[str, int, str]]:
+    rows = db.run(
+        "SELECT ref_in_markdown, blob_id, filename FROM note_attachments WHERE note_id = %s"
+        " ORDER BY sort_order, id",
+        [note_id],
+    )
+    return [(r["ref_in_markdown"], r["blob_id"], r["filename"]) for r in rows]
+
+
+def test_create_registers_the_attachment_refs_in_the_body(
+    notes_cfg: HostConfig, notes_db: FakeDb
+) -> None:
+    blob, _ = add_blob(notes_db)
+    note = repo.create_note(
+        notes_cfg, USER, NoteCreate(title="t", body_md=f"hi\n![shot.png](attachment://{blob})\n")
+    )
+    ref = f"![shot.png](attachment://{blob})"
+    assert att_rows(notes_db, note.id) == [(ref, blob, "shot.png")]
+    assert [(a.blob_id, a.filename, a.ref_in_markdown) for a in note.attachments] == [
+        (blob, "shot.png", ref)
+    ]
+
+
+def test_autosave_adds_and_drops_attachment_rows_as_refs_come_and_go(
+    notes_cfg: HostConfig, notes_db: FakeDb
+) -> None:
+    b1, _ = add_blob(notes_db, text="one")
+    b2, _ = add_blob(notes_db, text="two")
+    note = repo.create_note(notes_cfg, USER, NoteCreate(title="t", body_md="text"))
+    assert att_rows(notes_db, note.id) == []
+    r1, r2 = f"![a.png](attachment://{b1})", f"[spec.pdf](attachment://{b2})"
+    saved = repo.autosave_note(
+        notes_cfg, USER, note.id, AutosaveBody(body_md=f"{r1}\n{r2}", version=1)
+    )
+    assert saved.note is not None and len(saved.note.attachments) == 2
+    ids = {
+        r["ref_in_markdown"]: r["id"]
+        for r in notes_db.run(
+            "SELECT id, ref_in_markdown FROM note_attachments WHERE note_id = %s", [note.id]
+        )
+    }
+    repo.autosave_note(notes_cfg, USER, note.id, AutosaveBody(body_md=f"{r1}\nmore", version=2))
+    assert att_rows(notes_db, note.id) == [(r1, b1, "a.png")]
+    # the surviving row keeps its id
+    assert (
+        notes_db.run("SELECT id FROM note_attachments WHERE note_id = %s", [note.id])[0]["id"]
+        == ids[r1]
+    )
+
+
+def test_a_repeated_ref_counts_once_and_two_names_for_one_blob_are_two_rows(
+    notes_cfg: HostConfig, notes_db: FakeDb
+) -> None:
+    blob, _ = add_blob(notes_db)
+    a, b = f"![a](attachment://{blob})", f"![b](attachment://{blob})"
+    note = repo.create_note(notes_cfg, USER, NoteCreate(title="t", body_md=f"{a} {a} {b}"))
+    assert att_rows(notes_db, note.id) == [(a, blob, "a"), (b, blob, "b")]
+
+
+def test_refs_to_other_users_missing_or_pending_blobs_and_code_get_no_row(
+    notes_cfg: HostConfig, notes_db: FakeDb
+) -> None:
+    mine, _ = add_blob(notes_db)
+    theirs, _ = add_blob(notes_db, OTHER, text="theirs")
+    body = (
+        f"![x](attachment://{theirs}) ![y](attachment://9999) ![z](attachment://pending-ab1)\n"
+        f"`![c](attachment://{mine})`\n```\n![d](attachment://{mine})\n```\n"
+    )
+    note = repo.create_note(notes_cfg, USER, NoteCreate(title="t", body_md=body))
+    assert att_rows(notes_db, note.id) == []
+    assert repo.get_note(notes_cfg, USER, note.id).body_md == body
+
+
+def test_a_blank_link_text_falls_back_to_a_filename(
+    notes_cfg: HostConfig, notes_db: FakeDb
+) -> None:
+    blob, _ = add_blob(notes_db)
+    note = repo.create_note(
+        notes_cfg, USER, NoteCreate(title="t", body_md=f"![](attachment://{blob})")
+    )
+    assert att_rows(notes_db, note.id)[0][2] == f"attachment-{blob}"
+
+
+def test_patch_reconciles_a_body_change_and_leaves_other_edits_alone(
+    notes_cfg: HostConfig, notes_db: FakeDb
+) -> None:
+    blob, _ = add_blob(notes_db)
+    note = repo.create_note(
+        notes_cfg, USER, NoteCreate(title="t", body_md=f"![a](attachment://{blob})")
+    )
+    repo.patch_note(notes_cfg, USER, note.id, NotePatch(place="Studio"))
+    assert len(att_rows(notes_db, note.id)) == 1
+    repo.patch_note(notes_cfg, USER, note.id, NotePatch(body_md="gone"))
+    assert att_rows(notes_db, note.id) == []
+
+
+def test_a_conflicting_autosave_leaves_the_attachment_rows_alone(
+    notes_cfg: HostConfig, notes_db: FakeDb
+) -> None:
+    blob, _ = add_blob(notes_db)
+    note = repo.create_note(
+        notes_cfg, USER, NoteCreate(title="t", body_md=f"![a](attachment://{blob})")
+    )
+    repo.autosave_note(notes_cfg, USER, note.id, AutosaveBody(body_md="stale", version=9))
+    assert len(att_rows(notes_db, note.id)) == 1
+
+
 # --- delete -----------------------------------------------------------------------------------
 
 

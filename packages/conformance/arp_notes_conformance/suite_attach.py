@@ -12,6 +12,8 @@ What is proved:
   oversize is 413 (at upload-url, and as a body longer than the ticket);
 - a MIME outside the allowlist is 415, and a host that declares `attachments=false` refuses
   upload-url (capabilities against behaviour);
+- a paste-style app note (`attachment://<blob_id>` in `body_md`) lists the blob on create and on
+  autosave, and drops it when the ref leaves the body;
 - signed content: 200 for the URL as issued, 403 when the signature is altered, when `exp` is in
   the past, or when either is missing. A signature that has genuinely lapsed needs the host's
   clock, so the kit proves the refusal with an `exp` that is already past, which no signature can
@@ -445,3 +447,49 @@ def summary_thumbnail(h: Harness) -> None:
     url = row.get("thumbnail_url")
     need(bool(url), "a note whose first attachment is an image has no thumbnail_url (K§2)")
     readable(h, url, blob)
+
+
+@check("attachments.app_note_paste")
+def app_note_paste(h: Harness) -> None:
+    """A pasted image in an app note.
+
+    The editor writes `![name](attachment://<blob_id>)` into the body; the host must then list the
+    blob on the note (on create and on autosave) so a client can render it.
+    """
+    attachments_on(h)
+    blob = new_blob(h, "paste")
+    blob_id = upload(h, blob)
+    embed = (
+        f"{'!' if blob.mime.startswith('image/') else ''}[{blob.filename}](attachment://{blob_id})"
+    )
+    note = h.create_note("pasted", body_md=f"typed text\n{embed}\n")
+    got = [a for a in note["attachments"] if a["blob_id"] == blob_id]
+    need(
+        len(got) == 1,
+        "POST /notes with an `attachment://<blob_id>` ref in body_md must list that blob in"
+        f" `attachments` (got {note['attachments']})",
+    )
+    same(
+        (got[0]["sha256"], got[0]["filename"], got[0]["ref_in_markdown"]),
+        (blob.sha256, blob.filename, embed),
+        "attachment created from the pasted ref",
+    )
+    readable(h, got[0]["content_url"], blob)
+    same(h.get_note(note["id"])["attachments"][0]["blob_id"], blob_id, "attachment after a re-read")
+
+    cleared = h.call(
+        "PATCH",
+        f"/notes/{note['id']}/autosave",
+        shape="AutosaveResult",
+        json={"body_md": "typed text only\n", "version": note["version"]},
+    )
+    need("note" in cleared, f"autosave with the current version must save (got {cleared})")
+    same(cleared["note"]["attachments"], [], "attachments after the ref left the body")
+
+    back = h.call(
+        "PATCH",
+        f"/notes/{note['id']}/autosave",
+        shape="AutosaveResult",
+        json={"body_md": f"again\n{embed}\n", "version": cleared["note"]["version"]},
+    )
+    same([a["blob_id"] for a in back["note"]["attachments"]], [blob_id], "autosave adds a ref")

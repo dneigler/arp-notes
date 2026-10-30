@@ -71,7 +71,13 @@ def test_host_without_attachments(make: Callable[..., Any]) -> None:
     assert report.ok, "\n".join(report.lines())
     got = statuses(report)
     assert got["attachments.refused_when_off"] == "passed"
-    for name in ("upload_roundtrip", "hash_mismatch", "signed_content", "oversize"):
+    for name in (
+        "upload_roundtrip",
+        "hash_mismatch",
+        "signed_content",
+        "oversize",
+        "app_note_paste",
+    ):
         assert got[f"attachments.{name}"] == "skipped"
         assert "attachments=false" in detail(report, f"attachments.{name}")
     assert got["export.round_trip_attachments"] == "skipped"

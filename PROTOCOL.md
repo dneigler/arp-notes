@@ -178,7 +178,7 @@ GET    /notes/capabilities                                                      
                                                                                               kinds:[...], source_systems:[...], export:bool, llm_enrich:bool, schemes:[{prefix, entity_types}]}   (§9.2 Policy, self-describing; rev 2)
 GET    /notes/{id}/export?with_enrichment=false&enrichment_style=frontmatter|companion     → text/markdown + X-Arp-Attachments manifest header (§3.7; 403 when policy export=off; rev 2)
 GET    /notes?kind&origin&source_system&q&date_from&date_to&limit(1..100)&before(cursor)   → {items:[NoteSummary], next_cursor?}
-POST   /notes                 {kind?, title, body_md?, person?, note_date?, place?}        → 201 Note   (origin='app', created_via from client)
+POST   /notes                 {kind?, title, body_md?, person?, note_date?, place?}        → 201 Note   (origin='app', created_via from client; `attachment://<blob_id>` refs in `body_md` register `attachments`, and `PATCH` of `body_md` and autosave keep them in step: a ref to a blob the user owns adds a row named by its link text, a ref that left the body drops its row)
 GET    /notes/{id}                                                                        → Note       (404)
 PATCH  /notes/{id}            {kind?, title?, body_md?, person?, note_date?, place?}      → Note       (409 {"error":"read_only_import"} for origin='source' except kind/person/note_date/place which are editable on both)
 PATCH  /notes/{id}/autosave   {body_md, version}                                           → 200 {note} | 200 {conflict:true, server_version, server_data}   (house envelope; app notes only)
