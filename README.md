@@ -35,13 +35,13 @@ on by default, and a later sync of the exported folder round-trips to the same n
 ## Install
 
 Packages are semver and tagged together; hosts install by tag (no registry in v0.1). Current
-release: **v0.1.0**, `protocol_version: 1`.
+release: **v0.1.1**, `protocol_version: 1`.
 
 ```bash
-uv add "arp-notes-core @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/core"
-uv add --dev "arp-notes-conformance @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/conformance"
-uvx --from "arp-notes @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/cli" arp-notes --help
-npm install https://github.com/dneigler/arp-notes/releases/download/v0.1.0/arpinator-notes-ui-0.1.0.tgz
+uv add "arp-notes-core @ git+https://github.com/dneigler/arp-notes@v0.1.1#subdirectory=packages/core"
+uv add --dev "arp-notes-conformance @ git+https://github.com/dneigler/arp-notes@v0.1.1#subdirectory=packages/conformance"
+uvx --from "arp-notes @ git+https://github.com/dneigler/arp-notes@v0.1.1#subdirectory=packages/cli" arp-notes --help
+npm install https://github.com/dneigler/arp-notes/releases/download/v0.1.1/arpinator-notes-ui-0.1.1.tgz
 ```
 
 The UI line is the tarball attached to the GitHub release, because npm cannot install a git

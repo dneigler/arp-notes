@@ -10,14 +10,14 @@ table, no connection of its own. You supply ports; it never reaches past them.
 
 ## 1 · Install
 
-Pin one tag for everything (`v0.1.0` below; use the tag your team pins). No registry in v0.1.
+Pin one tag for everything (`v0.1.1` below; use the tag your team pins). No registry in v0.1.
 
 ```bash
-uv add "arp-notes-core @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/core"
-uv add --dev "arp-notes-conformance @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/conformance"
-uv add --dev "arp-notes @ git+https://github.com/dneigler/arp-notes@v0.1.0#subdirectory=packages/cli"
+uv add "arp-notes-core @ git+https://github.com/dneigler/arp-notes@v0.1.1#subdirectory=packages/core"
+uv add --dev "arp-notes-conformance @ git+https://github.com/dneigler/arp-notes@v0.1.1#subdirectory=packages/conformance"
+uv add --dev "arp-notes @ git+https://github.com/dneigler/arp-notes@v0.1.1#subdirectory=packages/cli"
 # React UI: the tarball attached to that tag's GitHub release (npm cannot install a git subdirectory)
-npm install https://github.com/dneigler/arp-notes/releases/download/v0.1.0/arpinator-notes-ui-0.1.0.tgz
+npm install https://github.com/dneigler/arp-notes/releases/download/v0.1.1/arpinator-notes-ui-0.1.1.tgz
 ```
 
 `@arpinator/notes-ui` wants `react` (18+) and the CodeMirror 6 packages as peers
