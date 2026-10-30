@@ -91,6 +91,7 @@ PLAIN_IDS = {
 
 
 def test_search_only_proposal_for_the_fixture(notes_db: FakeDb) -> None:
+    """Search-only keeps explicit catalogue gaps and coordinated names for review."""
     cfg, note_id = build(notes_db)
     p = propose(cfg, USER, note_id)
     assert ids(plain(p)) == PLAIN_IDS
@@ -103,11 +104,14 @@ def test_search_only_proposal_for_the_fixture(notes_db: FakeDb) -> None:
         (26, "debussy-preludes"),
     ]
     assert [u.mention for u in p.unresolved] == [
+        "Chopin Études",
         "S. 141",
         "second movement of the Moonlit Sonata",
         "E major Nocturne",
         "WTC Book 1",
         "Op. 110",
+        "Fauré",
+        "Duparc",
     ]
     assert (p.generated_by, p.action_items, p.takeaways, p.cached) == (["resolver"], [], [], False)
     assert p.proposed_at is not None and p.note_id == note_id
@@ -154,9 +158,11 @@ def test_composer_links_are_note_level_with_a_mention_count(notes_db: FakeDb) ->
     assert composer.anchor == "^e3"  # first mention
 
 
-def test_surnames_no_scheme_knows_are_dropped_not_unresolved(notes_db: FakeDb) -> None:
+def test_only_explicit_coordinated_names_survive_without_host_candidates(notes_db: FakeDb) -> None:
+    """Generic recall names are dropped; an explicit pair remains reviewable."""
     mentions = [u.mention for u in run(notes_db).unresolved]
-    assert not {"Bach", "Mozart", "Duparc", "Beethovan", "Ada Quill"} & set(mentions)
+    assert not {"Bach", "Mozart", "Haydn", "Beethovan", "Ada Quill"} & set(mentions)
+    assert {"Fauré", "Duparc"} <= set(mentions)
 
 
 def test_unresolved_carries_kind_hint_and_composer_label(notes_db: FakeDb) -> None:
