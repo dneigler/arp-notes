@@ -199,11 +199,29 @@ def test_a_bare_ordinal_takes_the_branch_context() -> None:
 
 
 def test_names_and_possessives() -> None:
+    """A possessive named form stays whole without consuming the next person's name."""
     body = "We heard Roy Howat talk about Debussy's Préludes and Ludwig van Beethoven.\n"
-    assert texts(tokenise(body)) == ["Roy Howat", "Debussy", "Préludes", "Ludwig van Beethoven"]
+    assert texts(tokenise(body)) == ["Roy Howat", "Debussy's Préludes", "Ludwig van Beethoven"]
     hints = {s["text"]: s["kind_hint"] for s in tokenise(body)}
-    assert hints["Debussy"] == "composer"
+    assert hints["Debussy's Préludes"] == "work"
     assert hints["Roy Howat"] is None
+
+
+def test_named_lowercase_forms_and_capitalized_key_titles() -> None:
+    """Ordinary note capitalization must not hide identifiable work references."""
+    spans = tokenise("- Debussy preludes - one of them has this\n- the E Major Nocturne\n")
+    assert texts(spans, "work") == ["Debussy preludes", "E Major Nocturne"]
+
+
+def test_coordinated_names_keep_the_sentence_initial_name() -> None:
+    """An explicit pair supplies recall even when the host has neither composer."""
+    from arp_notes.enrich import _scan
+
+    spans = _scan('- Faure and Dupac always say "speak the songs"\n')
+    composers = [t for t in spans if t.span["kind_hint"] == "composer"]
+    assert [t.span["text"] for t in composers] == ["Faure", "Dupac"]
+    assert all(t.structural for t in composers)
+    assert tokenise("- This and That are ordinary words\n") == []
 
 
 def test_a_lone_sentence_initial_word_is_not_a_name_but_a_composer_before_a_catalogue_is() -> None:
@@ -241,9 +259,11 @@ def test_list_markers_are_not_part_of_the_quote() -> None:
 
 
 def test_fixture_note_spans() -> None:
+    """The complete note includes both named forms and catalogue references."""
     spans = tokenise(BODY, title="Synthetic masterclass", kind="masterclass")
     structural = [s["text"] for s in spans if s["kind_hint"] in ("work", "movement")]
     assert structural == [
+        "Chopin Études",
         "Op. 10 nº 3",
         "Nº 12",
         "Op.25 No 1",
@@ -253,6 +273,7 @@ def test_fixture_note_spans() -> None:
         "Hob.XVI:48",
         "D. 960",
         "S. 141",
+        "Debussy Préludes",
         "second movement of the Moonlit Sonata",
         "E major Nocturne",
         "WTC Book 1",

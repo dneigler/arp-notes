@@ -10,7 +10,8 @@ raises. It never writes: the cache is `review` (R1), Layer 2 is `extract` (C5b).
 
 Surnames and generic name runs are recall-only: the core has no lexicon, so a name no scheme
 recognises is dropped rather than reported as unresolved. Unresolved mentions come from structural
-patterns only (catalogue numbers, ordinal movements, key-and-form titles, WTC).
+patterns only (catalogue numbers, ordinal movements, named musical forms, key-and-form titles,
+WTC, and explicitly coordinated proper names).
 """
 
 from __future__ import annotations
@@ -113,7 +114,7 @@ _ORDINAL = re.compile(
     r"(?:[ \t]+(?:[A-ZÀ-ÖØ-Þ][\w'’-]*|(?i:op)\.?[ \t]*\d+|(?i:no)\.?[ \t]*\d+))*)?"
 )
 _KEY_TITLE = re.compile(
-    r"\b[A-G](?:[-\s]?(?:flat|sharp)|[♭♯b#])?[ \t-](?:major|minor)[ \t]+[A-ZÀ-ÖØ-Þ][\w'’-]*"
+    r"\b[A-G](?:[-\s]?(?i:flat|sharp)|[♭♯b#])?[ \t-](?i:major|minor)[ \t]+[A-ZÀ-ÖØ-Þ][\w'’-]*"
 )
 _WTC = re.compile(
     r"\b(?:WTC|Well[- ]Tempered[ \t]+Clavier)(?:,?[ \t]*Book[ \t]*(?:[12]|I{1,2}))?",
@@ -127,6 +128,11 @@ _TECHNIQUE = re.compile(
 
 _NAME_START = "A-ZÀ-ÖØ-Þ"
 _NAME = rf"[{_NAME_START}][\w'’-]*"
+_NAMED_FORM = re.compile(
+    rf"\b{_NAME}[ \t]+(?i:préludes?|preludes?|études?|etudes?|nocturnes?|sonatas?"
+    r"|ballades?|polonaises?|inventions?|suites?|concertos?|symphonies)\b"
+)
+_COMPOSER_PAIR = re.compile(rf"\b(?P<first>{_NAME})[ \t]+and[ \t]+(?P<second>{_NAME})\b")
 _PRECEDING_NAME = re.compile(rf"(?P<name>{_NAME})(?:['’]s)?[,:]?[ \t]*$")
 _CAT_START = (
     r"(?:(?i:op(?:us)?)\.?[ \t]*\d|BWV\.?[ \t]*\d|K\.?[ \t]*\d|Hob\.?[ \t]*[IVX]"
@@ -273,7 +279,7 @@ def _line_tokens(
             None,
         )
 
-    work = _mask(content)
+    masked = work = _mask(content)
     toks: list[_Tok] = []
     found_comp: str | None = None
     found_opus: str | None = None
@@ -385,6 +391,38 @@ def _line_tokens(
                 True,
             )
             work = _blank(work, m.start(), m.end())
+
+    # A named musical form carries work evidence even when the title is lowercase.
+    # Coordinated proper names are explicit mentions, including names absent from the host.
+    for m in _NAMED_FORM.finditer(work):
+        text = content[m.start() : m.end()].strip()
+        add(
+            m.start(),
+            m.end(),
+            _span(text, _quote(content, m.start(), m.end()), anchor, "work", title, kind),
+            True,
+        )
+        work = _blank(work, m.start(), m.end())
+    for m in _COMPOSER_PAIR.finditer(masked):
+        if work[m.start() : m.end()] != m.group(0):
+            continue  # a work phrase already consumed one of these words
+        if not all(_is_name_word(m.group(k)) for k in ("first", "second")):
+            continue
+        for key in ("first", "second"):
+            add(
+                m.start(key),
+                m.end(key),
+                _span(
+                    m.group(key),
+                    _quote(content, m.start(), m.end()),
+                    anchor,
+                    "composer",
+                    title,
+                    kind,
+                ),
+                True,
+            )
+        work = _blank(work, m.start(), m.end())
 
     # Quoted and italic titles (recall only).
     for m in _QUOTED.finditer(work):
